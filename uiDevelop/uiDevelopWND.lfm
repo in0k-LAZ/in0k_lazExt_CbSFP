@@ -1,0 +1,106 @@
+object mainWND: TmainWND
+  Left = 323
+  Height = 462
+  Top = 145
+  Width = 645
+  Caption = 'mainWND'
+  ClientHeight = 462
+  ClientWidth = 645
+  OnCreate = FormCreate
+  OnShow = FormShow
+  LCLVersion = '1.2.6.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 25
+    Top = 437
+    Width = 645
+    Align = alBottom
+    AutoSize = True
+    BorderSpacing.Top = 10
+    BevelOuter = bvNone
+    Caption = 'Panel1'
+    ClientHeight = 25
+    ClientWidth = 645
+    TabOrder = 0
+    object Button1: TButton
+      AnchorSideTop.Control = Panel1
+      AnchorSideRight.Control = Button2
+      Left = 489
+      Height = 25
+      Top = 0
+      Width = 81
+      Anchors = [akTop, akRight]
+      Caption = 'OK'
+      OnClick = Button1Click
+      TabOrder = 0
+    end
+    object Button2: TButton
+      AnchorSideTop.Control = Panel1
+      AnchorSideRight.Control = Panel1
+      AnchorSideRight.Side = asrBottom
+      Left = 570
+      Height = 25
+      Top = 0
+      Width = 75
+      Anchors = [akTop, akRight]
+      Caption = 'Cansel'
+      OnClick = Button2Click
+      TabOrder = 1
+    end
+  end
+  inline CbSFP_ideCallEditor1: TCbSFP_ideCallEditor
+    Height = 427
+    Width = 645
+    ClientHeight = 427
+    ClientWidth = 645
+    TabOrder = 1
+    inherited Common_PNL: TPanel
+      AnchorSideRight.Control = CbSFP_ideCallEditor1
+      AnchorSideBottom.Control = CbSFP_ideCallEditor1
+      Height = 362
+      Width = 272
+    end
+    inherited Splitter_1: TSplitter
+      AnchorSideBottom.Control = CbSFP_ideCallEditor1
+      Height = 408
+    end
+    inherited OPTNs_GBox: TGroupBox
+      AnchorSideLeft.Control = CbSFP_ideCallEditor1
+      AnchorSideTop.Control = CbSFP_ideCallEditor1
+    end
+    inherited PTTNs_GBox: TGroupBox
+      AnchorSideLeft.Control = CbSFP_ideCallEditor1
+      AnchorSideBottom.Control = CbSFP_ideCallEditor1
+      Height = 150
+      ClientHeight = 132
+      inherited PTTNs_lBox: TCheckListBox
+        Height = 132
+      end
+    end
+    inherited Common_sh1: TShape
+      AnchorSideRight.Control = CbSFP_ideCallEditor1
+      Width = 270
+    end
+    inherited Common_CPT: TLabel
+      AnchorSideTop.Control = CbSFP_ideCallEditor1
+    end
+    inherited Common_OPT: TComboBox
+      Width = 182
+    end
+    inherited Common_CHB: TCheckBox
+      AnchorSideRight.Control = CbSFP_ideCallEditor1
+    end
+    inherited Common_EDT: TEdit
+      AnchorSideRight.Control = CbSFP_ideCallEditor1
+      Width = 182
+    end
+    inherited Common_sh2: TShape
+      AnchorSideRight.Control = CbSFP_ideCallEditor1
+      Width = 270
+    end
+    inherited Common_i_1: TImage
+      AnchorSideRight.Control = CbSFP_ideCallEditor1
+      Left = 625
+    end
+  end
+end

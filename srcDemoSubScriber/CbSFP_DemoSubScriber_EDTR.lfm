@@ -1,0 +1,58 @@
+object CbSFP_DemoSubScriber_EDTR: TCbSFP_DemoSubScriber_EDTR
+  Left = 0
+  Height = 240
+  Top = 0
+  Width = 320
+  ClientHeight = 240
+  ClientWidth = 320
+  LCLVersion = '1.2.6.0'
+  object Label1: TLabel
+    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Side = asrCenter
+    Left = 0
+    Height = 15
+    Top = 4
+    Width = 20
+    Caption = 'III:='
+    ParentColor = False
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Edit2
+    AnchorSideTop.Side = asrCenter
+    Left = 0
+    Height = 15
+    Top = 27
+    Width = 29
+    Caption = 'SSS:='
+    ParentColor = False
+  end
+  object Edit1: TEdit
+    AnchorSideLeft.Control = Label2
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 29
+    Height = 23
+    Top = 0
+    Width = 291
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 0
+    Text = 'Edit1'
+  end
+  object Edit2: TEdit
+    AnchorSideLeft.Control = Edit1
+    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 29
+    Height = 23
+    Top = 23
+    Width = 291
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 1
+    Text = 'Edit2'
+  end
+end

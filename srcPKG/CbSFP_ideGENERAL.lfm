@@ -1,0 +1,67 @@
+object in0kLE_CBSP_ideEDTR__General: Tin0kLE_CBSP_ideEDTR__General
+  Left = 0
+  Height = 240
+  Top = 0
+  Width = 490
+  ClientHeight = 240
+  ClientWidth = 490
+  TabOrder = 0
+  DesignLeft = 90
+  DesignTop = 210
+  object CheckBox1: TCheckBox
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 0
+    Height = 19
+    Top = 0
+    Width = 78
+    Caption = 'CheckBox1'
+    TabOrder = 0
+  end
+  object Memo1: TMemo
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 198
+    Top = 42
+    Width = 490
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 1
+  end
+  object SpeedButton1: TSpeedButton
+    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 486
+    Height = 4
+    Top = 28
+    Width = 4
+    Anchors = [akTop, akRight]
+    AutoSize = True
+    Flat = True
+    OnClick = SpeedButton1Click
+  end
+  object Edit1: TEdit
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = CheckBox1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = SpeedButton1
+    Left = 0
+    Height = 23
+    Top = 19
+    Width = 486
+    Anchors = [akTop, akLeft, akRight]
+    ReadOnly = True
+    TabOrder = 2
+    Text = 'Edit1'
+  end
+end

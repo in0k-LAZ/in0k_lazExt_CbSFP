@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <Title Value="uiDevelopPRJ"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <StringTable ProductVersion=""/>
+    </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="Default" Default="True"/>
+      <SharedMatrixOptions Count="2">
+        <Item1 ID="734407892945" Modes="Default" Value="-dPrjDevelop_TEST"/>
+        <Item2 ID="334615007912" Modes="Default" Value="-duiDevelopPRJ"/>
+      </SharedMatrixOptions>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="2">
+      <Item1>
+        <PackageName Value="IDEIntf"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
+    </RequiredPackages>
+    <Units Count="8">
+      <Unit0>
+        <Filename Value="uiDevelopPRJ.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uiDevelopPRJ"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="uiDevelopWND.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="mainWND"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uiDevelopWND"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\srcPKG\CbSFP_ideEditor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CbSFP_ideCallEditor"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="CbSFP_ideEditor"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\srcPKG\CbSFP_SubScriber.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CbSFP_SubScriber_edtFrm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="CbSFP_SubScriber"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\srcPKG\CbSFP_ideCenter.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CbSFP_ideCenter"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\srcDemoSubScriber\CbSFP_DemoSubScriber_HNDL.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CbSFP_DemoSubScriber_HNDL"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\srcDemoSubScriber\CbSFP_DemoSubScriber_EDTR.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CbSFP_DemoSubScriber_EDTR"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="CbSFP_DemoSubScriber_EDTR"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\srcDemoSubScriber\CbSFP_DemoSubScriber_CNFG.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CbSFP_DemoSubScriber_CNFG"/>
+      </Unit7>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="uiDevelopPRJ"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\develop\UI_Develop\subScriber;..\srcPKG\SubScriber;..\srcDemo_subScriber;..\srcPKG;..\srcDemoSubScriber"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Linking>
+      <Debugging>
+        <UseHeaptrc Value="True"/>
+      </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerMessages>
+        <MsgFileName Value=""/>
+      </CompilerMessages>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

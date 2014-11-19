@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="in0k_lazExt_CbSFP_DemoSubScriber_PKG"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+      </SearchPaths>
+      <Other>
+        <CompilerMessages>
+          <MsgFileName Value=""/>
+        </CompilerMessages>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Files Count="4">
+      <Item1>
+        <Filename Value="in0k_lazExt_CbSFP_DemoSubScriber_reg.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="in0k_lazExt_CbSFP_DemoSubScriber_reg"/>
+      </Item1>
+      <Item2>
+        <Filename Value="CbSFP_DemoSubScriber_CNFG.pas"/>
+        <UnitName Value="CbSFP_DemoSubScriber_CNFG"/>
+      </Item2>
+      <Item3>
+        <Filename Value="CbSFP_DemoSubScriber_EDTR.pas"/>
+        <UnitName Value="CbSFP_DemoSubScriber_EDTR"/>
+      </Item3>
+      <Item4>
+        <Filename Value="CbSFP_DemoSubScriber_HNDL.pas"/>
+        <UnitName Value="CbSFP_DemoSubScriber_HNDL"/>
+      </Item4>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="in0k_lazExt_CbSFP_pkg"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

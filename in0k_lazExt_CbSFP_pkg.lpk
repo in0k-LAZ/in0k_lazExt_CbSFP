@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="in0k_lazExt_CbSFP_pkg"/>
+    <Author Value="in0k"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="srcPKG"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Other>
+        <CompilerMessages>
+          <MsgFileName Value=""/>
+        </CompilerMessages>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <License Value="lgpl"/>
+    <Version Minor="9"/>
+    <Files Count="5">
+      <Item1>
+        <Filename Value="srcPKG\CbSFP__Intf.pas"/>
+        <UnitName Value="CbSFP__Intf"/>
+      </Item1>
+      <Item2>
+        <Filename Value="srcPKG\CbSFP_SubScriber.pas"/>
+        <UnitName Value="CbSFP_SubScriber"/>
+      </Item2>
+      <Item3>
+        <Filename Value="srcPKG\CbSFP_ideCenter.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="CbSFP_ideCenter"/>
+      </Item3>
+      <Item4>
+        <Filename Value="srcPKG\CbSFP_ideEditor.pas"/>
+        <UnitName Value="CbSFP_ideEditor"/>
+      </Item4>
+      <Item5>
+        <Filename Value="srcPKG\CbSFP_ideGENERAL.pas"/>
+        <UnitName Value="CbSFP_ideGENERAL"/>
+      </Item5>
+    </Files>
+    <Type Value="DesignTime"/>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="IDEIntf"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
