@@ -8,6 +8,24 @@ unit CbSFP_ideCenter;
 // реализует основную функциональность
 //------------------------------------------------------------------------------
 
+{/--[License]-[fold]----------------------------------------------------//
+//                                                                      //----//
+//  Copyright 2014 in0k                                                       //
+//                                                                            //
+//  Licensed under the Apache License, Version 2.0 (the "License");           //
+//  you may not use this file except in compliance with the License.          //
+//  You may obtain a copy of the License at                                   //
+//                                                                            //
+//      http://www.apache.org/licenses/LICENSE-2.0                            //
+//                                                                            //
+//  Unless required by applicable law or agreed to in writing, software       //
+//  distributed under the License is distributed on an "AS IS" BASIS,         //
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  //
+//  See the License for the specific language governing permissions and       //
+//  limitations under the License.                                            //
+//                                                                            //
+//----------------------------------------------------------------------------/}
+
 {$mode objfpc}{$H+}
 
 interface
@@ -157,6 +175,8 @@ type
     function  _itmPTTN_getCNFG (const item:pCbSFP_PTTN):pointer;
   {%endregion}
   {%region --- SubScriber поиск ----------------------------------- /fold}
+  protected
+    function  _SubScrbr_REGISTER(const CLS:tCbSFP_SubScriberTHandle; const FRM:tCbSFP_SubScriberTEditor; const ideData:pointer):tCbSFP_SubScriber;
   public
     function   SubScriber_byIdeREC(const value:PIDEOptionsEditorRec):tCbSFP_SubScriber;
     function   SubScriber_byEDITOR(const value:TAbstractIDEOptionsEditor):tCbSFP_SubScriber;
@@ -169,11 +189,6 @@ type
  {$ifNDef uiDevelopPRJ} //<------------------------ боевой режм "Расширения IDE"
 
  tCbSFP_ideCallCenterIDE=class(tCbSFP_ideCallCenter)
-  protected
-   _CBSP_IdeOptions_GRP_:PIDEOptionsGroupRec;
-   _CBSP_IdeOtnsEDT_GNR_:PIDEOptionsEditorRec;
-    function  _Ide_OptnCBSP_isRGSTER:boolean;
-    procedure _Ide_OptnCBSP_REGISTER;
     function  _Ide_SubScrbr_REGISTER(CLS:tCbSFP_SubScriberTHandle; FRM:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
   public
     constructor Create;
@@ -204,7 +219,7 @@ type
    _old_lPTTNs_:pCbSFP_PTTN; //< список как ДО начала при редактирования
    _del_lOPTNs_:pCbSFP_OPTN; //< список УДАЛЕННЫХ при редактировании
    _del_lPTTNs_:pCbSFP_PTTN; //< список УДАЛЕННЫХ при редактировании
-    function _IsEDITED:boolean;
+    function _IsEDITED:boolean; inline;
   private //< "копирование" данных
     function _lstOPTN_addCOPY(const Item:pCbSFP_OPTN):pCbSFP_OPTN;
     function _lstPTTN_addCOPY(const Item:pCbSFP_PTTN):pCbSFP_PTTN;
@@ -417,7 +432,7 @@ end;
 function tCbSFP_ideCallCenter._callCenter_rootPath:string;
 begin
     {$ifNDef uiDevelopPRJ}
-        result:=CbSFP_ideGENERAL__ConfigRootPath;
+        result:=CbSFP_ideGENERAL__ConfigsRootPath;
     {$else} //< режим ТЕСТИРОВАНИЯ
         result:=ExtractFileDir(ParamStr(0))+'\TMP\';
     {$endIf}
@@ -979,6 +994,19 @@ end;
 
 {%region --- SubScriber поиск ------------------------------------- /fold}
 
+function tCbSFP_ideCallCenter._SubScrbr_REGISTER(const CLS:tCbSFP_SubScriberTHandle; const FRM:tCbSFP_SubScriberTEditor; const ideData:pointer):tCbSFP_SubScriber;
+begin
+    _node_CRT(result,CLS,FRM);
+     with pCbSFP_Node(result)^ do begin
+         IDEOptERec:=ideData;
+     end;
+    _node_INI (result);
+    _node_LOAD(result);
+    _lair_ADD (result);
+end;
+
+//------------------------------------------------------------------------------
+
 function tCbSFP_ideCallCenter.SubScriber_byIdeREC(const value:PIDEOptionsEditorRec):tCbSFP_SubScriber;
 begin
     result:=_lair_FND_byIDEOptERec(value);
@@ -999,9 +1027,6 @@ end;
 
 constructor tCbSFP_ideCallCenterIDE.Create;
 begin
-   _CBSP_IdeOptions_GRP_:=nil;
-   _CBSP_IdeOtnsEDT_GNR_:=nil;
-    //---
     inherited;
 end;
 
@@ -1011,19 +1036,6 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-
-function tCbSFP_ideCallCenterIDE._Ide_OptnCBSP_isRGSTER:boolean;
-begin
-    result:=( Assigned(_CBSP_IdeOptions_GRP_) and Assigned(_CBSP_IdeOtnsEDT_GNR_));
-end;
-
-procedure tCbSFP_ideCallCenterIDE._Ide_OptnCBSP_REgister;
-begin
-   _CBSP_IdeOptions_GRP_:=RegisterIDEOptionsGroup (GroupEditor                 ,tIn0kLE_CBSP__General_Options,TRUE);
-   _CBSP_IdeOtnsEDT_GNR_:=RegisterIDEOptionsEditor(_CBSP_IdeOptions_GRP_^.Index,Tin0kLE_CBSP_ideEDTR__General,0);
-end;
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 function tCbSFP_ideCallCenterIDE._Ide_SubScrbr_REGISTER(
             CLS:tCbSFP_SubScriberTHandle;
@@ -1039,13 +1051,6 @@ begin
    _node_INI (result);
    _node_LOAD(result);
    _lair_ADD (result);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure tCbSFP_ideCallCenterIDE.REGISTER_in_IdeOptions;
-begin
-    if not _Ide_OptnCBSP_isRGSTER then _Ide_OptnCBSP_REGISTER;
 end;
 
 //------------------------------------------------------------------------------
@@ -1115,9 +1120,7 @@ end;
 
 destructor tCbSFP_ideEditorNODE.DESTROY;
 begin
-    if _IsEDITED then begin
-        EDIT_doEnd(FALSE); //< это уничтожит структуры созданные для редактирования
-    end;
+    EDIT_doEnd(FALSE); //< это уничтожит структуры созданные для редактирования
 end;
 
 //------------------------------------------------------------------------------
@@ -1198,34 +1201,36 @@ end;
 procedure tCbSFP_ideEditorNODE.EDIT_doEnd(const WithSAVE:boolean);
 var tmp:pointer;
 begin {todo: Уничтожение данных для редактирования}
-    if WithSAVE then begin
-        // уничтожение файлов УДАЛЕННЫХ настроек
-        tmp:=_del_lOPTNs_;
-        while tmp<>nil do begin
-           _CallCenter_._deleteFileFromFS_subScriber(_SubScriber_,tmp);
-            tmp:=_CallCenter_._itmOPTN_getNext(tmp);
+    if _IsEDITED then begin
+        if WithSAVE then begin
+            // уничтожение файлов УДАЛЕННЫХ настроек
+            tmp:=_del_lOPTNs_;
+            while tmp<>nil do begin
+               _CallCenter_._deleteFileFromFS_subScriber(_SubScriber_,tmp);
+                tmp:=_CallCenter_._itmOPTN_getNext(tmp);
+            end;
+            // продолжение чистки
+           _CallCenter_._lstPTTN_CLEAR(_old_lPTTNs_);
+           _CallCenter_._lstOPTN_CLEAR(_SubScriber_,_old_lOPTNs_);
+            //---
+           _CallCenter_._node_SAVE(_SubScriber_);
+        end
+        else begin //< возвращаем ПЕРВИЧНОЕ состояние
+            //--- меняем PTTN
+            tmp:=_CallCenter_._lstPTTN_getFirst(_SubScriber_);
+           _CallCenter_._lstPTTN_CLEAR(tmp);
+           _CallCenter_._lstPTTN_setFirst(_SubScriber_,_old_lPTTNs_);
+           _old_lPTTNs_:=nil; //< на всяк ПЖС
+            //--- меняем OPTN
+            tmp:=_CallCenter_._lstOPTN_getFirst(_SubScriber_);
+           _CallCenter_._lstOPTN_CLEAR(_SubScriber_,tmp);
+           _CallCenter_._lstOPTN_setFirst(_SubScriber_,_old_lOPTNs_);
+           _old_lOPTNs_:=nil; //< на всяк ПЖС
         end;
-        // продолжение чистки
-       _CallCenter_._lstPTTN_CLEAR(_old_lPTTNs_);
-       _CallCenter_._lstOPTN_CLEAR(_SubScriber_,_old_lOPTNs_);
-        //---
-       _CallCenter_._node_SAVE(_SubScriber_);
-    end
-    else begin //< возвращаем ПЕРВИЧНОЕ состояние
-        //--- меняем PTTN
-        tmp:=_CallCenter_._lstPTTN_getFirst(_SubScriber_);
-       _CallCenter_._lstPTTN_CLEAR(tmp);
-       _CallCenter_._lstPTTN_setFirst(_SubScriber_,_old_lPTTNs_);
-       _old_lPTTNs_:=nil; //< на всяк ПЖС
-        //--- меняем OPTN
-        tmp:=_CallCenter_._lstOPTN_getFirst(_SubScriber_);
-       _CallCenter_._lstOPTN_CLEAR(_SubScriber_,tmp);
-       _CallCenter_._lstOPTN_setFirst(_SubScriber_,_old_lOPTNs_);
-       _old_lOPTNs_:=nil; //< на всяк ПЖС
+        //--- что там по удаляли? ... тоже уничтожим
+       _CallCenter_._lstPTTN_CLEAR(_del_lPTTNs_);
+       _CallCenter_._lstOPTN_CLEAR(_SubScriber_,_del_lOPTNs_);
     end;
-    //--- что там по удаляли? ... тоже уничтожим
-   _CallCenter_._lstPTTN_CLEAR(_del_lPTTNs_);
-   _CallCenter_._lstOPTN_CLEAR(_SubScriber_,_del_lOPTNs_);
 end;
 
 //------------------------------------------------------------------------------

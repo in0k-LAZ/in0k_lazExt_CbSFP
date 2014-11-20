@@ -1,4 +1,4 @@
-object in0kLE_CBSP_ideEDTR__General: Tin0kLE_CBSP_ideEDTR__General
+object CbSFP_ideGeneral_Editor: TCbSFP_ideGeneral_Editor
   Left = 0
   Height = 240
   Top = 0

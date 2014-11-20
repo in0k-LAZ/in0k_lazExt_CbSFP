@@ -9,17 +9,45 @@ unit CbSFP_ideEditor;
 // реализует основную функциональность по настройке и привязке к путям
 //------------------------------------------------------------------------------
 
+{/--[License]-[fold]----------------------------------------------------//
+//                                                                      //----//
+//  Copyright 2014 in0k                                                       //
+//                                                                            //
+//  Licensed under the Apache License, Version 2.0 (the "License");           //
+//  you may not use this file except in compliance with the License.          //
+//  You may obtain a copy of the License at                                   //
+//                                                                            //
+//      http://www.apache.org/licenses/LICENSE-2.0                            //
+//                                                                            //
+//  Unless required by applicable law or agreed to in writing, software       //
+//  distributed under the License is distributed on an "AS IS" BASIS,         //
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  //
+//  See the License for the specific language governing permissions and       //
+//  limitations under the License.                                            //
+//                                                                            //
+//----------------------------------------------------------------------------/}
+
 {$mode objfpc}{$H+}
+
+{$define CbSFP_Log_ON}
 
 interface
 
 uses sysutils, Classes, Graphics,
      StdCtrls, Controls, Buttons, ActnList, ExtCtrls, CheckLst,
      //---
-     CbSFP_ideCenter, CbSFP_SubScriber,
+     {$ifDef CbSFP_Log_ON}
+     eventlog,
+     {$endif}
+     //---
+     CbSFP_ideCenter, CbSFP_SubScriber,  CbSFP_ideGENERAL,
      IDEOptionsIntf;
 
+
+
 type
+
+ { tCbSFP_ideCallEditor }
 
  tCbSFP_ideCallEditor=class(TAbstractIDEOptionsEditor)
     //---
@@ -59,9 +87,15 @@ type
     Common_PNL: TPanel;
     //---
   protected //<-----------------------------------------------------------------
+    {$ifDef CbSFP_Log_ON}
+   _EventLog_:TEventLog;
+    {$endif}
+  protected //<-----------------------------------------------------------------
   {%region --- выход на CallCenter -------------------------------- /fold}
   strict private
    _ideEditorNODE_:pointer;
+    procedure _ideEditorNODE_CLR; inline;
+    procedure _ideEditorNODE_SET; inline;
   protected
     function nodeEditor:tCbSFP_ideEditorNODE;
   {%endregion}
@@ -92,7 +126,8 @@ type
   {%region --- общие контролы Common_... -------------------------- /fold}
   protected //<--- фрейм для отображения пользовательской НАСТРОЙКИ
    _common_FRM_:TCbSFP_SubScriber_editor;
-    procedure _common_FRM__Test2CRT;
+    procedure _common_FRM__Tst2CRT;
+    procedure _common_FRM__DESTROY;
   protected //<-----------------------------------------------------------------
     procedure _Common_CHB_asOPTN__onChange(Sender: TObject);
     procedure _Common_CHB_asPTTN__onChange(Sender: TObject);
@@ -188,6 +223,11 @@ const
 constructor tCbSFP_ideCallEditor.Create(TheOwner:TComponent);
 begin
     inherited;
+    {$ifDef CbSFP_Log_ON}
+   _EventLog_:=TEventLog.Create(self);
+   _EventLog_.LogType :=ltFile;
+   _EventLog_.FileName:='tCbSFP_'+self.ClassName+'.log';
+    {$endif}
    _onCreate_fixHimSelfName;
    _onCreate_fixActionsName;
    _onCreate_setActionsEVNT;
@@ -213,10 +253,9 @@ begin
 end;
 
 destructor tCbSFP_ideCallEditor.DESTROY;
-begin
-    // уничтожение объекта приведет к востановлению первоначальный данных
-    tCbSFP_ideEditorNODE(_ideEditorNODE_).FREE;
-   _ideEditorNODE_:=nil;
+begin // !!! порядок ВАЖЕН !!!
+   _common_FRM__DESTROY; //< уничтожение ФРЕЙМА
+   _ideEditorNODE_CLR;   //< чистим объекта
     inherited;
 end;
 
@@ -304,12 +343,29 @@ end;
 
 {$region --- выход на CallCenter ---------------------------------- /fold}
 
+procedure tCbSFP_ideCallEditor._ideEditorNODE_CLR;
+begin
+    {$ifDef CbSFP_Log_ON}
+   _EventLog_.Debug('_ideEditorNODE_CLR_');
+    {$endif}
+    tCbSFP_ideEditorNODE(_ideEditorNODE_).FREE;
+   _ideEditorNODE_:=nil;
+end;
+
+procedure tCbSFP_ideCallEditor._ideEditorNODE_SET;
+begin
+    {$ifDef CbSFP_Log_ON}
+   _EventLog_.Debug('_ideEditorNODE_SET_');
+    {$endif}
+   _ideEditorNODE_:=CbSFP_ideCenter__EditorNODE(self);
+    Assert(Assigned(_ideEditorNODE_),'CallCenterNodeForEDIT NOT found');
+end;
+
 function tCbSFP_ideCallEditor.nodeEditor:tCbSFP_ideEditorNODE;
 begin
     if not Assigned(_ideEditorNODE_) then begin
-        _ideEditorNODE_:=CbSFP_ideCenter__EditorNODE(self);
+       _ideEditorNODE_SET;
     end;
-    Assert(Assigned(_ideEditorNODE_),'CallCenterNodeForEDIT NOT found');
     result:=tCbSFP_ideEditorNODE(_ideEditorNODE_);
 end;
 
@@ -519,7 +575,7 @@ end;
 {%region --- общие контролы Common_.. ----------------------------- /fold}
 
 {проверить создан ли уже подчиненный фрейм, и если нет то создать}
-procedure tCbSFP_ideCallEditor._common_FRM__Test2CRT;
+procedure tCbSFP_ideCallEditor._common_FRM__Tst2CRT;
 begin {todo : отправить заявку на ФИКС?}
     // по идее это должно идти в self.Create или self.Setup, но в LazarusIDE
     // установка свойства self.Rec (необходимого МНЕ для создания вложенного
@@ -533,7 +589,19 @@ begin {todo : отправить заявку на ФИКС?}
             Parent:=Common_PNL;
             Align :=alClient;
         end;
+        {$ifDef CbSFP_Log_ON}
+       _EventLog_.Debug('_common_FRM__Tst2CRT_');
+        {$endif}
     end;
+end;
+
+procedure tCbSFP_ideCallEditor._common_FRM__DESTROY;
+begin
+   _common_FRM_.FREE;
+   _common_FRM_:=nil;
+    {$ifDef CbSFP_Log_ON}
+   _EventLog_.Debug('_common_FRM__DESTROY');
+    {$endif}
 end;
 
 //------------------------------------------------------------------------------
@@ -720,7 +788,7 @@ end;
 
 procedure tCbSFP_ideCallEditor._common_FRM__CNFG_SET(const CNFG:pointer);
 begin
-   _common_FRM__Test2CRT;
+   _common_FRM__Tst2CRT;
     if Assigned(_slctd_CNFG_) then _common_FRM_.Settings_SAVE(_slctd_CNFG_);
     if _slctd_CNFG_<>CNFG then begin
        _slctd_CNFG_:=CNFG;
@@ -777,9 +845,11 @@ end;
 
 procedure tCbSFP_ideCallEditor._doSelected_DEFAULT_ITM;
 begin
-    if OPTNs_lBox.Count>0  then OPTNs_lBox.ItemIndex:=cILECBSPiEOA_OPTNs_DefIDX;
+    if OPTNs_lBox.Count>0 then begin
+        OPTNs_lBox.ItemIndex:=cILECBSPiEOA_OPTNs_DefIDX;
+       _OPTNs_lBox__onSelectionChange(OPTNs_lBox,TRUE);
+    end;
     if self.Focused then OPTNs_lBox.SetFocus;
-   _OPTNs_lBox__onSelectionChange(OPTNs_lBox,TRUE);
 end;
 
 {%endregion}
@@ -1021,14 +1091,17 @@ end;
 
 function tCbSFP_ideCallEditor.GetTitle:String;
 begin
-   _common_FRM__Test2CRT;
+    {$ifDef CbSFP_Log_ON}
+   _EventLog_.Debug('GetTitle');
+    {$endif}
+   _common_FRM__Tst2CRT;
     if Assigned(_common_FRM_) then result:=_common_FRM_.GetTitle
     else result:=self.Name;
 end;
 
 class function tCbSFP_ideCallEditor.SupportedOptionsClass:TAbstractIDEOptionsClass;
 begin
-    result:=TAbstractIDEOptions;
+    result:=tCbSFP_ideGeneral_Config;
 end;
 
 //------------------------------------------------------------------------------
@@ -1036,17 +1109,28 @@ end;
 procedure tCbSFP_ideCallEditor.Setup(ADialog:TAbstractOptionsEditorDialog);
 begin
     {do nofing}
+   {$ifDef CbSFP_Log_ON}
+  _EventLog_.Debug('Setup');
+   {$endif}
 end;
 
 procedure tCbSFP_ideCallEditor.ReadSettings(AOptions:TAbstractIDEOptions);
 begin
-   _common_FRM__Test2CRT; //< НЕ хорошо (см. реализацию)
+    {$ifDef CbSFP_Log_ON}
+    if not Assigned(AOptions) then _EventLog_.Debug('ReadSettings with NUL')
+    else _EventLog_.Debug('ReadSettings with #'+IntToHex(integer(AOptions),8));
+    {$endif}
+   _common_FRM__Tst2CRT; //< НЕ хорошо (см. реализацию)
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
 end;
 
 procedure tCbSFP_ideCallEditor.WriteSettings(AOptions:TAbstractIDEOptions);
 begin
+    {$ifDef CbSFP_Log_ON}
+    if not Assigned(AOptions) then _EventLog_.Debug('WriteSettings with NUL')
+    else _EventLog_.Debug('WriteSettings with #'+IntToHex(integer(AOptions),8));
+    {$endif}
    _settingsSAVE_;
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
@@ -1054,6 +1138,10 @@ end;
 
 procedure tCbSFP_ideCallEditor.RestoreSettings({%H-}AOptions:TAbstractIDEOptions);
 begin
+    {$ifDef CbSFP_Log_ON}
+    if not Assigned(AOptions) then _EventLog_.Debug('RestoreSettings with NUL')
+    else _EventLog_.Debug('RestoreSettings with #'+IntToHex(integer(AOptions),8));
+    {$endif}
     nodeEditor.EDIT_doEnd(FALSE); //<НЕТ, ОТМЕНЯЕМ все изменения
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;

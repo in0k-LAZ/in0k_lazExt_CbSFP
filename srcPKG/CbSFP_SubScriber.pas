@@ -8,11 +8,31 @@ unit CbSFP_SubScriber;
 // описание прав и обязанностей ПОДПИСЧИКА
 //------------------------------------------------------------------------------
 
+{/--[License]-[fold]----------------------------------------------------//
+//                                                                      //----//
+//  Copyright 2014 in0k                                                       //
+//                                                                            //
+//  Licensed under the Apache License, Version 2.0 (the "License");           //
+//  you may not use this file except in compliance with the License.          //
+//  You may obtain a copy of the License at                                   //
+//                                                                            //
+//      http://www.apache.org/licenses/LICENSE-2.0                            //
+//                                                                            //
+//  Unless required by applicable law or agreed to in writing, software       //
+//  distributed under the License is distributed on an "AS IS" BASIS,         //
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  //
+//  See the License for the specific language governing permissions and       //
+//  limitations under the License.                                            //
+//                                                                            //
+//----------------------------------------------------------------------------/}
+
 {$mode objfpc}{$H+}
+{$define CbSFP_Log_ON}
 
 interface
 
-uses Forms;
+uses {$ifDef CbSFP_Log_ON} classes,eventlog, {$endif}
+     Forms;
 
 type
 
@@ -49,6 +69,13 @@ type
   // [EDTR] -- редактор
   // "фрейм" для визуального редактирования свойств Объекта "Конфигурация"
  TCbSFP_SubScriber_editor = class(TFrame)
+  protected //<-----------------------------------------------------------------
+    {$ifDef CbSFP_Log_ON}
+   _EventLog_:TEventLog;
+    {$endif}
+  public
+    constructor Create(TheOwner: TComponent); override;
+    destructor DESTROY; override;
   public
     function GetTitle:string; virtual;
   public
@@ -68,6 +95,28 @@ end;
 
 //------------------------------------------------------------------------------
 
+constructor TCbSFP_SubScriber_editor.Create(TheOwner: TComponent);
+begin
+    inherited;
+    {$ifDef CbSFP_Log_ON}
+   _EventLog_:=TEventLog.Create(self);
+   _EventLog_.LogType :=ltFile;
+   _EventLog_.FileName:='tCbSFP_'+self.ClassName+'.log';
+    {$endif}
+    {$ifDef CbSFP_Log_ON}
+   _EventLog_.Debug('Create');
+    {$endif}
+end;
+
+destructor TCbSFP_SubScriber_editor.DESTROY;
+begin
+    {$ifDef CbSFP_Log_ON}
+   _EventLog_.Debug('DESTROY');
+    {$endif}
+    inherited;
+end;
+
+
 // строка отображаемая в "дереве" Опции
 function TCbSFP_SubScriber_editor.GetTitle:String;
 begin
@@ -76,12 +125,16 @@ end;
 
 procedure TCbSFP_SubScriber_editor.Settings_LOAD(const Obj:tCbSFP_SubScriber_cnfOBJ);
 begin
-    //
+    {$ifDef CbSFP_Log_ON}
+   _EventLog_.Debug('Settings_LOAD');
+    {$endif}
 end;
 
 procedure TCbSFP_SubScriber_editor.Settings_SAVE(const Obj:tCbSFP_SubScriber_cnfOBJ);
 begin
-    //
+    {$ifDef CbSFP_Log_ON}
+   _EventLog_.Debug('Settings_SAVE');
+    {$endif}
 end;
 
 end.

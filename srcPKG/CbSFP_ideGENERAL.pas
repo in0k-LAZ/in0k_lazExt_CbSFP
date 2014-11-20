@@ -5,16 +5,34 @@ unit CbSFP_ideGENERAL;
 //  ║  ├┴┐╚═╗╠╣ ╠═╝      //  Конфигурация по пути исходного файла              =
 //  ╚═╝└─┘╚═╝╚  ╩ v0.9  //   [ideGENERAL]                                      =
 //---------------------//------------------------------------------------------=
-// реализация ОСНОВНОГО пукта Меню
+// реализация ОСНОВНОГО пукта Меню и ОСНОВНОГО хранителя _Options
 //------------------------------------------------------------------------------
+
+{/--[License]-[fold]----------------------------------------------------//
+//                                                                      //----//
+//  Copyright 2014 in0k                                                       //
+//                                                                            //
+//  Licensed under the Apache License, Version 2.0 (the "License");           //
+//  you may not use this file except in compliance with the License.          //
+//  You may obtain a copy of the License at                                   //
+//                                                                            //
+//      http://www.apache.org/licenses/LICENSE-2.0                            //
+//                                                                            //
+//  Unless required by applicable law or agreed to in writing, software       //
+//  distributed under the License is distributed on an "AS IS" BASIS,         //
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  //
+//  See the License for the specific language governing permissions and       //
+//  limitations under the License.                                            //
+//                                                                            //
+//----------------------------------------------------------------------------/}
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses IDEOptionsIntf, LazIDEIntf, LazFileUtils, LCLIntf,
-
-
+                     LazConfigStorage, BaseIDEIntf,
+    sysutils,
     //in0k_LazExt_CBSP__General_Options,
   Classes, StdCtrls, EditBtn, Buttons
   {$ifNDef uiDevelopPRJ}
@@ -25,52 +43,35 @@ uses IDEOptionsIntf, LazIDEIntf, LazFileUtils, LCLIntf,
 
 const
 
-  cIn0k_LazExt_CbSFP__IdeOPTIONs__GroupGeneral='Config by SRC file path';
-  cIn0k_LazExt_CbSFP__IdeOPTIONs__Node_General='General';
-  cIn0k_LazExt_CbSFP__Config_Name             ='in0k_LazExt_CbSFP';
-  cIn0k_LazExt_CbSFP__def_Enabled             = true;
+  cIn0k_LazExt_CbSFP__IDENTIFICATOR='in0k_LazExt_CbSFP';
+  cIn0k_LazExt_CbSFP__GroupGeneral ='Config by SRC file path';
+  cIn0k_LazExt_CbSFP__Node_General ='General';
 
+  cIn0k_LazExt_CbSFP__defCnfFileExt='.xml';
 
 
 type
 
- //tCbSFP_ideCallEditor
- //tCbSFP_ideCallCenter
- //tCbSFP_GeneralEditor
- //tCbSFP_GeneralConfig
 
-
- tIn0kLE_CBSP__General_Options=class(TAbstractIDEEnvironmentOptions)
+ tCbSFP_ideGeneral_Config=class(TAbstractIDEEnvironmentOptions)
   protected
    _mustSAVE:boolean;
-  protected
-   _enabled:boolean;
-   _CNFsDIR:string;
-    procedure _set_enabled(const value:boolean);
-    procedure _set_CNFsDIR(const value:string);
   protected
     procedure _Init;
     procedure _Save;
     procedure _Load;
   public
-    function _get_configFileName:string;
-  public
     constructor Create;
     destructor Destroy; override;
   public
-    class function GetGroupCaption: string;          override;
-    class function GetInstance: TAbstractIDEOptions; override;
+    class function GetGroupCaption: string;         override;
+    class function GetInstance:TAbstractIDEOptions; override;
   public
     procedure LOAD;
     procedure SAVE;
-  public
-    property enabled:boolean read _enabled write _set_enabled;
-    property CNFsDIR:string  read _CNFsDIR write _set_CNFsDIR;
   end;
 
- { Tin0kLE_CBSP_ideEDTR__General }
-
- Tin0kLE_CBSP_ideEDTR__General=class(TAbstractIDEOptionsEditor)
+ tCbSFP_ideGeneral_Editor=class(TAbstractIDEOptionsEditor)
     CheckBox1: TCheckBox;
     Edit1: TEdit;
     Memo1: TMemo;
@@ -84,28 +85,183 @@ type
     class function SupportedOptionsClass:TAbstractIDEOptionsClass; override;
   public
     procedure Setup(ADialog:TAbstractOptionsEditorDialog); override;
-    procedure ReadSettings(AOptions:TAbstractIDEOptions);  override;
+    procedure ReadSettings (AOptions:TAbstractIDEOptions); override;
     procedure WriteSettings(AOptions:TAbstractIDEOptions); override;
   end;
 
 
-function CbSFP_ideGENERAL__ConfigRootPath:string;
+// директория внутри которой будем хранить наши настройки
+function CbSFP_ideGENERAL__ConfigsRootPath:string;
 
 implementation
 
-//uses CbSFP__Intf_1;
 
+{%region --- tCbSFP_ideGeneral_Config  -----------------------------------}
 
 function CbSFP_ideGENERAL__ConfigFileName:string;
 begin
    result:=LazarusIDE.GetPrimaryConfigPath;
-   result:=AppendPathDelim(result)+cIn0k_LazExt_CbSFP__Config_Name;
+   result:=AppendPathDelim(result)+cIn0k_LazExt_CbSFP__IDENTIFICATOR;
 end;
 
-function CbSFP_ideGENERAL__ConfigRootPath:string;
+function CbSFP_ideGENERAL__ConfigsRootPath:string;
 begin
     result:=AppendPathDelim(CbSFP_ideGENERAL__ConfigFileName);
 end;
+
+{%endregion}
+
+
+var
+
+ _CBSP_IdeOptions_GRP_:PIDEOptionsGroupRec;
+ _CBSP_IdeOtnsEDT_GNR_:PIDEOptionsEditorRec;
+
+function  _Ide_OptnCBSP_isRGSTER:boolean;
+begin
+    result:=( Assigned(_CBSP_IdeOptions_GRP_) and Assigned(_CBSP_IdeOtnsEDT_GNR_));
+end;
+
+procedure _Ide_OptnCBSP_REGISTER;
+begin
+    _CBSP_IdeOptions_GRP_:=RegisterIDEOptionsGroup (GroupEditor                 ,tCbSFP_ideGeneral_Config,TRUE);
+    _CBSP_IdeOtnsEDT_GNR_:=RegisterIDEOptionsEditor(_CBSP_IdeOptions_GRP_^.Index,tCbSFP_ideGeneral_Editor,0);
+end;
+
+procedure REGISTER_in_IdeOptions;
+begin
+    if not _Ide_OptnCBSP_isRGSTER then _Ide_OptnCBSP_REGISTER;
+end;
+
+{$region --- tCbSFP_ideGeneral_Config  -----------------------------------}
+
+//------------------------------------------------------------------------------
+{%region --- INSTANCE --------------------------------------------= /fold}
+
+var _CbSFP_ideOptions_:tCbSFP_ideGeneral_Config=nil;
+
+procedure _CbSFP_ideOptions__INI_;  inline;
+begin
+   _CbSFP_ideOptions_:=nil;
+end;
+
+procedure _CbSFP_ideOptions__DST_; inline;
+begin
+   _CbSFP_ideOptions_.Free;
+   _CbSFP_ideOptions_:=nil;
+end;
+
+function _CbSFP_ideOptions__GET_:tCbSFP_ideGeneral_Config; inline;
+begin
+    if not Assigned(_CbSFP_ideOptions_) then begin
+       _CbSFP_ideOptions_:=tCbSFP_ideGeneral_Config.Create;
+    end;
+    result:=_CbSFP_ideOptions_;
+end;
+
+{%endregion}
+//------------------------------------------------------------------------------
+
+constructor tCbSFP_ideGeneral_Config.Create;
+begin
+    inherited;
+   _Init;
+   _Load;
+   _Save;
+end;
+
+destructor tCbSFP_ideGeneral_Config.Destroy;
+begin
+    if _mustSAVE then _Save; //< сохранимся если надо
+   _CbSFP_ideOptions_:=NIL;  //< отпишимся от поддержки ЭКЗЕМПЛЯРА
+    inherited;
+end;
+
+//------------------------------------------------------------------------------
+
+class function tCbSFP_ideGeneral_Config.GetGroupCaption:string;
+begin
+    result:=cIn0k_LazExt_CbSFP__GroupGeneral;
+end;
+
+class function tCbSFP_ideGeneral_Config.GetInstance:TAbstractIDEOptions;
+begin
+    result:=_CbSFP_ideOptions__GET_;
+end;
+
+//------------------------------------------------------------------------------
+
+const cCbSFP__General_Options__fileName=cIn0k_LazExt_CbSFP__IDENTIFICATOR+cIn0k_LazExt_CbSFP__defCnfFileExt;
+
+
+procedure tCbSFP_ideGeneral_Config._Init;
+begin
+    //_enabled:=cIn0k_LazExt_CbSFP__def_Enabled;
+    //_CNFsDIR:=CbSFP_ideGENERAL__ConfigsRootPath;
+end;
+
+procedure tCbSFP_ideGeneral_Config._Save;
+var Config:TConfigStorage;
+begin
+    Config:=GetIDEConfigStorage(cCbSFP__General_Options__fileName,false);
+    try if Assigned(Config) then begin
+            //Config.SetDeleteValue(cCBSP__General_Options__enabled,_enabled,cIn0k_LazExt_CBSP_def_Enabled);
+            Config.SetDeleteValue('dd','asdfasdf','asdf');
+        end;
+       _mustSAVE:=false;
+    finally
+        Config.Free;
+    end;
+end;
+
+procedure tCbSFP_ideGeneral_Config._Load;
+var Config:TConfigStorage;
+begin
+    Config:=GetIDEConfigStorage(cCbSFP__General_Options__fileName,true);
+    try if Assigned(Config) then begin
+        //   _enabled:=Config.GetValue(cCBSP__General_Options__enabled,cIn0k_LazExt_CBSP_def_Enabled);
+        //   _CNFsDIR:=Config.GetValue(cCBSP__General_Options__CNFsDIR,_get_defaultCNFsDIR);
+        end;
+       _mustSAVE:=false;
+    finally
+       Config.Free;
+    end;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure tCbSFP_ideGeneral_Config.LOAD;
+begin
+    {doNofing}//--- мы загружаемся ОДИН раз в момент создания
+end;
+
+procedure tCbSFP_ideGeneral_Config.SAVE;
+begin
+    if _mustSAVE then _Save;
+end;
+
+{$endregion}
+
+{$region --- tCbSFP__General_EDITOR  ------------------------------------}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 {function _get_PrimaryConfigPath:string;
 begin
@@ -120,64 +276,81 @@ end; }
 
 {$R *.lfm}
 
-procedure Tin0kLE_CBSP_ideEDTR__General.SpeedButton1Click(Sender: TObject);
+procedure tCbSFP_ideGeneral_Editor.SpeedButton1Click(Sender: TObject);
 begin
    OpenDocument(Edit1.Text)
 end;
 
-constructor Tin0kLE_CBSP_ideEDTR__General.Create(TheOwner:TComponent);
+constructor tCbSFP_ideGeneral_Editor.Create(TheOwner:TComponent);
 begin
     inherited;
     SpeedButton1.LoadGlyphFromLazarusResource('laz_open');
 end;
 
-destructor Tin0kLE_CBSP_ideEDTR__General.Destroy;
+destructor tCbSFP_ideGeneral_Editor.Destroy;
 begin
     inherited;
 end;
 
 //------------------------------------------------------------------------------
 
-function Tin0kLE_CBSP_ideEDTR__General.GetTitle:String;
+function tCbSFP_ideGeneral_Editor.GetTitle:String;
 begin
-    result:=cIn0k_LazExt_CbSFP__IdeOPTIONs__Node_General;
+    result:=cIn0k_LazExt_CbSFP__Node_General;
 end;
 
-class function Tin0kLE_CBSP_ideEDTR__General.SupportedOptionsClass:TAbstractIDEOptionsClass;
+class function tCbSFP_ideGeneral_Editor.SupportedOptionsClass:TAbstractIDEOptionsClass;
 begin
-    result:=TAbstractIDEOptions;
+    result:=tCbSFP_ideGeneral_Config;
 end;
 
 //------------------------------------------------------------------------------
 
-procedure Tin0kLE_CBSP_ideEDTR__General.Setup(ADialog:TAbstractOptionsEditorDialog);
+procedure tCbSFP_ideGeneral_Editor.Setup(ADialog:TAbstractOptionsEditorDialog);
 begin
     memo1.Append('Setup');
 end;
 
-procedure Tin0kLE_CBSP_ideEDTR__General.ReadSettings(AOptions:TAbstractIDEOptions);
+procedure tCbSFP_ideGeneral_Editor.ReadSettings(AOptions:TAbstractIDEOptions);
 begin
-    memo1.Append('ReadSettings');
-    if AOptions is tIn0kLE_CBSP__General_Options then
-        with tIn0kLE_CBSP__General_Options(AOptions) do begin
+    {memo1.Append('ReadSettings'+IntToHex(integer(AOptions),8));
+    if AOptions is tCbSFP_ideGeneral_Config
+    then begin
+       memo1.Append('OK TYPE');
+       if _CbSFP_ideOptions_=AOptions then memo1.Append('OK');
+       if _CbSFP_ideOptions_=NIL then memo1.Append('NIL');
+    end;}
+
+
+    {if AOptions is tCbSFP_ideGeneral_Config then
+        with tCbSFP_ideGeneral_Config(AOptions) do begin
             LOAD;
             //---
             CheckBox1.Checked:=enabled;
             Edit1.Text:=CNFsDIR;
-        end;
+        end;}
 end;
 
-procedure Tin0kLE_CBSP_ideEDTR__General.WriteSettings(AOptions:TAbstractIDEOptions);
+procedure tCbSFP_ideGeneral_Editor.WriteSettings(AOptions:TAbstractIDEOptions);
 begin
-    memo1.Append('WriteSettings');
-   { if AOptions is tIn0kLE_CBSP__General_Options then
-        with tIn0kLE_CBSP__General_Options(AOptions) do begin
+   {memo1.Append('WriteSettings'+IntToHex(integer(AOptions),8));
+   if AOptions is tCbSFP_ideGeneral_Config
+   then begin
+      memo1.Append('OK TYPE');
+      if _CbSFP_ideOptions_=AOptions then memo1.Append('OK');
+   end;}
+   { if AOptions is tCbSFP_ideGeneral_Config then
+        with tCbSFP_ideGeneral_Config(AOptions) do begin
             enabled:=CheckBox1.Checked;
             CNFsDIR:=DirectoryEdit1.Directory;
             //---
             SAVE;
         end; }
 end;
+
+
+{$endregion}
+
 
 
 const
@@ -187,123 +360,36 @@ const
   cCBSP__General_Options__CNFsDIR='CNFsDIR';
 
 
-var _CBSP_GnrlOtns_:tIn0kLE_CBSP__General_Options=nil;
 
-function _Get_IDEOptionsGRP_: tIn0kLE_CBSP__General_Options;
-begin
-    if not Assigned(_CBSP_GnrlOtns_) then begin
-       _CBSP_GnrlOtns_:=tIn0kLE_CBSP__General_Options.Create;
-    end;
-    result:=_CBSP_GnrlOtns_;
-end;
 
 //------------------------------------------------------------------------------
 
-constructor tIn0kLE_CBSP__General_Options.Create;
-begin
-    inherited;
-   _Init;
-   _Load;
-end;
 
-destructor tIn0kLE_CBSP__General_Options.Destroy;
-begin
-   _CBSP_GnrlOtns_:=NIL;
-    inherited;
-end;
+
+
 
 //------------------------------------------------------------------------------
 
-class function tIn0kLE_CBSP__General_Options.GetGroupCaption:string;
-begin
-    result:=cIn0k_LazExt_CbSFP__IdeOPTIONs__GroupGeneral;
-end;
-
-class function tIn0kLE_CBSP__General_Options.GetInstance:TAbstractIDEOptions;
-begin
-    result:=_Get_IDEOptionsGRP_;
-end;
-
-//------------------------------------------------------------------------------
-
-function tIn0kLE_CBSP__General_Options._get_configFileName:string;
-begin
-    result:=CbSFP_ideGENERAL__ConfigFileName;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure tIn0kLE_CBSP__General_Options._Init;
-begin
-   _enabled:=cIn0k_LazExt_CbSFP__def_Enabled;
-   _CNFsDIR:=CbSFP_ideGENERAL__ConfigRootPath;
-end;
-
-procedure tIn0kLE_CBSP__General_Options._Save;
-//var Config:TConfigStorage;
-begin
- {   Config:=GetIDEConfigStorage(_get_configFileName,false);
-    try if Assigned(Config) then begin
-            Config.SetDeleteValue(cCBSP__General_Options__enabled,_enabled,cIn0k_LazExt_CBSP_def_Enabled);
-            Config.SetDeleteValue(cCBSP__General_Options__CNFsDIR,_CNFsDIR,_get_defaultCNFsDIR);
-        end;
-       _mustSAVE:=false;
-    finally
-        Config.Free;
-    end; }
-end;
-
-procedure tIn0kLE_CBSP__General_Options._Load;
-//var Config:TConfigStorage;
-begin
-  {  Config:=GetIDEConfigStorage(_get_configFileName,true);
-    try if Assigned(Config) then begin
-           _enabled:=Config.GetValue(cCBSP__General_Options__enabled,cIn0k_LazExt_CBSP_def_Enabled);
-           _CNFsDIR:=Config.GetValue(cCBSP__General_Options__CNFsDIR,_get_defaultCNFsDIR);
-        end;
-       _mustSAVE:=false;
-    finally
-       Config.Free;
-    end;}
-end;
-
-//------------------------------------------------------------------------------
-
-procedure tIn0kLE_CBSP__General_Options.LOAD;
-begin
-    //---
-end;
-
-procedure tIn0kLE_CBSP__General_Options.SAVE;
-begin
-    if _mustSAVE then _Save;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure tIn0kLE_CBSP__General_Options._set_enabled(const value:boolean);
+{procedure tCbSFP_ideGeneral_Config._set_enabled(const value:boolean);
 begin
     if _enabled<>value then begin
        _enabled:=value;
        _mustSAVE:=TRUE;
     end;
-end;
+end;}
 
-procedure tIn0kLE_CBSP__General_Options._set_CNFsDIR(const value:string);
+{procedure tCbSFP_ideGeneral_Config._set_CNFsDIR(const value:string);
 begin
     if _CNFsDIR<>value then begin
        _CNFsDIR:=value;
        _mustSAVE:=TRUE;
     end;
-end;
+end;}
 
 initialization
-   _CBSP_GnrlOtns_:=nil;
+   _CbSFP_ideOptions__INI_;
 
 finalization
-    if Assigned(_CBSP_GnrlOtns_) then begin
-       _CBSP_GnrlOtns_.Free;
-       _CBSP_GnrlOtns_:=nil;
-    end;
+   _CbSFP_ideOptions__DST_;
 end.
 

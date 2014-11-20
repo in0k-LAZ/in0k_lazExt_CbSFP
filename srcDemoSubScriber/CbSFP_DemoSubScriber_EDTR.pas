@@ -8,11 +8,29 @@ unit CbSFP_DemoSubScriber_EDTR;
 // пример реализации "пользовательского редактора для конфигурации"
 //------------------------------------------------------------------------------
 
+{/--[License]-[fold]----------------------------------------------------//
+//                                                                      //----//
+//  Copyright 2014 in0k                                                       //
+//                                                                            //
+//  Licensed under the Apache License, Version 2.0 (the "License");           //
+//  you may not use this file except in compliance with the License.          //
+//  You may obtain a copy of the License at                                   //
+//                                                                            //
+//      http://www.apache.org/licenses/LICENSE-2.0                            //
+//                                                                            //
+//  Unless required by applicable law or agreed to in writing, software       //
+//  distributed under the License is distributed on an "AS IS" BASIS,         //
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  //
+//  See the License for the specific language governing permissions and       //
+//  limitations under the License.                                            //
+//                                                                            //
+//----------------------------------------------------------------------------/}
+
 {$mode objfpc}{$H+}
 
 interface
 
-uses SysUtils, StdCtrls,
+uses SysUtils, StdCtrls, Classes,
   CbSFP_SubScriber,
   CbSFP_DemoSubScriber_CNFG;
 
@@ -27,6 +45,9 @@ type
     procedure _custom_load_(const config:pCbSFP_DemoSubScriber_CNFG);
     procedure _custom_save_(const config:pCbSFP_DemoSubScriber_CNFG);
   public
+    constructor Create(TheOwner: TComponent); override;
+    destructor DESTROY; override;
+  public
     procedure Settings_LOAD(const Obj:tCbSFP_SubScriber_cnfOBJ); override;
     procedure Settings_SAVE(const Obj:tCbSFP_SubScriber_cnfOBJ); override;
   end;
@@ -35,13 +56,26 @@ implementation
 
 {$R *.lfm}
 
+constructor TCbSFP_DemoSubScriber_EDTR.Create(TheOwner: TComponent);
+begin
+    inherited;
+end;
+
+destructor TCbSFP_DemoSubScriber_EDTR.DESTROY;
+begin
+    inherited;
+end;
+
+
 procedure TCbSFP_DemoSubScriber_EDTR.Settings_LOAD(const Obj:tCbSFP_SubScriber_cnfOBJ);
 begin
+    inherited;
    _custom_load_(pCbSFP_DemoSubScriber_CNFG(Obj));
 end;
 
 procedure TCbSFP_DemoSubScriber_EDTR.Settings_SAVE(const Obj:tCbSFP_SubScriber_cnfOBJ);
 begin
+    inherited;
    _custom_save_(pCbSFP_DemoSubScriber_CNFG(Obj));
 end;
 
