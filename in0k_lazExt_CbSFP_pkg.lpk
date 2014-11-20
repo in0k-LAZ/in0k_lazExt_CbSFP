@@ -43,7 +43,6 @@
       </Item2>
       <Item3>
         <Filename Value="srcPKG\CbSFP_ideCenter.pas"/>
-        <HasRegisterProc Value="True"/>
         <UnitName Value="CbSFP_ideCenter"/>
       </Item3>
       <Item4>
@@ -52,6 +51,7 @@
       </Item4>
       <Item5>
         <Filename Value="srcPKG\CbSFP_ideGENERAL.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="CbSFP_ideGENERAL"/>
       </Item5>
     </Files>

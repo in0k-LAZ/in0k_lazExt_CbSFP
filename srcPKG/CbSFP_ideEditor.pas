@@ -29,25 +29,15 @@ unit CbSFP_ideEditor;
 
 {$mode objfpc}{$H+}
 
-{$define CbSFP_Log_ON}
-
 interface
 
 uses sysutils, Classes, Graphics,
      StdCtrls, Controls, Buttons, ActnList, ExtCtrls, CheckLst,
      //---
-     {$ifDef CbSFP_Log_ON}
-     eventlog,
-     {$endif}
-     //---
-     CbSFP_ideCenter, CbSFP_SubScriber,  CbSFP_ideGENERAL,
+     CbSFP_ideCenter, CbSFP_SubScriber,
      IDEOptionsIntf;
 
-
-
 type
-
- { tCbSFP_ideCallEditor }
 
  tCbSFP_ideCallEditor=class(TAbstractIDEOptionsEditor)
     //---
@@ -86,10 +76,6 @@ type
     //---
     Common_PNL: TPanel;
     //---
-  protected //<-----------------------------------------------------------------
-    {$ifDef CbSFP_Log_ON}
-   _EventLog_:TEventLog;
-    {$endif}
   protected //<-----------------------------------------------------------------
   {%region --- выход на CallCenter -------------------------------- /fold}
   strict private
@@ -204,9 +190,49 @@ type
     procedure  RestoreSettings({%H-}AOptions:TAbstractIDEOptions); override;
   end;
 
+
 implementation
 
 {%region --- inLine .. -------------------------------------------- /fold}
+
+
+var _ideCallConfig_:TAbstractIDEOptions;
+
+procedure _ideCallConfig__INI_; inline;
+begin
+   _ideCallConfig_:=nil;
+end;
+
+procedure _ideCallConfig__DST_; inline;
+begin
+   _ideCallConfig_.Free;
+   _ideCallConfig_:=nil;
+end;
+
+type
+
+_tCbSFP_ideCallConfig_=class(TAbstractIDEOptions)
+ public
+   class function GetInstance:TAbstractIDEOptions; override;
+   class function GetGroupCaption:string;          override;
+ end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+class function _tCbSFP_ideCallConfig_.GetInstance:TAbstractIDEOptions;
+begin
+    if not Assigned(_ideCallConfig_) then begin
+       _ideCallConfig_:=_tCbSFP_ideCallConfig_.Create;
+    end;
+    result:=_ideCallConfig_;
+end;
+
+class function _tCbSFP_ideCallConfig_.GetGroupCaption:string;
+begin
+    result:='';
+end;
+
+
 
 const
 
@@ -223,11 +249,6 @@ const
 constructor tCbSFP_ideCallEditor.Create(TheOwner:TComponent);
 begin
     inherited;
-    {$ifDef CbSFP_Log_ON}
-   _EventLog_:=TEventLog.Create(self);
-   _EventLog_.LogType :=ltFile;
-   _EventLog_.FileName:='tCbSFP_'+self.ClassName+'.log';
-    {$endif}
    _onCreate_fixHimSelfName;
    _onCreate_fixActionsName;
    _onCreate_setActionsEVNT;
@@ -345,18 +366,12 @@ end;
 
 procedure tCbSFP_ideCallEditor._ideEditorNODE_CLR;
 begin
-    {$ifDef CbSFP_Log_ON}
-   _EventLog_.Debug('_ideEditorNODE_CLR_');
-    {$endif}
     tCbSFP_ideEditorNODE(_ideEditorNODE_).FREE;
    _ideEditorNODE_:=nil;
 end;
 
 procedure tCbSFP_ideCallEditor._ideEditorNODE_SET;
 begin
-    {$ifDef CbSFP_Log_ON}
-   _EventLog_.Debug('_ideEditorNODE_SET_');
-    {$endif}
    _ideEditorNODE_:=CbSFP_ideCenter__EditorNODE(self);
     Assert(Assigned(_ideEditorNODE_),'CallCenterNodeForEDIT NOT found');
 end;
@@ -451,7 +466,7 @@ begin
        _selected_SET_PTTNs(PTTNs_lBox.ItemIndex);
     end
     else begin
-
+        {doNOFING}
     end;
 end;
 
@@ -589,9 +604,6 @@ begin {todo : отправить заявку на ФИКС?}
             Parent:=Common_PNL;
             Align :=alClient;
         end;
-        {$ifDef CbSFP_Log_ON}
-       _EventLog_.Debug('_common_FRM__Tst2CRT_');
-        {$endif}
     end;
 end;
 
@@ -599,9 +611,6 @@ procedure tCbSFP_ideCallEditor._common_FRM__DESTROY;
 begin
    _common_FRM_.FREE;
    _common_FRM_:=nil;
-    {$ifDef CbSFP_Log_ON}
-   _EventLog_.Debug('_common_FRM__DESTROY');
-    {$endif}
 end;
 
 //------------------------------------------------------------------------------
@@ -1091,9 +1100,6 @@ end;
 
 function tCbSFP_ideCallEditor.GetTitle:String;
 begin
-    {$ifDef CbSFP_Log_ON}
-   _EventLog_.Debug('GetTitle');
-    {$endif}
    _common_FRM__Tst2CRT;
     if Assigned(_common_FRM_) then result:=_common_FRM_.GetTitle
     else result:=self.Name;
@@ -1101,7 +1107,7 @@ end;
 
 class function tCbSFP_ideCallEditor.SupportedOptionsClass:TAbstractIDEOptionsClass;
 begin
-    result:=tCbSFP_ideGeneral_Config;
+    result:=_tCbSFP_ideCallConfig_;
 end;
 
 //------------------------------------------------------------------------------
@@ -1109,17 +1115,10 @@ end;
 procedure tCbSFP_ideCallEditor.Setup(ADialog:TAbstractOptionsEditorDialog);
 begin
     {do nofing}
-   {$ifDef CbSFP_Log_ON}
-  _EventLog_.Debug('Setup');
-   {$endif}
 end;
 
 procedure tCbSFP_ideCallEditor.ReadSettings(AOptions:TAbstractIDEOptions);
 begin
-    {$ifDef CbSFP_Log_ON}
-    if not Assigned(AOptions) then _EventLog_.Debug('ReadSettings with NUL')
-    else _EventLog_.Debug('ReadSettings with #'+IntToHex(integer(AOptions),8));
-    {$endif}
    _common_FRM__Tst2CRT; //< НЕ хорошо (см. реализацию)
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
@@ -1127,10 +1126,6 @@ end;
 
 procedure tCbSFP_ideCallEditor.WriteSettings(AOptions:TAbstractIDEOptions);
 begin
-    {$ifDef CbSFP_Log_ON}
-    if not Assigned(AOptions) then _EventLog_.Debug('WriteSettings with NUL')
-    else _EventLog_.Debug('WriteSettings with #'+IntToHex(integer(AOptions),8));
-    {$endif}
    _settingsSAVE_;
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
@@ -1138,14 +1133,15 @@ end;
 
 procedure tCbSFP_ideCallEditor.RestoreSettings({%H-}AOptions:TAbstractIDEOptions);
 begin
-    {$ifDef CbSFP_Log_ON}
-    if not Assigned(AOptions) then _EventLog_.Debug('RestoreSettings with NUL')
-    else _EventLog_.Debug('RestoreSettings with #'+IntToHex(integer(AOptions),8));
-    {$endif}
     nodeEditor.EDIT_doEnd(FALSE); //<НЕТ, ОТМЕНЯЕМ все изменения
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
 end;
 
+initialization
+   _ideCallConfig__INI_;
+
+finalization
+   _ideCallConfig__DST_;
 end.
 

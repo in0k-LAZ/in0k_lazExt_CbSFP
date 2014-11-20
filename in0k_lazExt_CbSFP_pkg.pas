@@ -14,7 +14,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterUnit('CbSFP_ideCenter', @CbSFP_ideCenter.Register);
+  RegisterUnit('CbSFP_ideGENERAL', @CbSFP_ideGENERAL.Register);
 end;
 
 initialization

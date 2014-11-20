@@ -30,12 +30,8 @@ unit CbSFP_ideCenter;
 
 interface
 
-uses sysutils, LazFileUtils, XMLConf,
-    IDEOptionsIntf,
-    CbSFP_SubScriber
-    {$ifNDef uiDevelopPRJ}
-    ,CbSFP_ideGENERAL
-    {$endIf};
+uses sysutils, LazFileUtils, XMLConf, IDEOptionsIntf,
+    CbSFP_SubScriber;
 
 type
 
@@ -54,15 +50,15 @@ type
     next      :pCbSFP_Node;
     SubSiCLASS:tCbSFP_SubScriber_Handle;
     SubStFRAME:tCbSFP_SubScriberTEditor;
-    IDEOptERec:PIDEOptionsEditorRec; //
-    list_OPTNs:pCbSFP_OPTN;  //ConfigRecs:pSubScriber_node;
-    list_PTTNs:pCbSFP_PTTN;  //ConfigRecs:pSubScriber_node;
+    IDEOptERec:PIDEOptionsEditorRec;
+    list_OPTNs:pCbSFP_OPTN;
+    list_PTTNs:pCbSFP_PTTN;
   end;
 
  tCbSFP_ideCallCenter=class
   {%region --- работа с УЗЛАМИ pCbSFP_Node ------------------------ /fold}
   private
-    procedure _node_CRT(out   node:pCbSFP_Node; const CLS:tCbSFP_SubScriberTHandle; const FRM:tCbSFP_SubScriberTEditor);
+    procedure _node_CRT(out   node:pCbSFP_Node; const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor);
     procedure _node_INI(const node:pCbSFP_Node);
     procedure _node_DST(const node:pCbSFP_Node);
   protected
@@ -176,7 +172,7 @@ type
   {%endregion}
   {%region --- SubScriber поиск ----------------------------------- /fold}
   protected
-    function  _SubScrbr_REGISTER(const CLS:tCbSFP_SubScriberTHandle; const FRM:tCbSFP_SubScriberTEditor; const ideData:pointer):tCbSFP_SubScriber;
+    function  _SubScrbr_REGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):pCbSFP_Node;
   public
     function   SubScriber_byIdeREC(const value:PIDEOptionsEditorRec):tCbSFP_SubScriber;
     function   SubScriber_byEDITOR(const value:TAbstractIDEOptionsEditor):tCbSFP_SubScriber;
@@ -189,22 +185,16 @@ type
  {$ifNDef uiDevelopPRJ} //<------------------------ боевой режм "Расширения IDE"
 
  tCbSFP_ideCallCenterIDE=class(tCbSFP_ideCallCenter)
-    function  _Ide_SubScrbr_REGISTER(CLS:tCbSFP_SubScriberTHandle; FRM:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
   public
-    constructor Create;
-    destructor DESTROY; override;
-  public
-    procedure REGISTER_in_IdeOptions;
-  public
-    function  SubScriber_REGISTER(CLS:tCbSFP_SubScriberTHandle; FRM:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber; overload;
-    function  SubScriber_REGISTER(CLS:tCbSFP_SubScriberTHandle; FRM:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber; overload;
+    function SubScriber_REGISTER(HNDL:tCbSFP_SubScriberTHandle; EDTR:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber; overload;
+    function SubScriber_REGISTER(HNDL:tCbSFP_SubScriberTHandle; EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber; overload;
   end;
 
  {$else} //<------------------------------------------------- режим ТЕСТИРОВАНИЯ
 
  tCbSFP_ideCallCenterTST=class(tCbSFP_ideCallCenter)
   public
-    function SubScriber_REGISTER(CLS:tCbSFP_SubScriberTHandle; FRM:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
+    function SubScriber_REGISTER(HNDL:tCbSFP_SubScriberTHandle; EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
   end;
 
  {$endIf}
@@ -283,15 +273,11 @@ function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle
 {$endIf}
 function CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
 
-{$ifNDef uiDevelopPRJ} //< боевой режм "Расширения IDE"
-procedure Register;
-{$endIf}
-
 implementation
 
 {$ifDef uiDevelopPRJ}
 {$else}
-uses CbSFP_ideEditor;
+uses CbSFP_ideGENERAL;//CbSFP_ideEditor;
 {$endIf}
 
 const
@@ -361,14 +347,14 @@ end;
 
 {%region --- работа с УЗЛАМИ pCbSFP_Node -------------------------- /fold}
 
-procedure tCbSFP_ideCallCenter._node_CRT(out node:pCbSFP_Node; const CLS:tCbSFP_SubScriberTHandle; const FRM:tCbSFP_SubScriberTEditor);
+procedure tCbSFP_ideCallCenter._node_CRT(out node:pCbSFP_Node; const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor);
 begin
     new(node);
     with node^ do begin
         next      :=nil;
         IDEOptERec:=nil;
-        SubStFRAME:=FRM;
-        SubSiCLASS:=CLS.Create;
+        SubStFRAME:=EDTR;
+        SubSiCLASS:=HNDL.Create;
         list_OPTNs:=nil;
         list_PTTNs:=nil;
     end;
@@ -994,15 +980,18 @@ end;
 
 {%region --- SubScriber поиск ------------------------------------- /fold}
 
-function tCbSFP_ideCallCenter._SubScrbr_REGISTER(const CLS:tCbSFP_SubScriberTHandle; const FRM:tCbSFP_SubScriberTEditor; const ideData:pointer):tCbSFP_SubScriber;
+function tCbSFP_ideCallCenter._SubScrbr_REGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):pCbSFP_Node;
 begin
-    _node_CRT(result,CLS,FRM);
-     with pCbSFP_Node(result)^ do begin
-         IDEOptERec:=ideData;
-     end;
-    _node_INI (result);
-    _node_LOAD(result);
-    _lair_ADD (result);
+    result:=_lair_FND_byIdentifier(HNDL.Identifier);
+    if Assigned(result) then begin //< это ПЛОХО ... мы не сможем добавть
+        result:=NIL;
+    end
+    else begin
+       _node_CRT (result,HNDL,EDTR);
+       _node_INI (result);
+       _node_LOAD(result);
+       _lair_ADD (result);
+    end;
 end;
 
 //------------------------------------------------------------------------------
@@ -1019,94 +1008,51 @@ end;
 
 {%endregion}
 
-//------------------------------------------------------------------------------
-
-{$region --- CallCenter .. РАСШИРЕНИЯ  ----------------------------------}
+{$region --- CallCenter .. РАСШИРЕНИЯ  ---------------------------- /fold}
 
 {$ifNDef uiDevelopPRJ} //<------------------------- боевой режм "Расширения IDE"
 
-constructor tCbSFP_ideCallCenterIDE.Create;
-begin
-    inherited;
-end;
-
-destructor tCbSFP_ideCallCenterIDE.DESTROY;
-begin
-    inherited;
-end;
-
-//------------------------------------------------------------------------------
-
-function tCbSFP_ideCallCenterIDE._Ide_SubScrbr_REGISTER(
-            CLS:tCbSFP_SubScriberTHandle;
-            FRM:tCbSFP_SubScriberTEditor;
-            const AGroup,AIndex:Integer;
-            const AParent:Integer=NoParent
-            ):tCbSFP_SubScriber;
-begin
-   _node_CRT(result,CLS,FRM);
-    with pCbSFP_Node(result)^ do begin
-        IDEOptERec:=RegisterIDEOptionsEditor(AGroup,tCbSFP_ideCallEditor,AIndex,AParent, TRUE);
-    end;
-   _node_INI (result);
-   _node_LOAD(result);
-   _lair_ADD (result);
-end;
-
-//------------------------------------------------------------------------------
-
 function tCbSFP_ideCallCenterIDE.SubScriber_REGISTER(
-            CLS:tCbSFP_SubScriberTHandle;
-            FRM:tCbSFP_SubScriberTEditor;
+            HNDL:tCbSFP_SubScriberTHandle;
+            EDTR:tCbSFP_SubScriberTEditor;
             //---
             const AGroup,AIndex:Integer;
             const AParent:Integer=NoParent
             ):tCbSFP_SubScriber;
 begin
-    result:=nil;// _lair_FND_byIdentifier(CLS.Identifier);
-    if Assigned(result) then begin //< это ПЛОХО ... мы не сможем добавть
-        result:=NIL;
-    end
-    else begin
-        result:=_Ide_SubScrbr_REGISTER(CLS,FRM,AGroup,AIndex,AParent);
+    result:=_SubScrbr_REGISTER(HNDL,EDTR);
+    if Assigned(result) then begin
+        pCbSFP_Node(result)^.IDEOptERec:=CbSFP_ideGENERAL__register_SubScrbr(AGroup,AIndex,AParent);
     end;
 end;
 
 function tCbSFP_ideCallCenterIDE.SubScriber_REGISTER(
-            CLS:tCbSFP_SubScriberTHandle;
-            FRM:tCbSFP_SubScriberTEditor
+            HNDL:tCbSFP_SubScriberTHandle;
+            EDTR:tCbSFP_SubScriberTEditor
             ):tCbSFP_SubScriber;
 begin
-    result:=_lair_FND_byIdentifier(CLS.Identifier);
-    if Assigned(result) then begin //< это ПЛОХО ... мы не сможем добавть
-        result:=NIL;
-    end
-    else begin
-        REGISTER_in_IdeOptions; //< создаем ГЛАВНОЕ, если оно надо
-        result:=_Ide_SubScrbr_REGISTER(CLS,FRM,_CBSP_IdeOptions_GRP_^.Index,GetFreeIDEOptionsIndex(_CBSP_IdeOptions_GRP_^.Index,0),NoParent);
+    result:=_SubScrbr_REGISTER(HNDL,EDTR);
+    if Assigned(result) then begin
+        pCbSFP_Node(result)^.IDEOptERec:=CbSFP_ideGENERAL__register_SubScrbr;
     end;
 end;
 
 {$else} //<-------------------------------------------------- режим ТЕСТИРОВАНИЯ
 
-function tCbSFP_ideCallCenterTST.SubScriber_REGISTER(CLS:tCbSFP_SubScriberTHandle; FRM:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
-begin
+function tCbSFP_ideCallCenterTST.SubScriber_REGISTER(HNDL:tCbSFP_SubScriberTHandle; EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
+begin // очищаем ВСЕ и создаем ЗАНОГО, чтобы был тока ЕДИНСТВЕННЫЙ
    _lair_DST;
    _lair_CRT;
-    //---
-   _node_CRT(result,CLS,FRM);
-   _node_INI(result);
-    //---
-   _node_LOAD(result);
-    //---
-   _lair_ADD(result);
+    result:=_SubScrbr_REGISTER(HNDL,EDTR);
 end;
 
 {$endIf}
 
 {$endRegion}
 
-{$region --- tCbSFP_ideEditorNODE ---------------------------------------}
+//------------------------------------------------------------------------------
+
+{$region --- tCbSFP_ideEditorNODE --------------------------------- /fold}
 
 constructor tCbSFP_ideEditorNODE.Create(const CallCenter:tCbSFP_ideCallCenter; const Node:pCbSFP_Node);
 begin
@@ -1161,7 +1107,6 @@ begin
     tmpOPTN:=_CallCenter_._lstOPTN_fndNAME(_SubScriber_,_CallCenter_._itmOPTN_getName(tmpOPTN));
     if Assigned(tmpOPTN) then begin
          result:=_CallCenter_._itmPTTN_crt8ini(_SubScriber_,_CallCenter_._itmPTTN_getSeek(Item));
-        //_CallCenter_._itmPTTN_setSeek(result,_CallCenter_._itmPTTN_getSeek(Item));
         _CallCenter_._itmPTTN_setUsed(result,_CallCenter_._itmPTTN_getUsed(Item));
         _CallCenter_._itmPTTN_setOPTN(result,tmpOPTN);
         _CallCenter_._lstPTTN_insLast(_SubScriber_,result);
@@ -1371,9 +1316,9 @@ end;
 
 function tCbSFP_ideEditorNODE.lstPTTN_addFromPTTN(const PTTN:pCbSFP_PTTN):pCbSFP_PTTN;
 begin
-   result:=_CallCenter_._itmPTTN_crt8ini(_SubScriber_,_CallCenter_._itmPTTN_getSeek(PTTN));
-  _CallCenter_._itmPTTN_setOPTN(result,_CallCenter_._itmPTTN_getOPTN(PTTN));
-  _CallCenter_._lstPTTN_insLast(_SubScriber_,result);
+    result:=_CallCenter_._itmPTTN_crt8ini(_SubScriber_,_CallCenter_._itmPTTN_getSeek(PTTN));
+   _CallCenter_._itmPTTN_setOPTN(result,_CallCenter_._itmPTTN_getOPTN(PTTN));
+   _CallCenter_._lstPTTN_insLast(_SubScriber_,result);
 end;
 
 //------------------------------------------------------------------------------
@@ -1422,6 +1367,10 @@ end;
 
 {$endRegion}
 
+//------------------------------------------------------------------------------
+
+{%region --- ЭКЗЕМПЛЯР _CallCenter_:tCbSFP_ideCallCenter ---------- /fold}
+
 var _CallCenter_:tCbSFP_ideCallCenter;
 
 function CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
@@ -1430,11 +1379,6 @@ begin
 end;
 
 {$ifNDef uiDevelopPRJ} //< боевой режм "Расширения IDE"
-
-procedure Register;
-begin
-   tCbSFP_ideCallCenterIDE(_CallCenter_).REGISTER_in_IdeOptions;
-end;
 
 function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
 begin
@@ -1454,6 +1398,8 @@ begin
 end;
 
 {$endIf}
+
+{%endregion}
 
 initialization
 

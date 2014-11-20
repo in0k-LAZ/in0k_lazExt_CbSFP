@@ -27,12 +27,10 @@ unit CbSFP_SubScriber;
 //----------------------------------------------------------------------------/}
 
 {$mode objfpc}{$H+}
-{$define CbSFP_Log_ON}
 
 interface
 
-uses {$ifDef CbSFP_Log_ON} classes,eventlog, {$endif}
-     Forms;
+uses Forms;
 
 type
 
@@ -69,20 +67,13 @@ type
   // [EDTR] -- редактор
   // "фрейм" для визуального редактирования свойств Объекта "Конфигурация"
  TCbSFP_SubScriber_editor = class(TFrame)
-  protected //<-----------------------------------------------------------------
-    {$ifDef CbSFP_Log_ON}
-   _EventLog_:TEventLog;
-    {$endif}
-  public
-    constructor Create(TheOwner: TComponent); override;
-    destructor DESTROY; override;
   public
     function GetTitle:string; virtual;
   public
     // загрузить данные из объекта во фрейм
-    procedure Settings_LOAD(const {%H-}Obj:tCbSFP_SubScriber_cnfOBJ); virtual;
+    procedure Settings_LOAD(const {%H-}Obj:tCbSFP_SubScriber_cnfOBJ); virtual; abstract;
     // сохранить данные из фрейма в объекте
-    procedure Settings_SAVE(const {%H-}Obj:tCbSFP_SubScriber_cnfOBJ); virtual;
+    procedure Settings_SAVE(const {%H-}Obj:tCbSFP_SubScriber_cnfOBJ); virtual; abstract;
   end;
  tCbSFP_SubScriberTEditor = class of TCbSFP_SubScriber_editor;
 
@@ -95,46 +86,10 @@ end;
 
 //------------------------------------------------------------------------------
 
-constructor TCbSFP_SubScriber_editor.Create(TheOwner: TComponent);
-begin
-    inherited;
-    {$ifDef CbSFP_Log_ON}
-   _EventLog_:=TEventLog.Create(self);
-   _EventLog_.LogType :=ltFile;
-   _EventLog_.FileName:='tCbSFP_'+self.ClassName+'.log';
-    {$endif}
-    {$ifDef CbSFP_Log_ON}
-   _EventLog_.Debug('Create');
-    {$endif}
-end;
-
-destructor TCbSFP_SubScriber_editor.DESTROY;
-begin
-    {$ifDef CbSFP_Log_ON}
-   _EventLog_.Debug('DESTROY');
-    {$endif}
-    inherited;
-end;
-
-
 // строка отображаемая в "дереве" Опции
 function TCbSFP_SubScriber_editor.GetTitle:String;
 begin
     result:=self.ClassName;
-end;
-
-procedure TCbSFP_SubScriber_editor.Settings_LOAD(const Obj:tCbSFP_SubScriber_cnfOBJ);
-begin
-    {$ifDef CbSFP_Log_ON}
-   _EventLog_.Debug('Settings_LOAD');
-    {$endif}
-end;
-
-procedure TCbSFP_SubScriber_editor.Settings_SAVE(const Obj:tCbSFP_SubScriber_cnfOBJ);
-begin
-    {$ifDef CbSFP_Log_ON}
-   _EventLog_.Debug('Settings_SAVE');
-    {$endif}
 end;
 
 end.
