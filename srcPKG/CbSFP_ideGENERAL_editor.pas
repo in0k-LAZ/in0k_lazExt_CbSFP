@@ -30,10 +30,9 @@ unit CbSFP_ideGENERAL_editor;
 
 interface
 
-uses IDEOptionsIntf, LazIDEIntf, LazFileUtils, LazConfigStorage, BaseIDEIntf, LCLIntf,
-  StdCtrls, Buttons, Classes, CbSFP_SubScriber, CbSFP_ideEditor, sysutils,
-  CbSFP_ideGENERAL_config;
-
+uses IDEOptionsIntf, LCLIntf,
+    sysutils, Classes, StdCtrls, Buttons,
+    CbSFP_ideGENERAL_config;
 
 type
 

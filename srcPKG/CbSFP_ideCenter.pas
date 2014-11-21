@@ -218,6 +218,7 @@ type
     constructor Create(const CallCenter:tCbSFP_ideCallCenter; const Node:pCbSFP_Node);
     destructor DESTROY; override;
   public
+    function  Identifier:string;
     function  EDITtFRAME:tCbSFP_SubScriberTEditor;
     procedure EDIT_Start;
     procedure EDIT_doEnd(const WithSAVE:boolean);
@@ -1074,6 +1075,11 @@ end;
 function tCbSFP_ideEditorNODE.EDITtFRAME:tCbSFP_SubScriberTEditor;
 begin
     result:=_SubScriber_^.SubStFRAME;
+end;
+
+function tCbSFP_ideEditorNODE.Identifier:string;
+begin
+    result:=_SubScriber_^.SubSiCLASS.Identifier;
 end;
 
 //------------------------------------------------------------------------------

@@ -1103,10 +1103,18 @@ begin
 end;
 
 procedure tCbSFP_ideCallEditor.ReadSettings(AOptions:TAbstractIDEOptions);
+var v1,v2:integer;
 begin
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('ReadSettings');
     {$endIf}
+    with tCbSFP_ideGeneral_Config(AOptions) do begin
+        v1:=Splitter_2.Top;
+        v2:=Splitter_1.Left;
+        SubScriber_loadEditorVALUEs(nodeEditor.Identifier,V1,V2);
+        Splitter_2.Top :=v1;
+        Splitter_1.Left:=v2;
+    end;
    _common_FRM__Tst2CRT; //< НЕ хорошо (см. реализацию)
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
@@ -1117,6 +1125,10 @@ begin
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('WriteSettings');
     {$endIf}
+    with tCbSFP_ideGeneral_Config(AOptions) do begin
+        SubScriber_saveEditorVALUEs(nodeEditor.Identifier,Splitter_2.Top,Splitter_1.Left);
+    end;
+    //---
    _settingsSAVE_;
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;

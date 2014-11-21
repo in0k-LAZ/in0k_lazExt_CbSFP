@@ -5,7 +5,7 @@ unit CbSFP_ideGENERAL_config;
 //  ║  ├┴┐╚═╗╠╣ ╠═╝      //  Конфигурация по пути исходного файла              =
 //  ╚═╝└─┘╚═╝╚  ╩ v0.9  //   [ideGENERAL]                                      =
 //---------------------//------------------------------------------------------=
-// реализация ОСНОВНОГО пукта Меню и ОСНОВНОГО хранителя _Options
+// реализация ОСНОВНОГО хранителя.
 //------------------------------------------------------------------------------
 
 {/--[License]-[fold]----------------------------------------------------//
@@ -50,6 +50,9 @@ type
    public
      class function GetGroupCaption: string;         override;
      class function GetInstance:TAbstractIDEOptions; override;
+   public
+     procedure SubScriber_saveEditorVALUEs(const INDF:string; const V1,V2:integer);
+     procedure SubScriber_loadEditorVALUEs(const INDF:string; var   V1,V2:integer);
    end;
 
 
@@ -124,6 +127,7 @@ end;
 
 procedure tCbSFP_ideGeneral_Config._Init;
 begin
+    {do-Nothing}
 end;
 
 procedure tCbSFP_ideGeneral_Config._Save;
@@ -149,6 +153,36 @@ begin
         //   _CNFsDIR:=Config.GetValue(cCBSP__General_Options__CNFsDIR,_get_defaultCNFsDIR);
         end;
        _mustSAVE:=false;
+    finally
+       Config.Free;
+    end;
+end;
+
+//------------------------------------------------------------------------------
+
+const
+  cPathDELIM='/';
+  cNodeName_V1='V1';
+  cNodeName_V2='V2';
+
+procedure tCbSFP_ideGeneral_Config.SubScriber_saveEditorVALUEs(const INDF:string; const V1,V2:integer);
+var Config:TConfigStorage;
+begin
+    Config:=_ConfigStorage_get;
+    try Config.SetValue(INDF+cPathDELIM+cNodeName_V1,V1);
+        Config.SetValue(INDF+cPathDELIM+cNodeName_V2,V2);
+        Config.WriteToDisk;
+    finally
+       Config.Free;
+    end;
+end;
+
+procedure tCbSFP_ideGeneral_Config.SubScriber_loadEditorVALUEs(const INDF:string; var V1,V2:integer);
+var Config:TConfigStorage;
+begin
+    Config:=_ConfigStorage_get;
+    try V1:=Config.GetValue(INDF+cPathDELIM+cNodeName_V1,V1);
+        V2:=Config.GetValue(INDF+cPathDELIM+cNodeName_V2,V2);
     finally
        Config.Free;
     end;
