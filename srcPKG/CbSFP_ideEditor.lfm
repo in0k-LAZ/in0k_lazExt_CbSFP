@@ -72,6 +72,7 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
       Width = 4
       Action = aOPTN_aAdd
       AutoSize = True
+      OnChangeBounds = OPTNs_bAddChangeBounds
     end
     object OPTNs_bDel: TSpeedButton
       AnchorSideLeft.Control = OPTNs_bAdd

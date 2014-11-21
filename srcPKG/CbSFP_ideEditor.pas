@@ -39,7 +39,7 @@ uses sysutils, Classes, Graphics,
      eventlog,
      {$endIf}
      CbSFP_ideCenter, CbSFP_SubScriber,
-     IDEOptionsIntf;
+     IDEOptionsIntf, types;
 
 type
 
@@ -81,6 +81,7 @@ type
     Common_OPT: TComboBox;
     //---
     Common_PNL: TPanel;
+    procedure OPTNs_bAddChangeBounds(Sender: TObject);
     //---
   protected //<-----------------------------------------------------------------
     {$ifDef CbSFP_log_ON}
@@ -345,6 +346,13 @@ end;
 {%endregion}
 
 {$region --- выход на CallCenter ---------------------------------- /fold}
+
+procedure tCbSFP_ideCallEditor.OPTNs_bAddChangeBounds(Sender: TObject);
+begin
+    OPTNs_GBox.Constraints.MinHeight:=
+        TSpeedButton(Sender).Top*2+
+        TSpeedButton(Sender).Height*4;
+end;
 
 procedure tCbSFP_ideCallEditor._ideEditorNODE_CLR;
 begin
@@ -1108,6 +1116,7 @@ begin
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('ReadSettings');
     {$endIf}
+    //OPTNs_GBox.Constraints.MinHeight:=PTTNs_bAdd.Height*4;
     with tCbSFP_ideGeneral_Config(AOptions) do begin
         v1:=Splitter_2.Top;
         v2:=Splitter_1.Left;

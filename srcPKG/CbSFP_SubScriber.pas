@@ -66,14 +66,14 @@ type
 
   // [EDTR] -- редактор
   // "фрейм" для визуального редактирования свойств Объекта "Конфигурация"
- TCbSFP_SubScriber_editor = class(TFrame)
+ TCbSFP_SubScriber_editor=class(TFrame)
   public
     function GetTitle:string; virtual;
   public
     // загрузить данные из объекта во фрейм
-    procedure Settings_LOAD(const {%H-}Obj:tCbSFP_SubScriber_cnfOBJ); virtual; abstract;
+    procedure Settings_LOAD(const {%H-}Obj:pointer); virtual; abstract;
     // сохранить данные из фрейма в объекте
-    procedure Settings_SAVE(const {%H-}Obj:tCbSFP_SubScriber_cnfOBJ); virtual; abstract;
+    procedure Settings_SAVE(const {%H-}Obj:pointer); virtual; abstract;
   end;
  tCbSFP_SubScriberTEditor = class of TCbSFP_SubScriber_editor;
 
