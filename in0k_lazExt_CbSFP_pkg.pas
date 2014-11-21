@@ -8,7 +8,8 @@ interface
 
 uses
   CbSFP__Intf, CbSFP_SubScriber, CbSFP_ideCenter, CbSFP_ideEditor, 
-  CbSFP_ideGENERAL, LazarusPackageIntf;
+  CbSFP_ideGENERAL_editor, CbSFP_ideGENERAL_config, CbSFP_ideGENERAL, 
+  LazarusPackageIntf;
 
 implementation
 

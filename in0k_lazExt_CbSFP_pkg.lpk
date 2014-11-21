@@ -32,7 +32,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.                "/>
     <Version Minor="9"/>
-    <Files Count="5">
+    <Files Count="7">
       <Item1>
         <Filename Value="srcPKG\CbSFP__Intf.pas"/>
         <UnitName Value="CbSFP__Intf"/>
@@ -50,10 +50,18 @@
         <UnitName Value="CbSFP_ideEditor"/>
       </Item4>
       <Item5>
+        <Filename Value="srcPKG\CbSFP_ideGENERAL_editor.pas"/>
+        <UnitName Value="CbSFP_ideGENERAL_editor"/>
+      </Item5>
+      <Item6>
+        <Filename Value="srcPKG\CbSFP_ideGENERAL_config.pas"/>
+        <UnitName Value="CbSFP_ideGENERAL_config"/>
+      </Item6>
+      <Item7>
         <Filename Value="srcPKG\CbSFP_ideGENERAL.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="CbSFP_ideGENERAL"/>
-      </Item5>
+      </Item7>
     </Files>
     <Type Value="DesignTime"/>
     <RequiredPkgs Count="2">
