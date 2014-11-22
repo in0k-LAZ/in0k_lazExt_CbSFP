@@ -81,7 +81,6 @@ type
     Common_OPT: TComboBox;
     //---
     Common_PNL: TPanel;
-    procedure OPTNs_bAddChangeBounds(Sender: TObject);
     //---
   protected //<-----------------------------------------------------------------
     {$ifDef CbSFP_log_ON}
@@ -118,6 +117,8 @@ type
   protected
     procedure _OPTNs_lBox__reSetITEM(const i:integer);
     procedure _PTTNs_lBox__reSetITEM(const i:integer);
+  protected
+    procedure _OPTNs_bAdd_onChangeBounds(Sender: TObject);
   {%endregion}
   {%region --- общие контролы Common_... -------------------------- /fold}
   protected //<--- фрейм для отображения пользовательской НАСТРОЙКИ
@@ -187,6 +188,7 @@ type
     procedure _onCreate_setActionsEVNT;
     procedure _onCreate_setButtonsIMGs;
     procedure _onResize_controlsPosSET(Sender:TObject);
+    procedure _reSet_gBox_Sizing;
   public
     constructor Create(TheOwner: TComponent); override;
     destructor DESTROY; override;
@@ -243,6 +245,8 @@ begin
     PTTNs_lBox.DoubleBuffered:=TRUE;
     PTTNs_lBox.OnSelectionChange:=@_PTTNs_lBox__onSelectionChange;
     PTTNs_lBox.OnClickCheck     :=@_PTTNs_lBox__onClickCheck;
+    //---
+    OPTNs_bAdd.OnChangeBounds:=@_OPTNs_bAdd_onChangeBounds;
     //---
     self.OnResize:=@_onResize_controlsPosSET;
     {$ifDef CbSFP_log_ON}
@@ -343,16 +347,21 @@ begin
     Common_EDT.BorderSpacing.Right:=Common_i_1.Width+Common_i_1.BorderSpacing.Right*2;
 end;
 
+//------------------------------------------------------------------------------
+
+procedure tCbSFP_ideCallEditor._reSet_gBox_Sizing;
+begin
+    // тупое определение минимального размера
+    {todo: переделать}
+    OPTNs_GBox.Constraints.MinHeight:=OPTNs_bAdd.Height*6;
+    PTTNs_GBox.Constraints.MinHeight:=OPTNs_GBox.Constraints.MinHeight;
+    OPTNs_GBox.Constraints.MinWidth:=OPTNs_bAdd.Height*8;
+    PTTNs_GBox.Constraints.MinWidth:=OPTNs_GBox.Constraints.MinWidth;
+end;
+
 {%endregion}
 
 {$region --- выход на CallCenter ---------------------------------- /fold}
-
-procedure tCbSFP_ideCallEditor.OPTNs_bAddChangeBounds(Sender: TObject);
-begin
-    OPTNs_GBox.Constraints.MinHeight:=
-        TSpeedButton(Sender).Top*2+
-        TSpeedButton(Sender).Height*4;
-end;
 
 procedure tCbSFP_ideCallEditor._ideEditorNODE_CLR;
 begin
@@ -573,6 +582,13 @@ begin
         PTTNs_lBox.Items.Strings[i]:='ndf';
         PTTNs_lBox.Checked      [i]:=false;
     end;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure tCbSFP_ideCallEditor._OPTNs_bAdd_onChangeBounds(Sender: TObject);
+begin
+   _reSet_gBox_Sizing;
 end;
 
 {%endregion}
