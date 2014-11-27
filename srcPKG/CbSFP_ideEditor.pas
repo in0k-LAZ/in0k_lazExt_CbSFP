@@ -1132,10 +1132,9 @@ begin
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('ReadSettings');
     {$endIf}
-    //OPTNs_GBox.Constraints.MinHeight:=PTTNs_bAdd.Height*4;
     with tCbSFP_ideGeneral_Config(AOptions) do begin
         v1:=Splitter_2.Top;
-        v2:=Splitter_1.Left;
+        v2:=PTTNs_GBox.Constraints.MinWidth;//   Splitter_1.Left;
         SubScriber_loadEditorVALUEs(nodeEditor.Identifier,V1,V2);
         Splitter_2.Top :=v1;
         Splitter_1.Left:=v2;
