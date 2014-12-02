@@ -28,10 +28,16 @@ unit CbSFP_ideGENERAL_config;
 
 {$mode objfpc}{$H+}
 
+{$define ideLazExtMODE}  //<----------------------- боевой режм "Расширения IDE"
+
+{$ifDef uiDevelopPRJ}
+    {$undef ideLazExtMODE}
+{$endif}
+
 interface
 
-uses IDEOptionsIntf, LazIDEIntf, LazFileUtils, LazConfigStorage, BaseIDEIntf, LCLIntf,
-  StdCtrls, Buttons, Classes, CbSFP_SubScriber, CbSFP_ideEditor, sysutils;
+uses IDEOptionsIntf, LazConfigStorage, BaseIDEIntf,
+  sysutils;
 
 type
 
@@ -57,7 +63,16 @@ type
 
 
 implementation
+{$ifDef ideLazExtMODE}
 uses CbSFP_ideGENERAL;
+{$endif}
+
+{$ifdef ideLazExtMODE}
+const cCbSFP_ideGeneral_Config__GroupGeneral=cIn0k_LazExt_CbSFP__GroupGeneral;
+{$else}
+const cCbSFP_ideGeneral_Config__GroupGeneral='';
+{$endif}
+
 
 //------------------------------------------------------------------------------
 {%region --- INSTANCE --------------------------------------------= /fold}
@@ -104,7 +119,7 @@ end;
 
 class function tCbSFP_ideGeneral_Config.GetGroupCaption:string;
 begin
-    result:=cIn0k_LazExt_CbSFP__GroupGeneral;
+    result:=cCbSFP_ideGeneral_Config__GroupGeneral;
 end;
 
 class function tCbSFP_ideGeneral_Config.GetInstance:TAbstractIDEOptions;

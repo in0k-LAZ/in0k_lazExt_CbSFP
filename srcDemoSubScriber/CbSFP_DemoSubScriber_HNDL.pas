@@ -45,8 +45,8 @@ type
     procedure ConfigOBJ_DEF(const Obj:tCbSFP_SubScriber_cnfOBJ); override;
   public
     function  ConfigOBJ_FileEXT:string; override;
-    function  ConfigOBJ_Save(const Obj:tCbSFP_SubScriber_cnfOBJ; const FileName:string; const Used:boolean):boolean; override;
-    function  ConfigOBJ_Load(const Obj:tCbSFP_SubScriber_cnfOBJ; const FileName:string; var   Used:boolean):boolean; override;
+    function  ConfigOBJ_Save(const Obj:tCbSFP_SubScriber_cnfOBJ; const FileName:string):boolean; override;
+    function  ConfigOBJ_Load(const Obj:tCbSFP_SubScriber_cnfOBJ; const FileName:string):boolean; override;
   end;
 
 implementation
@@ -80,7 +80,7 @@ begin
     result:='.ini';
 end;
 
-function tCbSFP_DemoSubScriber_HNDL.ConfigOBJ_Save(const Obj:pointer; const FileName:string; const Used:boolean):boolean;
+function tCbSFP_DemoSubScriber_HNDL.ConfigOBJ_Save(const Obj:pointer; const FileName:string):boolean;
 var tmp:pCbSFP_DemoSubScriber_CNFG;
     ini:TIniFile;
 begin
@@ -88,8 +88,6 @@ begin
     result:=false;
     try
         ini:=TIniFile.Create(FileName);
-        //---
-        ini.WriteBool('main','Used',Used);
         //---
         ini.WriteInteger('main','III',tmp^.III);
         ini.WriteString ('main','SSS',tmp^.SSS);
@@ -101,7 +99,7 @@ begin
     end;
 end;
 
-function tCbSFP_DemoSubScriber_HNDL.ConfigOBJ_Load(const Obj:pointer; const FileName:string; var Used:boolean):boolean;
+function tCbSFP_DemoSubScriber_HNDL.ConfigOBJ_Load(const Obj:pointer; const FileName:string):boolean;
 var tmp:pCbSFP_DemoSubScriber_CNFG;
     ini:TIniFile;
 begin
@@ -109,8 +107,6 @@ begin
     result:=false;
     try
         ini:=TIniFile.Create(FileName);
-        //---
-        Used    :=ini.ReadBool   ('main','Used',   Used);
         tmp^.III:=ini.ReadInteger('main','III',tmp^.III);
         tmp^.SSS:=ini.ReadString ('main','SSS',tmp^.SSS);
         //---

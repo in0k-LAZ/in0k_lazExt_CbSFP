@@ -58,9 +58,9 @@ type
     // расширение файла
     function  ConfigOBJ_FileEXT:string; virtual; abstract;
     // Сохранить "Объект Конфигурация" в файле
-    function  ConfigOBJ_Save(const Obj:tCbSFP_SubScriber_cnfOBJ; const FileName:string; const Used:boolean):boolean; virtual; abstract;
+    function  ConfigOBJ_Save(const Obj:tCbSFP_SubScriber_cnfOBJ; const FileName:string):boolean; virtual; abstract;
     // Загрузить "Объект Конфигурация" из файла
-    function  ConfigOBJ_Load(const Obj:tCbSFP_SubScriber_cnfOBJ; const FileName:string; var   Used:boolean):boolean; virtual; abstract;
+    function  ConfigOBJ_Load(const Obj:tCbSFP_SubScriber_cnfOBJ; const FileName:string):boolean; virtual; abstract;
   end;
  tCbSFP_SubScriberTHandle = class of tCbSFP_SubScriber_handle;
 

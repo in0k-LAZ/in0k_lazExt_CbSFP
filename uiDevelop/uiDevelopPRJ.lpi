@@ -19,9 +19,8 @@
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
-      <SharedMatrixOptions Count="2">
-        <Item1 ID="734407892945" Modes="Default" Value="-dPrjDevelop_TEST"/>
-        <Item2 ID="334615007912" Modes="Default" Value="-duiDevelopPRJ"/>
+      <SharedMatrixOptions Count="1">
+        <Item1 ID="334615007912" Modes="Default" Value="-duiDevelopPRJ"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
@@ -106,7 +105,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\develop\UI_Develop\subScriber;..\srcPKG\SubScriber;..\srcDemo_subScriber;..\srcPKG;..\srcDemoSubScriber"/>
+      <OtherUnitFiles Value="..\srcPKG;..\srcDemoSubScriber"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

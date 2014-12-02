@@ -32,7 +32,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.                "/>
     <Version Minor="9"/>
-    <Files Count="7">
+    <Files Count="8">
       <Item1>
         <Filename Value="srcPKG\CbSFP__Intf.pas"/>
         <UnitName Value="CbSFP__Intf"/>
@@ -62,6 +62,10 @@
         <HasRegisterProc Value="True"/>
         <UnitName Value="CbSFP_ideGENERAL"/>
       </Item7>
+      <Item8>
+        <Filename Value="srcPKG\CbSFP_ideConfigStorage.pas"/>
+        <UnitName Value="CbSFP_ideConfigStorage"/>
+      </Item8>
     </Files>
     <Type Value="DesignTime"/>
     <RequiredPkgs Count="2">

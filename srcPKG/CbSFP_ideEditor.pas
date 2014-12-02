@@ -28,6 +28,13 @@ unit CbSFP_ideEditor;
 //----------------------------------------------------------------------------/}
 
 {$mode objfpc}{$H+}
+
+{$define ideLazExtMODE}  //<----------------------- боевой режм "Расширения IDE"
+
+{$ifDef uiDevelopPRJ}
+    {$undef ideLazExtMODE}
+{$endif}
+
 {.$define CbSFP_log_ON}
 
 interface
@@ -189,6 +196,9 @@ type
     procedure _onCreate_setButtonsIMGs;
     procedure _onResize_controlsPosSET(Sender:TObject);
     procedure _reSet_gBox_Sizing;
+  protected //<-----------------------------------------------------------------
+    procedure _vSizes_Set(const v1,v2:integer);
+    procedure _vSizes_Get(out   v1,v2:integer);
   public
     constructor Create(TheOwner: TComponent); override;
     destructor DESTROY; override;
@@ -203,7 +213,9 @@ type
   end;
 
 implementation
+{$ifDef ideLazExtMODE}
 uses CbSFP_ideGENERAL_config;
+{$endIf}
 
 {%region --- inLine .. -------------------------------------------- /fold}
 
@@ -331,6 +343,31 @@ begin
 end;
 
 //------------------------------------------------------------------------------
+
+procedure tCbSFP_ideCallEditor._vSizes_Set(const v1,v2:integer);
+begin
+ {  //with tCbSFP_ideGeneral_Config(AOptions) do begin
+       v2:=self.Canvas.GetTextWidth(PTTNs_GBox.Caption);
+       v1:=self.Canvas.GetTextWidth(OPTNs_GBox.Caption);
+       if v2<v1 then v2:=v1;
+       v2:=v2+(v2 div 4);
+       if v2<PTTNs_GBox.Constraints.MinWidth then v2:=PTTNs_GBox.Constraints.MinWidth;
+       //---
+       v1:=Splitter_2.Top;
+       //v2:=Splitter_1.Left;
+       //SubScriber_loadEditorVALUEs(nodeEditor.Identifier,V1,V2);
+       Splitter_2.Top :=v1;
+       Splitter_1.Left:=v2;
+   //end; }
+end;
+
+procedure tCbSFP_ideCallEditor._vSizes_Get(out v1,v2:integer);
+begin
+    v1:=Splitter_2.Top;
+    v2:=Splitter_1.Left;
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 procedure tCbSFP_ideCallEditor._onResize_controlsPosSET(Sender:TObject);
 var W:integer;
@@ -1113,7 +1150,13 @@ end;
 
 class function tCbSFP_ideCallEditor.SupportedOptionsClass:TAbstractIDEOptionsClass;
 begin
+    {$ifDef ideLazExtMODE}
     result:=tCbSFP_ideGeneral_Config;
+    {$else}
+        {$ifDef uiDevelopPRJ}
+    result:=nil;
+        {$endif}
+    {$endIf}
 end;
 
 //------------------------------------------------------------------------------
@@ -1127,31 +1170,36 @@ begin
 end;
 
 procedure tCbSFP_ideCallEditor.ReadSettings(AOptions:TAbstractIDEOptions);
+{$ifDef ideLazExtMODE}
 var v1,v2:integer;
+{$endIf}
 begin
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('ReadSettings');
     {$endIf}
-    with tCbSFP_ideGeneral_Config(AOptions) do begin
-        v1:=Splitter_2.Top;
-        v2:=PTTNs_GBox.Constraints.MinWidth;//   Splitter_1.Left;
-        SubScriber_loadEditorVALUEs(nodeEditor.Identifier,V1,V2);
-        Splitter_2.Top :=v1;
-        Splitter_1.Left:=v2;
-    end;
+    {$ifDef ideLazExtMODE}
+    SubScriber_loadEditorVALUEs(nodeEditor.Identifier,V1,V2);
+   _vSizes_Set(V1,V2);
+    {$endIf}
    _common_FRM__Tst2CRT; //< НЕ хорошо (см. реализацию)
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
 end;
 
 procedure tCbSFP_ideCallEditor.WriteSettings(AOptions:TAbstractIDEOptions);
+{$ifDef ideLazExtMODE}
+var v1,v2:integer;
+{$endIf}
 begin
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('WriteSettings');
     {$endIf}
+    {$ifDef ideLazExtMODE}
+   _vSizes_Get(V1,V2);
     with tCbSFP_ideGeneral_Config(AOptions) do begin
-        SubScriber_saveEditorVALUEs(nodeEditor.Identifier,Splitter_2.Top,Splitter_1.Left);
+        SubScriber_saveEditorVALUEs(nodeEditor.Identifier,V1,V2);
     end;
+    {$endIf}
     //---
    _settingsSAVE_;
    _settingsLOAD_;

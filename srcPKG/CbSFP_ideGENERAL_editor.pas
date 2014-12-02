@@ -28,6 +28,12 @@ unit CbSFP_ideGENERAL_editor;
 
 {$mode objfpc}{$H+}
 
+{$define ideLazExtMODE}  //<----------------------- боевой режм "Расширения IDE"
+
+{$ifDef uiDevelopPRJ}
+    {$undef ideLazExtMODE}
+{$endif}
+
 interface
 
 uses IDEOptionsIntf, LCLIntf,
@@ -56,7 +62,15 @@ type
 
 
 implementation
-uses CbSFP_ideGENERAL;
+{$ifdef ideLazExtMODE}
+uses  CbSFP_ideGENERAL;
+{$endif}
+
+{$ifdef ideLazExtMODE}
+const cCbSFP_ideGeneral_Editor__frmTitle=cIn0k_LazExt_CbSFP__Node_General;
+{$else}
+const cCbSFP_ideGeneral_Editor__frmTitle='';
+{$endif}
 
 {$region tCbSFP_ideGeneral_Editor}
 {$R *.lfm}
@@ -81,7 +95,7 @@ end;
 
 function tCbSFP_ideGeneral_Editor.GetTitle:String;
 begin
-    result:=cIn0k_LazExt_CbSFP__Node_General;
+    result:=cCbSFP_ideGeneral_Editor__frmTitle;
 end;
 
 class function tCbSFP_ideGeneral_Editor.SupportedOptionsClass:TAbstractIDEOptionsClass;
