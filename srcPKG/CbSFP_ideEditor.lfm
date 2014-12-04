@@ -7,8 +7,8 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
   ClientHeight = 548
   ClientWidth = 825
   TabOrder = 0
-  DesignLeft = 373
-  DesignTop = 269
+  DesignLeft = 359
+  DesignTop = 118
   object Common_PNL: TPanel
     AnchorSideLeft.Control = Splitter_1
     AnchorSideLeft.Side = asrBottom
@@ -38,13 +38,13 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
     Anchors = [akTop, akLeft, akBottom]
   end
   object Splitter_2: TSplitter
-    AnchorSideLeft.Side = asrBottom
+    AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = Splitter_1
     Cursor = crVSplit
-    Left = 40
+    Left = 0
     Height = 5
     Top = 272
-    Width = 112
+    Width = 152
     Align = alNone
     Anchors = [akTop, akLeft, akRight]
     ResizeAnchor = akTop
@@ -72,6 +72,7 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
       Width = 4
       Action = aOPTN_aAdd
       AutoSize = True
+      OnChangeBounds = OPTNs_bAddChangeBounds
     end
     object OPTNs_bDel: TSpeedButton
       AnchorSideLeft.Control = OPTNs_bAdd

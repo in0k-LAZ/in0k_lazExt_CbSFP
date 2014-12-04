@@ -31,7 +31,7 @@ unit CbSFP_ideGENERAL;
 interface
 
 uses IDEOptionsIntf, LazIDEIntf, LazFileUtils,
-  StdCtrls, Buttons, CbSFP_ideEditor,
+  {StdCtrls,} Buttons, CbSFP_ideEditor,
   CbSFP_ideGENERAL_editor, CbSFP_ideGENERAL_config;
 
 const

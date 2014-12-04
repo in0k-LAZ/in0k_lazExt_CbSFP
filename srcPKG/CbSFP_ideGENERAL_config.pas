@@ -58,7 +58,7 @@ type
      class function GetInstance:TAbstractIDEOptions; override;
    public
      procedure SubScriber_saveEditorVALUEs(const INDF:string; const V1,V2:integer);
-     procedure SubScriber_loadEditorVALUEs(const INDF:string; var   V1,V2:integer);
+     procedure SubScriber_loadEditorVALUEs(const INDF:string; out   V1,V2:integer);
    end;
 
 
@@ -192,7 +192,7 @@ begin
     end;
 end;
 
-procedure tCbSFP_ideGeneral_Config.SubScriber_loadEditorVALUEs(const INDF:string; var V1,V2:integer);
+procedure tCbSFP_ideGeneral_Config.SubScriber_loadEditorVALUEs(const INDF:string; out V1,V2:integer);
 var Config:TConfigStorage;
 begin
     Config:=_ConfigStorage_get;

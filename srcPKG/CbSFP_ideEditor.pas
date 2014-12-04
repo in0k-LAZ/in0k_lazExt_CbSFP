@@ -46,7 +46,7 @@ uses sysutils, Classes, Graphics,
      eventlog,
      {$endIf}
      CbSFP_ideCenter, CbSFP_SubScriber,
-     IDEOptionsIntf, types;
+     IDEOptionsIntf;//, types;
 
 type
 
@@ -88,6 +88,7 @@ type
     Common_OPT: TComboBox;
     //---
     Common_PNL: TPanel;
+    procedure OPTNs_bAddChangeBounds(Sender: TObject);
     //---
   protected //<-----------------------------------------------------------------
     {$ifDef CbSFP_log_ON}
@@ -124,8 +125,6 @@ type
   protected
     procedure _OPTNs_lBox__reSetITEM(const i:integer);
     procedure _PTTNs_lBox__reSetITEM(const i:integer);
-  protected
-    procedure _OPTNs_bAdd_onChangeBounds(Sender: TObject);
   {%endregion}
   {%region --- общие контролы Common_... -------------------------- /fold}
   protected //<--- фрейм для отображения пользовательской НАСТРОЙКИ
@@ -195,7 +194,7 @@ type
     procedure _onCreate_setActionsEVNT;
     procedure _onCreate_setButtonsIMGs;
     procedure _onResize_controlsPosSET(Sender:TObject);
-    procedure _reSet_gBox_Sizing;
+    procedure _onSetup_gBox_setConstraints;
   protected //<-----------------------------------------------------------------
     procedure _vSizes_Set(const v1,v2:integer);
     procedure _vSizes_Get(out   v1,v2:integer);
@@ -257,8 +256,6 @@ begin
     PTTNs_lBox.DoubleBuffered:=TRUE;
     PTTNs_lBox.OnSelectionChange:=@_PTTNs_lBox__onSelectionChange;
     PTTNs_lBox.OnClickCheck     :=@_PTTNs_lBox__onClickCheck;
-    //---
-    OPTNs_bAdd.OnChangeBounds:=@_OPTNs_bAdd_onChangeBounds;
     //---
     self.OnResize:=@_onResize_controlsPosSET;
     {$ifDef CbSFP_log_ON}
@@ -331,7 +328,7 @@ end;
 
 procedure tCbSFP_ideCallEditor._onCreate_setButtonsIMGs;
 begin
-    {$ifNDEF uiDevelopPRJ}
+    {$ifDEF ideLazExtMODE}
         OPTNs_bAdd.LoadGlyphFromLazarusResource('laz_add');
         OPTNs_bDel.LoadGlyphFromLazarusResource('laz_delete');
         //---
@@ -346,7 +343,7 @@ end;
 
 procedure tCbSFP_ideCallEditor._vSizes_Set(const v1,v2:integer);
 begin
- {  //with tCbSFP_ideGeneral_Config(AOptions) do begin
+   {//with tCbSFP_ideGeneral_Config(AOptions) do begin
        v2:=self.Canvas.GetTextWidth(PTTNs_GBox.Caption);
        v1:=self.Canvas.GetTextWidth(OPTNs_GBox.Caption);
        if v2<v1 then v2:=v1;
@@ -359,6 +356,12 @@ begin
        Splitter_2.Top :=v1;
        Splitter_1.Left:=v2;
    //end; }
+   //OPTNs_GBox.BeginUpdateBounds;
+//   Splitter_1.DisableAutoSizing;
+   Splitter_2.Top :=v1;
+   Splitter_1.Left:=v2;
+   OPTNs_GBox.Update;
+  // Splitter_1.EnableAutoSizing;
 end;
 
 procedure tCbSFP_ideCallEditor._vSizes_Get(out v1,v2:integer);
@@ -378,7 +381,7 @@ begin
     //---
     w:=0;
     with Common_CHB do if W<Width then W:=Width;
-    with Common_L_2    do if W<Width then W:=Width;
+    with Common_L_2 do if W<Width then W:=Width;
     Common_EDT.BorderSpacing.Left:=W+16;
     //---
     Common_EDT.BorderSpacing.Right:=Common_i_1.Width+Common_i_1.BorderSpacing.Right*2;
@@ -386,19 +389,23 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure tCbSFP_ideCallEditor._reSet_gBox_Sizing;
-begin
+procedure tCbSFP_ideCallEditor._onSetup_gBox_setConstraints;
+begin {todo: переделать}
     // тупое определение минимального размера
-    {todo: переделать}
     OPTNs_GBox.Constraints.MinHeight:=OPTNs_bAdd.Height*6;
     PTTNs_GBox.Constraints.MinHeight:=OPTNs_GBox.Constraints.MinHeight;
-    OPTNs_GBox.Constraints.MinWidth:=OPTNs_bAdd.Height*8;
-    PTTNs_GBox.Constraints.MinWidth:=OPTNs_GBox.Constraints.MinWidth;
+    OPTNs_GBox.Constraints.MinWidth :=OPTNs_bAdd.Height*8;
+    PTTNs_GBox.Constraints.MinWidth :=OPTNs_GBox.Constraints.MinWidth;
 end;
 
 {%endregion}
 
 {$region --- выход на CallCenter ---------------------------------- /fold}
+
+procedure tCbSFP_ideCallEditor.OPTNs_bAddChangeBounds(Sender: TObject);
+begin
+  _onSetup_gBox_setConstraints;
+end;
 
 procedure tCbSFP_ideCallEditor._ideEditorNODE_CLR;
 begin
@@ -619,13 +626,6 @@ begin
         PTTNs_lBox.Items.Strings[i]:='ndf';
         PTTNs_lBox.Checked      [i]:=false;
     end;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure tCbSFP_ideCallEditor._OPTNs_bAdd_onChangeBounds(Sender: TObject);
-begin
-   _reSet_gBox_Sizing;
 end;
 
 {%endregion}
@@ -1163,7 +1163,7 @@ end;
 
 procedure tCbSFP_ideCallEditor.Setup(ADialog:TAbstractOptionsEditorDialog);
 begin
-    {do nofing}
+  // _onSetup_gBox_setConstraints;
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('Setup');
     {$endIf}
@@ -1178,9 +1178,11 @@ begin
    _EventLog_.Debug('ReadSettings');
     {$endIf}
     {$ifDef ideLazExtMODE}
-    SubScriber_loadEditorVALUEs(nodeEditor.Identifier,V1,V2);
+   _vSizes_Get(V1,V2);
+    tCbSFP_ideGeneral_Config(AOptions).SubScriber_loadEditorVALUEs(nodeEditor.Identifier,V1,V2);
    _vSizes_Set(V1,V2);
     {$endIf}
+   _vSizes_Set(150,150);
    _common_FRM__Tst2CRT; //< НЕ хорошо (см. реализацию)
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;

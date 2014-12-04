@@ -36,8 +36,14 @@ unit CbSFP_ideCenter;
 
 interface
 
-uses sysutils, LazFileUtils, XMLConf, IDEOptionsIntf, Classes,
-    BaseIDEIntf, LazConfigStorage,
+uses sysutils, LazFileUtils, IDEOptionsIntf,
+    {$ifDef ideLazExtMODE}
+    BaseIDEIntf,
+    LazConfigStorage,
+    {$endif}
+    {$ifDef uiDevelopPRJ}
+    XMLConf,
+    {$endif}
     CbSFP_SubScriber;
 
 type
@@ -151,6 +157,8 @@ type
     procedure _lstOPTN_cutItem (const node:pCbSFP_Node; const item:pCbSFP_OPTN);
     function  _lstOPTN_fndNAME (const node:pCbSFP_Node; const name:string):pCbSFP_OPTN;
     function  _lstOPTN_vldNAME (const node:pCbSFP_Node; const name:string; const withOut:pCbSFP_OPTN=nil):boolean;
+  private
+    function  _lstOPTN_defOPTNs(const node:pCbSFP_Node):pCbSFP_OPTN;
   private
     function  _itmOPTN_crt8ini (const node:pCbSFP_Node):pCbSFP_OPTN;
     procedure _itmOPTN_destroy (const node:pCbSFP_Node; const item:pCbSFP_OPTN);
@@ -389,7 +397,7 @@ begin
    _lstOPTN_CLEAR  (node,node^.list_OPTNs);
     // создаем главный "По Умолчанию" и задаем его "стандартное" имя
    _lstOPTN_insLast(node,_itmOPTN_crt8ini(node)); //< он станет ПЕРВЫМ
-   _itmOPTN_setName(_lstOPTN_getFirst(node),cItmOPTN_DEFAULT_name);
+   _itmOPTN_setName(_lstOPTN_defOPTNs(node),cItmOPTN_DEFAULT_name);
 end;
 
 procedure tCbSFP_ideCallCenter._node_DST(const node:pCbSFP_Node);
@@ -633,7 +641,7 @@ begin
             tmpName:=_fileName_to_OPTN_Name(srchRec.Name);
             if tmpName=cItmOPTN_DEFAULT_name then begin //< "поУМОЛЧАНИЮ"
                 // он ВСЕГДА ЕСТЬ и он самый ПЕРВЫЙ
-                tmpOPNT:=_lstOPTN_getFirst(node);
+                tmpOPNT:=_lstOPTN_defOPTNs(node);
                _node_LOAD_CNFG(node,tmpOPNT);
                _itmOPTN_setUsed(tmpOPNT,TRUE); //< ВСЕГДА используется
             end
@@ -662,10 +670,10 @@ begin
     fileSTRG.DeletePath(cfgPATH);
     // пишем новое, как оно счас есть (КРОМЕ первого, которое по умолчанию)
     tmpOPTN:=_lstOPTN_getFirst(node); // всегда ЕСТЬ и всегда ИСПОЛЬЗУЕТСЯ
-    tmpOPTN:=_itmOPTN_getNext (tmpOPTN);
     cnt_idx:=0;
     while tmpOPTN<>nil do begin //< идем по всем и сохраняем имена тех
-        if _itmOPTN_getUsed(tmpOPTN) then begin //< кто используется
+        if (tmpOPTN<>_lstOPTN_defOPTNs(node))and(_itmOPTN_getUsed(tmpOPTN)) then begin
+            // если это не DEF и используется то пишем
             cfgPATH:=cTXT_OptionsUsed+cPathDelim+cTXT_Item+inttostr(cnt_idx)+cPathDelim;
             fileSTRG.SetValue(cfgPATH+cTXT_name,_itmOPTN_getNAME(tmpOPTN));
             inc(cnt_idx);
@@ -695,7 +703,7 @@ begin
         if Assigned(tmpOPTN) then _itmOPTN_setUsed(tmpOPTN,TRUE);
     end;
     // теперь по УМОЛЧАНИЮ, он всегда ЕСТЬ и всегда ИСПОЛЬЗУЕТСЯ
-   _itmOPTN_setUsed(_lstOPTN_getFirst(node),TRUE);
+   _itmOPTN_setUsed(_lstOPTN_defOPTNs(node),TRUE);
 end;
 
 //------------------------------------------------------------------------------
@@ -861,6 +869,13 @@ begin
        _itmOPTN_destroy(node,tmp);
         tmp:=FIRST;
     end;
+end;
+
+//------------------------------------------------------------------------------
+
+function tCbSFP_ideCallCenter._lstOPTN_defOPTNs(const node:pCbSFP_Node):pCbSFP_OPTN;
+begin //< да да да, по умолчанию у нас ВСЕГДА первый в списке
+    result:=_lstOPTN_getFirst(node);
 end;
 
 //------------------------------------------------------------------------------
@@ -1196,7 +1211,7 @@ begin
     if _CallCenter_._node_LOAD_CNFG(_SubScriber_,result) then begin
         if _CallCenter_._itmOPTN_getName(result)=cItmOPTN_DEFAULT_name then begin //< "поУМОЛЧАНИЮ"
             // он ВСЕГДА ЕСТЬ и он самый ПЕРВЫЙ
-           _CallCenter_._itmOPTN_setNext(result,_CallCenter_._lstOPTN_getFirst(_SubScriber_));
+           _CallCenter_._itmOPTN_setNext(result,_CallCenter_._lstOPTN_defOPTNs(_SubScriber_));
            _CallCenter_._lstOPTN_setFirst(_SubScriber_,result);
            _CallCenter_._itmOPTN_setUsed(result,TRUE);
         end
@@ -1256,7 +1271,7 @@ end;
 
 procedure tCbSFP_ideEditorNODE.EDIT_doEnd(const WithSAVE:boolean);
 var tmp:pointer;
-begin {todo: Уничтожение данных для редактирования}
+begin
     if _IsEDITED then begin
         if WithSAVE then begin
             // уничтожение файлов УДАЛЕННЫХ настроек
@@ -1265,7 +1280,7 @@ begin {todo: Уничтожение данных для редактирован
                _CallCenter_._deleteFileFromFS_subScriber(_SubScriber_,tmp);
                 tmp:=_CallCenter_._itmOPTN_getNext(tmp);
             end;
-            // продолжение чистки
+            // продолжение чистки, уничтожаем СТАРЫЕ настройки
            _CallCenter_._lstPTTN_CLEAR(_old_lPTTNs_);
            _CallCenter_._lstOPTN_CLEAR(_SubScriber_,_old_lOPTNs_);
             //---
@@ -1315,7 +1330,7 @@ end;
 
 function tCbSFP_ideEditorNODE.lstOPTN_defOPTNs:pCbSFP_OPTN;
 begin
-    result:=lstOPTN_getFirst;
+    result:=_CallCenter_._lstOPTN_defOPTNs(_SubScriber_);
 end;
 
 function tCbSFP_ideEditorNODE.lstOPTN_defCNFGs:pointer;
