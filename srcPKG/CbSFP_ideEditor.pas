@@ -61,7 +61,19 @@ type
     aPTTN_aDEL: TAction;
     aPTTN_mwUP: TAction;
     aPTTN_mwDW: TAction;
+    Common_CHB: TCheckBox;
+    Common_CPT: TLabel;
+    Common_EDT: TEdit;
+    Common_i_1: TImage;
+    Common_L_1: TLabel;
+    Common_L_2: TLabel;
+    Common_OPT: TComboBox;
+    Common_PNL: TPanel;
+    Common_sh1: TShape;
+    Common_sh2: TShape;
     //---
+    GBox_Panel: TPanel;
+    CMMN_Panel: TPanel;
     Splitter_1: TSplitter;
     Splitter_2: TSplitter;
     //---
@@ -76,18 +88,6 @@ type
     PTTNs_bDel: TSpeedButton;
     PTTNs_bUp : TSpeedButton;
     PTTNs_bDwn: TSpeedButton;
-    //---
-    Common_sh1: TShape;
-    Common_L_1: TLabel;
-    Common_CPT: TLabel;
-    Common_CHB: TCheckBox;
-    Common_EDT: TEdit;
-    Common_i_1: TImage;
-    Common_sh2: TShape;
-    Common_L_2: TLabel;
-    Common_OPT: TComboBox;
-    //---
-    Common_PNL: TPanel;
     procedure OPTNs_bAddChangeBounds(Sender: TObject);
     //---
   protected //<-----------------------------------------------------------------
@@ -342,32 +342,15 @@ end;
 //------------------------------------------------------------------------------
 
 procedure tCbSFP_ideCallEditor._vSizes_Set(const v1,v2:integer);
-begin
-   {//with tCbSFP_ideGeneral_Config(AOptions) do begin
-       v2:=self.Canvas.GetTextWidth(PTTNs_GBox.Caption);
-       v1:=self.Canvas.GetTextWidth(OPTNs_GBox.Caption);
-       if v2<v1 then v2:=v1;
-       v2:=v2+(v2 div 4);
-       if v2<PTTNs_GBox.Constraints.MinWidth then v2:=PTTNs_GBox.Constraints.MinWidth;
-       //---
-       v1:=Splitter_2.Top;
-       //v2:=Splitter_1.Left;
-       //SubScriber_loadEditorVALUEs(nodeEditor.Identifier,V1,V2);
-       Splitter_2.Top :=v1;
-       Splitter_1.Left:=v2;
-   //end; }
-   //OPTNs_GBox.BeginUpdateBounds;
-//   Splitter_1.DisableAutoSizing;
-   Splitter_2.Top :=v1;
-   Splitter_1.Left:=v2;
-   OPTNs_GBox.Update;
-  // Splitter_1.EnableAutoSizing;
+begin {todo: как-то надо переименовать... по любому нада}
+   OPTNs_GBox.Height:=v1;
+   GBox_Panel.Width:=v2;
 end;
 
 procedure tCbSFP_ideCallEditor._vSizes_Get(out v1,v2:integer);
-begin
-    v1:=Splitter_2.Top;
-    v2:=Splitter_1.Left;
+begin {todo: как-то надо переименовать... по любому нада}
+    v1:=OPTNs_GBox.Height;
+    v2:=GBox_Panel.Width;
 end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -394,8 +377,7 @@ begin {todo: переделать}
     // тупое определение минимального размера
     OPTNs_GBox.Constraints.MinHeight:=OPTNs_bAdd.Height*6;
     PTTNs_GBox.Constraints.MinHeight:=OPTNs_GBox.Constraints.MinHeight;
-    OPTNs_GBox.Constraints.MinWidth :=OPTNs_bAdd.Height*8;
-    PTTNs_GBox.Constraints.MinWidth :=OPTNs_GBox.Constraints.MinWidth;
+    GBox_Panel.Constraints.MinWidth:=OPTNs_bAdd.Height*8;
 end;
 
 {%endregion}
@@ -1178,11 +1160,13 @@ begin
    _EventLog_.Debug('ReadSettings');
     {$endIf}
     {$ifDef ideLazExtMODE}
-   _vSizes_Get(V1,V2);
     tCbSFP_ideGeneral_Config(AOptions).SubScriber_loadEditorVALUEs(nodeEditor.Identifier,V1,V2);
    _vSizes_Set(V1,V2);
+    {$else}
+        {$ifDef uiDevelopPRJ}
+       _vSizes_Set(0,0);
+        {$endif}
     {$endIf}
-   _vSizes_Set(150,150);
    _common_FRM__Tst2CRT; //< НЕ хорошо (см. реализацию)
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;

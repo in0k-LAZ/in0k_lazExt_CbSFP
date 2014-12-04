@@ -196,8 +196,8 @@ procedure tCbSFP_ideGeneral_Config.SubScriber_loadEditorVALUEs(const INDF:string
 var Config:TConfigStorage;
 begin
     Config:=_ConfigStorage_get;
-    try V1:=Config.GetValue(INDF+cPathDELIM+cNodeName_V1,V1);
-        V2:=Config.GetValue(INDF+cPathDELIM+cNodeName_V2,V2);
+    try V1:=Config.GetValue(INDF+cPathDELIM+cNodeName_V1,1);
+        V2:=Config.GetValue(INDF+cPathDELIM+cNodeName_V2,1);
     finally
        Config.Free;
     end;

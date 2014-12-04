@@ -7,314 +7,319 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
   ClientHeight = 548
   ClientWidth = 825
   TabOrder = 0
-  DesignLeft = 359
-  DesignTop = 118
-  object Common_PNL: TPanel
-    AnchorSideLeft.Control = Splitter_1
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = Common_sh2
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 157
-    Height = 483
-    Top = 65
-    Width = 668
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.Top = 12
-    BevelOuter = bvNone
-    TabOrder = 1
-  end
+  DesignLeft = 472
+  DesignTop = 99
   object Splitter_1: TSplitter
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 152
-    Height = 541
-    Top = 7
+    Left = 170
+    Height = 548
+    Top = 0
     Width = 5
-    Align = alNone
-    Anchors = [akTop, akLeft, akBottom]
+    Anchors = [akLeft]
   end
-  object Splitter_2: TSplitter
-    AnchorSideLeft.Control = Owner
-    AnchorSideRight.Control = Splitter_1
-    Cursor = crVSplit
+  object GBox_Panel: TPanel
     Left = 0
-    Height = 5
-    Top = 272
-    Width = 152
-    Align = alNone
-    Anchors = [akTop, akLeft, akRight]
-    ResizeAnchor = akTop
-  end
-  object OPTNs_GBox: TGroupBox
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = Splitter_1
-    AnchorSideBottom.Control = Splitter_2
-    Left = 0
-    Height = 272
+    Height = 548
     Top = 0
-    Width = 152
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    Caption = 'sets of OPTIONs'
-    ClientHeight = 254
-    ClientWidth = 148
-    TabOrder = 0
-    object OPTNs_bAdd: TSpeedButton
-      AnchorSideLeft.Control = OPTNs_GBox
-      AnchorSideTop.Control = OPTNs_GBox
+    Width = 170
+    Align = alLeft
+    Anchors = []
+    BevelOuter = bvNone
+    ClientHeight = 548
+    ClientWidth = 170
+    TabOrder = 1
+    object OPTNs_GBox: TGroupBox
       Left = 0
-      Height = 4
+      Height = 250
       Top = 0
-      Width = 4
-      Action = aOPTN_aAdd
-      AutoSize = True
-      OnChangeBounds = OPTNs_bAddChangeBounds
+      Width = 170
+      Align = alTop
+      Anchors = []
+      Caption = 'sets of OPTIONs'
+      ClientHeight = 232
+      ClientWidth = 166
+      TabOrder = 0
+      object OPTNs_bAdd: TSpeedButton
+        AnchorSideLeft.Control = OPTNs_GBox
+        AnchorSideTop.Control = OPTNs_GBox
+        Left = 0
+        Height = 4
+        Top = 0
+        Width = 4
+        Action = aOPTN_aAdd
+        AutoSize = True
+        OnChangeBounds = OPTNs_bAddChangeBounds
+      end
+      object OPTNs_bDel: TSpeedButton
+        AnchorSideLeft.Control = OPTNs_bAdd
+        AnchorSideTop.Control = OPTNs_bAdd
+        AnchorSideTop.Side = asrBottom
+        Left = 0
+        Height = 4
+        Top = 4
+        Width = 4
+        Action = aOPTN_aDEL
+        AutoSize = True
+      end
+      object OPTNs_lBox: TCheckListBox
+        AnchorSideLeft.Control = OPTNs_bAdd
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = OPTNs_GBox
+        AnchorSideRight.Control = OPTNs_GBox
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = OPTNs_GBox
+        AnchorSideBottom.Side = asrBottom
+        Left = 4
+        Height = 232
+        Top = 0
+        Width = 162
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ExtendedSelect = False
+        ItemHeight = 0
+        TabOrder = 0
+      end
     end
-    object OPTNs_bDel: TSpeedButton
-      AnchorSideLeft.Control = OPTNs_bAdd
-      AnchorSideTop.Control = OPTNs_bAdd
-      AnchorSideTop.Side = asrBottom
+    object PTTNs_GBox: TGroupBox
       Left = 0
-      Height = 4
-      Top = 4
-      Width = 4
-      Action = aOPTN_aDEL
-      AutoSize = True
+      Height = 293
+      Top = 255
+      Width = 170
+      Align = alClient
+      Anchors = []
+      Caption = 'set of search PATTERNs'
+      ClientHeight = 275
+      ClientWidth = 166
+      TabOrder = 1
+      object PTTNs_bAdd: TSpeedButton
+        AnchorSideLeft.Control = PTTNs_GBox
+        AnchorSideTop.Control = PTTNs_GBox
+        Left = 0
+        Height = 4
+        Top = 0
+        Width = 4
+        Action = aPTTN_aAdd
+        AutoSize = True
+      end
+      object PTTNs_bDel: TSpeedButton
+        AnchorSideLeft.Control = PTTNs_bAdd
+        AnchorSideTop.Control = PTTNs_bAdd
+        AnchorSideTop.Side = asrBottom
+        Left = 0
+        Height = 4
+        Top = 4
+        Width = 4
+        Action = aPTTN_aDEL
+        AutoSize = True
+      end
+      object PTTNs_bUp: TSpeedButton
+        AnchorSideLeft.Control = PTTNs_bAdd
+        AnchorSideTop.Control = PTTNs_bDel
+        AnchorSideTop.Side = asrBottom
+        Left = 0
+        Height = 4
+        Top = 12
+        Width = 4
+        Action = aPTTN_mwUP
+        AutoSize = True
+        BorderSpacing.Top = 4
+      end
+      object PTTNs_bDwn: TSpeedButton
+        AnchorSideLeft.Control = PTTNs_bUp
+        AnchorSideTop.Control = PTTNs_bUp
+        AnchorSideTop.Side = asrBottom
+        Left = 0
+        Height = 4
+        Top = 16
+        Width = 4
+        Action = aPTTN_mwDW
+        AutoSize = True
+      end
+      object PTTNs_lBox: TCheckListBox
+        AnchorSideLeft.Control = PTTNs_bAdd
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = PTTNs_GBox
+        AnchorSideRight.Control = PTTNs_GBox
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = PTTNs_GBox
+        AnchorSideBottom.Side = asrBottom
+        Left = 4
+        Height = 275
+        Top = 0
+        Width = 162
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ExtendedSelect = False
+        ItemHeight = 0
+        TabOrder = 0
+      end
     end
-    object OPTNs_lBox: TCheckListBox
-      AnchorSideLeft.Control = OPTNs_bAdd
+    object Splitter_2: TSplitter
+      Cursor = crVSplit
+      Left = 0
+      Height = 5
+      Top = 250
+      Width = 170
+      Align = alTop
+      Anchors = [akTop]
+      ResizeAnchor = akTop
+    end
+  end
+  object CMMN_Panel: TPanel
+    Left = 175
+    Height = 548
+    Top = 0
+    Width = 650
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 548
+    ClientWidth = 650
+    TabOrder = 2
+    object Common_i_1: TImage
+      AnchorSideLeft.Control = Common_EDT
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = OPTNs_GBox
-      AnchorSideRight.Control = OPTNs_GBox
+      AnchorSideTop.Control = Common_EDT
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = CMMN_Panel
       AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = OPTNs_GBox
-      AnchorSideBottom.Side = asrBottom
-      Left = 4
-      Height = 254
-      Top = 0
-      Width = 144
-      Anchors = [akTop, akLeft, akRight, akBottom]
-      ExtendedSelect = False
-      ItemHeight = 0
+      Left = 630
+      Height = 16
+      Top = 20
+      Width = 16
+      Anchors = [akTop, akRight]
+      AutoSize = True
+      BorderSpacing.Right = 4
+    end
+    object Common_OPT: TComboBox
+      AnchorSideLeft.Control = Common_EDT
+      AnchorSideTop.Control = Common_sh2
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = Common_EDT
+      AnchorSideRight.Side = asrBottom
+      Left = 58
+      Height = 23
+      Top = 41
+      Width = 556
+      Anchors = [akTop, akLeft, akRight]
+      ItemHeight = 15
+      Style = csDropDownList
       TabOrder = 0
     end
-  end
-  object PTTNs_GBox: TGroupBox
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Splitter_2
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Splitter_1
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 0
-    Height = 271
-    Top = 277
-    Width = 152
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    Caption = 'set of search PATTERNs'
-    ClientHeight = 253
-    ClientWidth = 148
-    TabOrder = 4
-    object PTTNs_bAdd: TSpeedButton
-      AnchorSideLeft.Control = PTTNs_GBox
-      AnchorSideTop.Control = PTTNs_GBox
-      Left = 0
-      Height = 4
-      Top = 0
-      Width = 4
-      Action = aPTTN_aAdd
-      AutoSize = True
-    end
-    object PTTNs_bDel: TSpeedButton
-      AnchorSideLeft.Control = PTTNs_bAdd
-      AnchorSideTop.Control = PTTNs_bAdd
-      AnchorSideTop.Side = asrBottom
-      Left = 0
-      Height = 4
-      Top = 4
-      Width = 4
-      Action = aPTTN_aDEL
-      AutoSize = True
-    end
-    object PTTNs_bUp: TSpeedButton
-      AnchorSideLeft.Control = PTTNs_bAdd
-      AnchorSideTop.Control = PTTNs_bDel
-      AnchorSideTop.Side = asrBottom
-      Left = 0
-      Height = 4
-      Top = 12
-      Width = 4
-      Action = aPTTN_mwUP
-      AutoSize = True
-      BorderSpacing.Top = 4
-    end
-    object PTTNs_bDwn: TSpeedButton
-      AnchorSideLeft.Control = PTTNs_bUp
-      AnchorSideTop.Control = PTTNs_bUp
-      AnchorSideTop.Side = asrBottom
-      Left = 0
-      Height = 4
-      Top = 16
-      Width = 4
-      Action = aPTTN_mwDW
-      AutoSize = True
-    end
-    object PTTNs_lBox: TCheckListBox
-      AnchorSideLeft.Control = PTTNs_bAdd
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = PTTNs_GBox
-      AnchorSideRight.Control = PTTNs_GBox
+    object Common_CHB: TCheckBox
+      AnchorSideLeft.Control = Common_L_1
+      AnchorSideTop.Control = Common_EDT
+      AnchorSideTop.Side = asrCenter
       AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = PTTNs_GBox
-      AnchorSideBottom.Side = asrBottom
-      Left = 4
-      Height = 253
-      Top = 0
-      Width = 144
-      Anchors = [akTop, akLeft, akRight, akBottom]
-      ExtendedSelect = False
-      ItemHeight = 0
-      TabOrder = 0
+      Left = 6
+      Height = 19
+      Top = 19
+      Width = 39
+      Caption = 'Use'
+      TabOrder = 1
     end
-  end
-  object Common_sh1: TShape
-    AnchorSideLeft.Control = Splitter_1
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = Common_CPT
-    AnchorSideTop.Side = asrCenter
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 157
-    Height = 1
-    Top = 7
-    Width = 666
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Right = 2
-    Pen.Color = clGrayText
-  end
-  object Common_L_1: TLabel
-    AnchorSideLeft.Control = Common_sh1
-    AnchorSideTop.Control = Common_CPT
-    AnchorSideTop.Side = asrCenter
-    Left = 163
-    Height = 15
-    Top = 0
-    Width = 43
-    BorderSpacing.Left = 6
-    Caption = 'selected'
-    Color = clForm
-    ParentColor = False
-    Transparent = False
-  end
-  object Common_CPT: TLabel
-    AnchorSideLeft.Control = Common_L_1
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = Owner
-    Left = 206
-    Height = 15
-    Top = 0
-    Width = 42
-    Caption = ' Label5 '
-    Color = clForm
-    Font.Color = clHotLight
-    Font.Style = [fsBold]
-    ParentColor = False
-    ParentFont = False
-    Transparent = False
-  end
-  object Common_OPT: TComboBox
-    AnchorSideLeft.Control = Common_EDT
-    AnchorSideTop.Control = Common_sh2
-    AnchorSideTop.Side = asrCenter
-    AnchorSideRight.Control = Common_EDT
-    AnchorSideRight.Side = asrBottom
-    Left = 215
-    Height = 23
-    Top = 41
-    Width = 578
-    Anchors = [akTop, akLeft, akRight]
-    ItemHeight = 15
-    Style = csDropDownList
-    TabOrder = 5
-  end
-  object Common_CHB: TCheckBox
-    AnchorSideLeft.Control = Common_L_1
-    AnchorSideTop.Control = Common_EDT
-    AnchorSideTop.Side = asrCenter
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 163
-    Height = 19
-    Top = 19
-    Width = 39
-    Caption = 'Use'
-    TabOrder = 6
-  end
-  object Common_EDT: TEdit
-    AnchorSideLeft.Control = Splitter_1
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = Common_CPT
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 215
-    Height = 23
-    Top = 17
-    Width = 578
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Left = 58
-    BorderSpacing.Top = 2
-    BorderSpacing.Right = 32
-    TabOrder = 7
-    Text = 'Common_EDT'
-  end
-  object Common_sh2: TShape
-    AnchorSideLeft.Control = Splitter_1
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = Common_EDT
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 157
-    Height = 1
-    Top = 52
-    Width = 666
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Top = 12
-    BorderSpacing.Right = 2
-    Pen.Color = clGrayText
-  end
-  object Common_L_2: TLabel
-    AnchorSideLeft.Control = Common_L_1
-    AnchorSideTop.Control = Common_sh2
-    AnchorSideTop.Side = asrCenter
-    Left = 163
-    Height = 15
-    Top = 45
-    Width = 49
-    Caption = 'OPTIONs'
-    Color = clForm
-    ParentColor = False
-    Transparent = False
-  end
-  object Common_i_1: TImage
-    AnchorSideLeft.Control = Common_EDT
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = Common_EDT
-    AnchorSideTop.Side = asrCenter
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 805
-    Height = 16
-    Top = 20
-    Width = 16
-    Anchors = [akTop, akRight]
-    AutoSize = True
-    BorderSpacing.Right = 4
+    object Common_EDT: TEdit
+      AnchorSideLeft.Control = CMMN_Panel
+      AnchorSideTop.Control = Common_CPT
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Common_i_1
+      AnchorSideRight.Side = asrBottom
+      Left = 58
+      Height = 23
+      Top = 17
+      Width = 556
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Left = 58
+      BorderSpacing.Top = 2
+      BorderSpacing.Right = 32
+      TabOrder = 2
+      Text = 'Common_EDT'
+    end
+    object Common_sh2: TShape
+      AnchorSideLeft.Control = CMMN_Panel
+      AnchorSideTop.Control = Common_EDT
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = CMMN_Panel
+      AnchorSideRight.Side = asrBottom
+      Left = 0
+      Height = 1
+      Top = 52
+      Width = 648
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Top = 12
+      BorderSpacing.Right = 2
+      Pen.Color = clGrayText
+    end
+    object Common_sh1: TShape
+      AnchorSideLeft.Control = CMMN_Panel
+      AnchorSideTop.Control = Common_CPT
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = CMMN_Panel
+      AnchorSideRight.Side = asrBottom
+      Left = 0
+      Height = 1
+      Top = 7
+      Width = 648
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Right = 2
+      Pen.Color = clGrayText
+    end
+    object Common_PNL: TPanel
+      AnchorSideLeft.Control = CMMN_Panel
+      AnchorSideTop.Control = Common_sh2
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = CMMN_Panel
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = CMMN_Panel
+      AnchorSideBottom.Side = asrBottom
+      Left = 0
+      Height = 483
+      Top = 65
+      Width = 650
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      BorderSpacing.Top = 12
+      BevelOuter = bvNone
+      TabOrder = 3
+    end
+    object Common_L_1: TLabel
+      AnchorSideLeft.Control = Common_sh1
+      AnchorSideTop.Control = Common_CPT
+      AnchorSideTop.Side = asrCenter
+      Left = 6
+      Height = 15
+      Top = 0
+      Width = 43
+      BorderSpacing.Left = 6
+      Caption = 'selected'
+      Color = clForm
+      ParentColor = False
+      Transparent = False
+    end
+    object Common_CPT: TLabel
+      AnchorSideLeft.Control = Common_L_1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = CMMN_Panel
+      Left = 49
+      Height = 15
+      Top = 0
+      Width = 42
+      Caption = ' Label5 '
+      Color = clForm
+      Font.Color = clHotLight
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      Transparent = False
+    end
+    object Common_L_2: TLabel
+      AnchorSideLeft.Control = Common_L_1
+      AnchorSideTop.Control = Common_sh2
+      AnchorSideTop.Side = asrCenter
+      Left = 6
+      Height = 15
+      Top = 45
+      Width = 49
+      Caption = 'OPTIONs'
+      Color = clForm
+      ParentColor = False
+      Transparent = False
+    end
   end
   object ActionList: TActionList
     left = 320

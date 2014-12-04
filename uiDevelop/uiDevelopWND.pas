@@ -39,6 +39,8 @@ uses Forms, Dialogs, ExtCtrls, StdCtrls,
 
 type
 
+  { TmainWND }
+
   TmainWND = class(TForm)
     Button1: TButton;
     Button2: TButton;
