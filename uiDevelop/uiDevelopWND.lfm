@@ -88,29 +88,29 @@ object mainWND: TmainWND
         end
       end
     end
-    inherited Panel1: TPanel
+    inherited CMMN_Panel: TPanel
       Height = 427
       Width = 470
       ClientHeight = 427
       ClientWidth = 470
       inherited Common_i_1: TImage
-        Left = 449
+        Left = 450
       end
       inherited Common_OPT: TComboBox
-        Width = 374
+        Width = 376
       end
       inherited Common_EDT: TEdit
-        Width = 374
+        Width = 376
       end
       inherited Common_sh2: TShape
-        Width = 466
+        Width = 468
       end
       inherited Common_sh1: TShape
-        Width = 466
+        Width = 468
       end
       inherited Common_PNL: TPanel
-        Height = 360
-        Width = 468
+        Height = 362
+        Width = 470
       end
     end
   end

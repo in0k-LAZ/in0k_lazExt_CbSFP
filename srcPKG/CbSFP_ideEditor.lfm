@@ -7,8 +7,8 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
   ClientHeight = 548
   ClientWidth = 825
   TabOrder = 0
-  DesignLeft = 472
-  DesignTop = 99
+  DesignLeft = 355
+  DesignTop = 108
   object Splitter_1: TSplitter
     Left = 170
     Height = 548
@@ -47,7 +47,6 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
         Width = 4
         Action = aOPTN_aAdd
         AutoSize = True
-        OnChangeBounds = OPTNs_bAddChangeBounds
       end
       object OPTNs_bDel: TSpeedButton
         AnchorSideLeft.Control = OPTNs_bAdd
@@ -171,6 +170,7 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
     BevelOuter = bvNone
     ClientHeight = 548
     ClientWidth = 650
+    Constraints.MinWidth = 100
     TabOrder = 2
     object Common_i_1: TImage
       AnchorSideLeft.Control = Common_EDT
@@ -261,18 +261,14 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
       Pen.Color = clGrayText
     end
     object Common_PNL: TPanel
-      AnchorSideLeft.Control = CMMN_Panel
       AnchorSideTop.Control = Common_sh2
       AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = CMMN_Panel
-      AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = CMMN_Panel
-      AnchorSideBottom.Side = asrBottom
       Left = 0
       Height = 483
       Top = 65
       Width = 650
-      Anchors = [akTop, akLeft, akRight, akBottom]
+      Align = alBottom
+      Anchors = [akTop]
       BorderSpacing.Top = 12
       BevelOuter = bvNone
       TabOrder = 3
