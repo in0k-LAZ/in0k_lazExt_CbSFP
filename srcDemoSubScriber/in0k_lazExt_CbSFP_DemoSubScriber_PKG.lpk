@@ -53,6 +53,7 @@
     <RequiredPkgs Count="2">
       <Item1>
         <PackageName Value="in0k_lazExt_CbSFP_pkg"/>
+        <MinVersion Minor="9" Release="2" Valid="True"/>
       </Item1>
       <Item2>
         <PackageName Value="FCL"/>
