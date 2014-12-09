@@ -36,7 +36,7 @@ unit CbSFP_ideCenter;
 
 interface
 
-uses sysutils, LazFileUtils, IDEOptionsIntf,
+uses sysutils, LazFileUtils, IDEOptionsIntf, RegExpr,
     {$ifDef ideLazExtMODE}
     BaseIDEIntf,
     LazConfigStorage,
@@ -201,6 +201,7 @@ type
   {%region --- SubScriber поиск ----------------------------------- /fold}
   protected
     function  _SubScrbr_REGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):pCbSFP_Node;
+    function  _SubScrbr_Cnfg_OBJ(const node:pCbSFP_Node; const FileName:string):pointer;
   public
     function   SubScriber_byIdeREC(const value:PIDEOptionsEditorRec):tCbSFP_SubScriber;
     function   SubScriber_byEDITOR(const value:TAbstractIDEOptionsEditor):tCbSFP_SubScriber;
@@ -216,6 +217,7 @@ type
   public
     function SubScriber_REGISTER(HNDL:tCbSFP_SubScriberTHandle; EDTR:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber; overload;
     function SubScriber_REGISTER(HNDL:tCbSFP_SubScriberTHandle; EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber; overload;
+    function SubScriber_Cnfg_OBJ(const node:pCbSFP_Node; const FileName:string):pointer;
   end;
 
  {$else} //<------------------------------------------------- режим ТЕСТИРОВАНИЯ
@@ -301,6 +303,7 @@ type
 function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
 {$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"
 function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
+function CbSFP_ideCenter__SubScriber_CnfgOBJ(const SubScriber:tCbSFP_SubScriber; const FileName:string):pointer;
 {$endIf}
 function CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
 
@@ -1112,6 +1115,29 @@ begin
     end;
 end;
 
+function tCbSFP_ideCallCenter._SubScrbr_Cnfg_OBJ(const node:pCbSFP_Node; const FileName:string):pointer;
+var RegexObj:TRegExpr;
+begin
+    RegexObj:=TRegExpr.Create;
+    RegexObj.InputString:=FileName;
+    result:=_lstPTTN_getFirst(node);
+    while result<>nil do begin
+        if _itmPTTN_getUsed(result) and
+           _itmOPTN_getUsed(_itmPTTN_getOPTN(result))
+        then begin
+            RegexObj.Expression:=_itmPTTN_getSeek(result);
+            if RegexObj.Exec(1) then break;
+        end;
+        result:=_itmPTTN_getNext(result);
+    end;
+    RegexObj.FREE;
+    //---
+    if result=nil then begin
+        result:=_lstOPTN_defOPTNs(node);
+        result:=_itmOPTN_getCNFG(result);
+    end;
+end;
+
 //------------------------------------------------------------------------------
 
 function tCbSFP_ideCallCenter.SubScriber_byIdeREC(const value:PIDEOptionsEditorRec):tCbSFP_SubScriber;
@@ -1153,6 +1179,11 @@ begin
     if Assigned(result) then begin
         pCbSFP_Node(result)^.IDEOptERec:=CbSFP_ideGENERAL__register_SubScrbr;
     end;
+end;
+
+function tCbSFP_ideCallCenterIDE.SubScriber_Cnfg_OBJ(const node:pCbSFP_Node; const FileName:string):pointer;
+begin
+    result:=_SubScrbr_Cnfg_OBJ(node,FileName);
 end;
 
 {$else} //<-------------------------------------------------- режим ТЕСТИРОВАНИЯ
@@ -1514,6 +1545,11 @@ end;
 function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
 begin
     result:=tCbSFP_ideCallCenterIDE(_CallCenter_).SubScriber_REGISTER(HNDL,EDTR, AGroup,AIndex,AParent);
+end;
+
+function CbSFP_ideCenter__SubScriber_CnfgOBJ(const SubScriber:tCbSFP_SubScriber; const FileName:string):pointer;
+begin
+    result:=tCbSFP_ideCallCenterIDE(_CallCenter_).SubScriber_Cnfg_OBJ(SubScriber,FileName);
 end;
 
 {$else} //< режим ТЕСТИРОВАНИЯ
