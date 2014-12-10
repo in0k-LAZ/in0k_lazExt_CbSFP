@@ -201,7 +201,10 @@ type
   {%region --- SubScriber поиск ----------------------------------- /fold}
   protected
     function  _SubScrbr_REGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):pCbSFP_Node;
-    function  _SubScrbr_Cnfg_OBJ(const node:pCbSFP_Node; const FileName:string):pointer;
+    function  _SubScrbr_testPTTN(const node:pCbSFP_Node; const item:pCbSFP_PTTN; const fileName:string):boolean; inline;
+    function  _SubScrbr_findPTTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_PTTN; inline;
+    function  _SubScrbr_findOPTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_OPTN; inline;
+    function  _SubScrbr_Cnfg_OBJ(const node:pCbSFP_Node; const fileName:string):pointer;
   public
     function   SubScriber_byIdeREC(const value:PIDEOptionsEditorRec):tCbSFP_SubScriber;
     function   SubScriber_byEDITOR(const value:TAbstractIDEOptionsEditor):tCbSFP_SubScriber;
@@ -297,6 +300,9 @@ type
     function  itmPTTN_getName (const item:pCbSFP_PTTN):string;
     function  itmPTTN_getSeek (const item:pCbSFP_PTTN):string;
     function  itmPTTN_getUsed (const item:pCbSFP_PTTN):boolean;
+  public //< это можно почитать
+    function  itmPTTN_test    (const item:pCbSFP_PTTN; const fileName:string):boolean;
+
   {%endregion}
   end;
 
@@ -1115,26 +1121,51 @@ begin
     end;
 end;
 
-function tCbSFP_ideCallCenter._SubScrbr_Cnfg_OBJ(const node:pCbSFP_Node; const FileName:string):pointer;
+//------------------------------------------------------------------------------
+
+function  tCbSFP_ideCallCenter._SubScrbr_testPTTN(const node:pCbSFP_Node; const item:pCbSFP_PTTN; const fileName:string):boolean;
 var RegexObj:TRegExpr;
 begin
     RegexObj:=TRegExpr.Create;
-    RegexObj.InputString:=FileName;
+    RegexObj.InputString:=fileName;
+    RegexObj.Expression:=_itmPTTN_getSeek(item);
+    result  :=RegexObj.Exec(1);
+    RegexObj.FREE;
+end;
+
+function tCbSFP_ideCallCenter._SubScrbr_findPTTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_PTTN;
+var RegexObj:TRegExpr;
+begin
+    RegexObj:=TRegExpr.Create;
+    RegexObj.InputString:=fileName;
+    //---
     result:=_lstPTTN_getFirst(node);
     while result<>nil do begin
-        if _itmPTTN_getUsed(result) and
-           _itmOPTN_getUsed(_itmPTTN_getOPTN(result))
+        if _itmPTTN_getUsed(result) and _itmOPTN_getUsed(_itmPTTN_getOPTN(result))
         then begin
             RegexObj.Expression:=_itmPTTN_getSeek(result);
             if RegexObj.Exec(1) then break;
         end;
         result:=_itmPTTN_getNext(result);
     end;
-    RegexObj.FREE;
     //---
-    if result=nil then begin
-        result:=_lstOPTN_defOPTNs(node);
-        result:=_itmOPTN_getCNFG(result);
+    RegexObj.FREE;
+end;
+
+function tCbSFP_ideCallCenter._SubScrbr_findOPTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_OPTN;
+begin
+    result:=_SubScrbr_findPTTN(node,fileName);
+    if Assigned(result)
+    then result:=_itmPTTN_getOPTN(result)
+    else result:=_lstOPTN_defOPTNs(node);
+end;
+
+function tCbSFP_ideCallCenter._SubScrbr_Cnfg_OBJ(const node:pCbSFP_Node; const fileName:string):pointer;
+begin
+    result:=_SubScrbr_findOPTN(node,fileName);
+    if Assigned(result) then begin //< по идее это ЛИШНЕ
+       {todo: это по ходу лишняя проверки, её надо исключить}
+       result:=_itmOPTN_getCNFG(result);
     end;
 end;
 
@@ -1518,6 +1549,13 @@ end;
 procedure tCbSFP_ideEditorNODE.itmPTTN_setUsed(const item:pCbSFP_PTTN; const value:boolean);
 begin
    _CallCenter_._itmPTTN_setUsed(item,value);
+end;
+
+//------------------------------------------------------------------------------
+
+function tCbSFP_ideEditorNODE.itmPTTN_test(const item:pCbSFP_PTTN; const fileName:string):boolean;
+begin
+    _CallCenter_._SubScrbr_testPTTN(_SubScriber_,item,fileName);
 end;
 
 {%endregion}

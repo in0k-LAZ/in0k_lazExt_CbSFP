@@ -46,6 +46,9 @@ uses sysutils, Classes, Graphics,
      eventlog,
      {$endIf}
      CbSFP_ideCenter, CbSFP_SubScriber,
+     {$ifDef ideLazExtMODE}
+     SrcEditorIntf,
+     {$endIf}
      IDEOptionsIntf;
 
 type
@@ -99,6 +102,9 @@ type
     procedure _ideEditorNODE_SET; inline;
   protected
     function nodeEditor:tCbSFP_ideEditorNODE;
+  {%endregion}
+  {%region --- выход на IDE lazarus ------------------------------- /fold}
+    function _ideLazarus_ActivEditFileName:string;
   {%endregion}
   {%region --- основные контроля списков_... ---------------------- /fold}
   protected
@@ -293,7 +299,7 @@ begin {
             Name:=Name+inttostr(Date)+inttostr(Time);
         end;
         Name:=Name+inttostr(Date)+inttostr(Time);
-      }
+      } // ОДИН ФИГ нЕ ХВАТАЕТ
         GetLocalTime(SystemTime);
         with SystemTime do begin
             Name:=Name+inttostr(Year)
@@ -420,6 +426,19 @@ begin
 end;
 
 {$endregion}
+
+function tCbSFP_ideCallEditor._ideLazarus_ActivEditFileName:string;
+var tmp:TSourceEditorInterface;
+begin
+    result:='';
+    tmp:=SourceEditorManagerIntf.ActiveEditor;
+    if Assigned(tmp) then begin
+        result:=tmp.FileName;
+    end;
+end;
+
+
+
 
 {%region --- основные контроля списков_ ... ----------------------- /fold}
 
@@ -591,6 +610,11 @@ end;
 function tCbSFP_ideCallEditor._PTTNs_lBox__clcCPTN(const itm:pCbSFP_PTTN):string;
 begin
     result:=nodeEditor.itmPTTN_getSeek(itm);
+
+    if nodeEditor.itmPTTN_test(itm,_ideLazarus_ActivEditFileName)
+    then begin
+        result:=result+'{+}';
+    end;
 end;
 
 //------------------------------------------------------------------------------
