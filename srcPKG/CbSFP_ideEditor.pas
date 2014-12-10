@@ -283,14 +283,27 @@ end;
 {%region --- внутренняя КУХНЯ .. ---------------------------------- /fold}
 
 procedure tCbSFP_ideCallEditor._onCreate_fixHimSelfName;
+var SystemTime: TSystemTime;
 begin {
         при создании ОДИНАКОВЫХ (с одним self.Name) возникает ошибка,
         поэтому для КАЖДОВОГО НОВОГО фрейма задаем "УНИКАЛЬНОЕ" имя.
         Будем надеяться что этого будет достаточно
-      }
-    with DateTimeToTimeStamp(Now) do begin
+        //--- не помогает, наверно надо точнее
+        with DateTimeToTimeStamp(Now) do begin
+            Name:=Name+inttostr(Date)+inttostr(Time);
+        end;
         Name:=Name+inttostr(Date)+inttostr(Time);
-    end;
+      }
+        GetLocalTime(SystemTime);
+        with SystemTime do begin
+            Name:=Name+inttostr(Year)
+                      +inttostr(Month)
+                      +inttostr(Day)
+                      +inttostr(Hour)
+                      +inttostr(Minute)
+                      +inttostr(Second)
+                      +inttostr(Millisecond)
+        end;
 end;
 
 procedure tCbSFP_ideCallEditor._onCreate_fixActionsName;
@@ -701,8 +714,12 @@ begin
     tmpSEEK:= trim(tEdit(Sender).Text);
     if nodeEditor.lstPTTN_vldSeek(tmpSEEK,_slctd_ITEM_) then begin
         nodeEditor.itmPTTN_setSeek(_slctd_ITEM_,tmpSEEK);
-        PTTNs_lBox.Items.Strings[_slctd_INDX_]:=_PTTNs_lBox__clcCPTN(_slctd_ITEM_);             //tmpSEEK;
+        PTTNs_lBox.Items.Strings[_slctd_INDX_]:=_PTTNs_lBox__clcCPTN(_slctd_ITEM_);
         tEdit(Sender).Font.Color:=clDefault;
+
+
+//       _
+
     end
     else begin
         tEdit(Sender).Font.Color:=clRED;
