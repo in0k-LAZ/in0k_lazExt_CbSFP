@@ -338,6 +338,40 @@ end;
 
 //------------------------------------------------------------------------------
 
+function _SubSiCLASS_safeCall__Identifier(const SubSiCLASS:tCbSFP_SubScriber_Handle):string;
+begin
+    try result:=SubSiCLASS.Identifier;
+    except
+        result:='';
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.Identifier : ERROR');
+    end;
+end;
+
+function _SubSiCLASS_safeCall__ConfigOBJ_CRT(const SubSiCLASS:tCbSFP_SubScriber_Handle):tCbSFP_SubScriber_cnfOBJ;
+begin
+    try result:=SubSiCLASS.ConfigOBJ_CRT;
+    except
+        result:=nil;
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_CRT : ERROR');
+    end;
+end;
+
+procedure _SubSiCLASS_safeCall__ConfigOBJ_DST(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ);
+begin
+    try SubSiCLASS.ConfigOBJ_DST(Obj);
+    except
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_DST : ERROR');
+    end;
+end;
+
+procedure _SubSiCLASS_safeCall__ConfigOBJ_DEF(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ);
+begin
+    try SubSiCLASS.ConfigOBJ_DEF(Obj);
+    except
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_DEF : ERROR');
+    end;
+end;
+
 {%region --- работа с ОЧЕРЕДЬЮ pCbSFP_Node ------------------------ /fold}
 
 procedure tCbSFP_ideCallCenter._lair_CRT;
@@ -421,7 +455,7 @@ end;
 
 function tCbSFP_ideCallCenter._node_identifier(const node:pCbSFP_Node):string;
 begin
-    result:=node^.SubSiCLASS.Identifier;
+    result:=_SubSiCLASS_safeCall__Identifier(node^.SubSiCLASS);
 end;
 
 function tCbSFP_ideCallCenter._node_cnfFileEXT(const node:pCbSFP_Node):string;
@@ -523,8 +557,6 @@ end;
 {%endregion}
 
 {%region --- Сохранение и Загрузка -------------------------------- /fold}
-
-
 
 function tCbSFP_ideCallCenter._node_configStorageCRT(const file_Name:string):tCbSFP_ideFileStorage;
 begin
@@ -925,32 +957,6 @@ end;
 
 //------------------------------------------------------------------------------
 
-function _SubSiCLASS_safeCall__ConfigOBJ_CRT(const SubSiCLASS:tCbSFP_SubScriber_Handle):tCbSFP_SubScriber_cnfOBJ;
-begin
-    try result:=SubSiCLASS.ConfigOBJ_CRT;
-    except
-        result:=nil;
-        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_CRT : ERROR');
-    end;
-end;
-
-procedure _SubSiCLASS_safeCall__ConfigOBJ_DST(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ);
-begin
-    try SubSiCLASS.ConfigOBJ_DST(Obj);
-    except
-        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_DST : ERROR');
-    end;
-end;
-
-procedure _SubSiCLASS_safeCall__ConfigOBJ_DEF(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ);
-begin
-    try SubSiCLASS.ConfigOBJ_DEF(Obj);
-    except
-        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_DEF : ERROR');
-    end;
-end;
-
-
 function tCbSFP_ideCallCenter._itmOPTN_crt8ini(const node:pCbSFP_Node):pCbSFP_OPTN;
 begin
    _itmBase_CRT(result);
@@ -1286,7 +1292,7 @@ end;
 
 function tCbSFP_ideEditorNODE.Identifier:string;
 begin
-    result:=_SubScriber_^.SubSiCLASS.Identifier;
+    result:=_SubSiCLASS_safeCall__Identifier(_SubScriber_^.SubSiCLASS);
 end;
 
 //------------------------------------------------------------------------------
