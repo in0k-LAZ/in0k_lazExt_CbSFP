@@ -36,7 +36,7 @@ unit CbSFP_ideCenter;
 
 interface
 
-uses sysutils, LazFileUtils, IDEOptionsIntf, RegExpr,
+uses sysutils, LazFileUtils, IDEOptionsIntf, RegExpr, Dialogs,
     {$ifDef ideLazExtMODE}
     BaseIDEIntf,
     LazConfigStorage,
@@ -925,13 +925,39 @@ end;
 
 //------------------------------------------------------------------------------
 
+function _SubSiCLASS_safeCall__ConfigOBJ_CRT(const SubSiCLASS:tCbSFP_SubScriber_Handle):tCbSFP_SubScriber_cnfOBJ;
+begin
+    try result:=SubSiCLASS.ConfigOBJ_CRT;
+    except
+        result:=nil;
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_CRT : ERROR');
+    end;
+end;
+
+procedure _SubSiCLASS_safeCall__ConfigOBJ_DST(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ);
+begin
+    try SubSiCLASS.ConfigOBJ_DST(Obj);
+    except
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_DST : ERROR');
+    end;
+end;
+
+procedure _SubSiCLASS_safeCall__ConfigOBJ_DEF(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ);
+begin
+    try SubSiCLASS.ConfigOBJ_DEF(Obj);
+    except
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_DEF : ERROR');
+    end;
+end;
+
+
 function tCbSFP_ideCallCenter._itmOPTN_crt8ini(const node:pCbSFP_Node):pCbSFP_OPTN;
 begin
    _itmBase_CRT(result);
     if Assigned(node) and Assigned(node^.SubSiCLASS) then begin
        _itmOPTN_setName(result,_lstBase_newText(_lstOPTN_getFirst(node),cItmOPTN_DEFCUST_name));
-       _itmOPTN_setCNFG(result,node^.SubSiCLASS.ConfigOBJ_CRT);
-        node^.SubSiCLASS.ConfigOBJ_DEF(_itmOPTN_getCNFG(result));
+       _itmOPTN_setCNFG(result,_SubSiCLASS_safeCall__ConfigOBJ_CRT(node^.SubSiCLASS));
+       _SubSiCLASS_safeCall__ConfigOBJ_DEF(node^.SubSiCLASS,_itmOPTN_getCNFG(result));
     end;
 end;
 
@@ -940,7 +966,7 @@ begin
     if Assigned(node) and Assigned(node^.SubSiCLASS) AND
        Assigned(item) and Assigned(_itmOPTN_getCNFG(item))
     then begin
-        node^.SubSiCLASS.ConfigOBJ_DST(_itmOPTN_getCNFG(item));
+       _SubSiCLASS_safeCall__ConfigOBJ_DST(node^.SubSiCLASS,_itmOPTN_getCNFG(item));
     end;
    _itmBase_DST(item);
 end;
