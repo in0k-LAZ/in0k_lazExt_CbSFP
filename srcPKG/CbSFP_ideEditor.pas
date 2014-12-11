@@ -863,7 +863,7 @@ end;
 
 {%endregion}
 
-function _common_FRM_safeCall__getTitle(const cFRM:TCbSFP_SubScriber_editor):string;
+function _safeCall__common_FRM__getTitle_(const cFRM:TCbSFP_SubScriber_editor):string;
 begin
     try
         result:=cFRM.GetTitle;
@@ -873,7 +873,7 @@ begin
     end;
 end;
 
-procedure _common_FRM_safeCall__Settings_SAVE_(const cFRM:TCbSFP_SubScriber_editor; const CNFG:pointer);
+procedure _safeCall__common_FRM__Settings_SAVE_(const cFRM:TCbSFP_SubScriber_editor; const CNFG:pointer);
 begin
     try
         cFRM.Settings_SAVE(CNFG);
@@ -882,7 +882,7 @@ begin
     end;
 end;
 
-procedure _common_FRM_safeCall__Settings_LOAD_(const cFRM:TCbSFP_SubScriber_editor; const CNFG:pointer);
+procedure _safeCall__common_FRM__Settings_LOAD_(const cFRM:TCbSFP_SubScriber_editor; const CNFG:pointer);
 begin
     try
         cFRM.Settings_LOAD(CNFG);
@@ -896,11 +896,11 @@ end;
 procedure tCbSFP_ideCallEditor._common_FRM__CNFG_SET(const CNFG:pointer);
 begin
    _common_FRM__Tst2CRT;
-    if Assigned(_slctd_CNFG_) then _common_FRM_safeCall__Settings_SAVE_(_common_FRM_,CNFG);
+    if Assigned(_slctd_CNFG_) then _safeCall__common_FRM__Settings_SAVE_(_common_FRM_,CNFG);
     if _slctd_CNFG_<>CNFG then begin
        _slctd_CNFG_:=CNFG;
         //---
-        if Assigned(_slctd_CNFG_) then _common_FRM_safeCall__Settings_LOAD_(_common_FRM_,_slctd_CNFG_)
+        if Assigned(_slctd_CNFG_) then _safeCall__common_FRM__Settings_LOAD_(_common_FRM_,_slctd_CNFG_)
         else begin
            _common_FRM_.Enabled:=false;
         end;
@@ -967,7 +967,7 @@ begin
     //--- добавляем и "копируем" настройки из текущей
     tmp:=nodeEditor.lstOPTN_addItem;
     if Assigned(_slctd_CNFG_) then
-   _common_FRM_safeCall__Settings_SAVE_(_common_FRM_,nodeEditor.itmOPTN_getCNFG(tmp));
+   _safeCall__common_FRM__Settings_SAVE_(_common_FRM_,nodeEditor.itmOPTN_getCNFG(tmp));
     //--- вставляем в контрол
     idx:=OPTNs_lBox.Items.AddObject('',tObject(tmp));
    _OPTNs_lBox__reSetITEM(idx);
@@ -1197,7 +1197,7 @@ end;
 function tCbSFP_ideCallEditor.GetTitle:String;
 begin
    _common_FRM__Tst2CRT;
-    if Assigned(_common_FRM_) then result:=_common_FRM_safeCall__getTitle(_common_FRM_)
+    if Assigned(_common_FRM_) then result:=_safeCall__common_FRM__getTitle_(_common_FRM_)
     else result:=self.Name;
 end;
 
