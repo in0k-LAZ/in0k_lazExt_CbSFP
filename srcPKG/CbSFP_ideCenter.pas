@@ -36,7 +36,7 @@ unit CbSFP_ideCenter;
 
 interface
 
-uses sysutils, LazFileUtils, IDEOptionsIntf, RegExpr,
+uses sysutils, LazFileUtils, IDEOptionsIntf, RegExpr, Dialogs,
     {$ifDef ideLazExtMODE}
     BaseIDEIntf,
     LazConfigStorage,
@@ -339,6 +339,67 @@ end;
 
 //------------------------------------------------------------------------------
 
+function _safeCall__SubSiCLASS__Identifier_(const SubSiCLASS:tCbSFP_SubScriber_Handle):string;
+begin
+    try result:=SubSiCLASS.Identifier;
+    except
+        result:='';
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.Identifier : ERROR');
+    end;
+end;
+
+function _safeCall__SubSiCLASS__ConfigOBJ_CRT(const SubSiCLASS:tCbSFP_SubScriber_Handle):tCbSFP_SubScriber_cnfOBJ;
+begin
+    try result:=SubSiCLASS.ConfigOBJ_CRT;
+    except
+        result:=nil;
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_CRT : ERROR');
+    end;
+end;
+
+procedure _safeCall__SubSiCLASS__ConfigOBJ_DST(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ);
+begin
+    try SubSiCLASS.ConfigOBJ_DST(Obj);
+    except
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_DST : ERROR');
+    end;
+end;
+
+procedure _safeCall__SubSiCLASS__ConfigOBJ_DEF(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ);
+begin
+    try SubSiCLASS.ConfigOBJ_DEF(Obj);
+    except
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_DEF : ERROR');
+    end;
+end;
+
+function _safeCall__SubSiCLASS__ConfigOBJ_FileEXT(const SubSiCLASS:tCbSFP_SubScriber_Handle):string;
+begin
+    try result:=SubSiCLASS.ConfigOBJ_FileEXT;
+    except
+        result:='';
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_FileEXT : ERROR');
+    end;
+end;
+
+function _safeCall__SubSiCLASS__ConfigOBJ_LOAD(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ; const FileName:string):boolean;
+begin
+    try result:=SubSiCLASS.ConfigOBJ_Load(Obj,FileName);
+    except
+        result:=false;
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_Load : ERROR');
+    end;
+end;
+
+function _safeCall__SubSiCLASS__ConfigOBJ_SAVE(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ; const FileName:string):boolean;
+begin
+    try result:=SubSiCLASS.ConfigOBJ_Save(Obj,FileName);
+    except
+        result:=false;
+        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_Save : ERROR');
+    end;
+end;
+
 {%region --- работа с ОЧЕРЕДЬЮ pCbSFP_Node ------------------------ /fold}
 
 procedure tCbSFP_ideCallCenter._lair_CRT;
@@ -422,33 +483,25 @@ end;
 
 function tCbSFP_ideCallCenter._node_identifier(const node:pCbSFP_Node):string;
 begin
-    result:=node^.SubSiCLASS.Identifier;
+    result:=_safeCall__SubSiCLASS__Identifier_(node^.SubSiCLASS);
 end;
 
 function tCbSFP_ideCallCenter._node_cnfFileEXT(const node:pCbSFP_Node):string;
 begin
-    result:=node^.SubSiCLASS.ConfigOBJ_FileEXT;
+    result:=_safeCall__SubSiCLASS__ConfigOBJ_FileEXT(node^.SubSiCLASS);
 end;
 
 //------------------------------------------------------------------------------
 
 function tCbSFP_ideCallCenter._node_LOAD_CNFG(const node:pCbSFP_Node; const OPTN:pCbSFP_OPTN):boolean;
 begin
-    result:=FALSE;
-    try result:=node^.SubSiCLASS.ConfigOBJ_Load(OPTN^.CNFG,_subScriber_OPTN_fileName(node,OPTN));
-    except
-        result:=FALSE;
-    end;
+    result:=_safeCall__SubSiCLASS__ConfigOBJ_LOAD(node^.SubSiCLASS,OPTN^.CNFG,_subScriber_OPTN_fileName(node,OPTN));
     if NOT result then node^.SubSiCLASS.ConfigOBJ_DEF(OPTN^.CNFG);
 end;
 
 function tCbSFP_ideCallCenter._node_SAVE_CNFG(const node:pCbSFP_Node; const OPTN:pCbSFP_OPTN):boolean;
 begin
-    result:=FALSE;
-    try result:=node^.SubSiCLASS.ConfigOBJ_Save(OPTN^.CNFG,_subScriber_OPTN_fileName(node,OPTN));
-    except
-        result:=FALSE;
-    end;
+    result:=_safeCall__SubSiCLASS__ConfigOBJ_SAVE(node^.SubSiCLASS,OPTN^.CNFG,_subScriber_OPTN_fileName(node,OPTN));
 end;
 
 {%endregion}
@@ -524,8 +577,6 @@ end;
 {%endregion}
 
 {%region --- Сохранение и Загрузка -------------------------------- /fold}
-
-
 
 function tCbSFP_ideCallCenter._node_configStorageCRT(const file_Name:string):tCbSFP_ideFileStorage;
 begin
@@ -931,8 +982,8 @@ begin
    _itmBase_CRT(result);
     if Assigned(node) and Assigned(node^.SubSiCLASS) then begin
        _itmOPTN_setName(result,_lstBase_newText(_lstOPTN_getFirst(node),cItmOPTN_DEFCUST_name));
-       _itmOPTN_setCNFG(result,node^.SubSiCLASS.ConfigOBJ_CRT);
-        node^.SubSiCLASS.ConfigOBJ_DEF(_itmOPTN_getCNFG(result));
+       _itmOPTN_setCNFG(result,_safeCall__SubSiCLASS__ConfigOBJ_CRT(node^.SubSiCLASS));
+       _safeCall__SubSiCLASS__ConfigOBJ_DEF(node^.SubSiCLASS,_itmOPTN_getCNFG(result));
     end;
 end;
 
@@ -941,7 +992,7 @@ begin
     if Assigned(node) and Assigned(node^.SubSiCLASS) AND
        Assigned(item) and Assigned(_itmOPTN_getCNFG(item))
     then begin
-        node^.SubSiCLASS.ConfigOBJ_DST(_itmOPTN_getCNFG(item));
+       _safeCall__SubSiCLASS__ConfigOBJ_DST(node^.SubSiCLASS,_itmOPTN_getCNFG(item));
     end;
    _itmBase_DST(item);
 end;
@@ -1261,7 +1312,7 @@ end;
 
 function tCbSFP_ideEditorNODE.Identifier:string;
 begin
-    result:=_SubScriber_^.SubSiCLASS.Identifier;
+    result:=_safeCall__SubSiCLASS__Identifier_(_SubScriber_^.SubSiCLASS);
 end;
 
 //------------------------------------------------------------------------------

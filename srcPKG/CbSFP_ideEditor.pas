@@ -39,7 +39,7 @@ unit CbSFP_ideEditor;
 
 interface
 
-uses sysutils, Classes, Graphics,
+uses sysutils, Classes, Graphics,  Dialogs,
      StdCtrls, Controls, Buttons, ActnList, ExtCtrls, CheckLst,
      //---
      {$ifDef CbSFP_log_ON}
@@ -889,19 +889,44 @@ end;
 
 {%endregion}
 
+function _safeCall__common_FRM__getTitle_(const cFRM:TCbSFP_SubScriber_editor):string;
+begin
+    try
+        result:=cFRM.GetTitle;
+    except
+        result:=cFRM.ClassName;
+        ShowMessage(cFRM.ClassName+'.GetTitle : ERROR');
+    end;
+end;
+
+procedure _safeCall__common_FRM__Settings_SAVE_(const cFRM:TCbSFP_SubScriber_editor; const CNFG:pointer);
+begin
+    try
+        cFRM.Settings_SAVE(CNFG);
+    except
+        ShowMessage(cFRM.ClassName+'.Settings_SAVE : ERROR');
+    end;
+end;
+
+procedure _safeCall__common_FRM__Settings_LOAD_(const cFRM:TCbSFP_SubScriber_editor; const CNFG:pointer);
+begin
+    try
+        cFRM.Settings_LOAD(CNFG);
+    except
+        ShowMessage(cFRM.ClassName+'.Settings_LOAD : ERROR');
+    end;
+end;
+
 {%region --- что КОНКРЕКТНО выделено _slctd_.. -------------------- /fold}
 
 procedure tCbSFP_ideCallEditor._common_FRM__CNFG_SET(const CNFG:pointer);
 begin
    _common_FRM__Tst2CRT;
-    if Assigned(_slctd_CNFG_) then _common_FRM_.Settings_SAVE(_slctd_CNFG_);
+    if Assigned(_slctd_CNFG_) then _safeCall__common_FRM__Settings_SAVE_(_common_FRM_,CNFG);
     if _slctd_CNFG_<>CNFG then begin
        _slctd_CNFG_:=CNFG;
         //---
-        if Assigned(_slctd_CNFG_) then begin
-           _common_FRM_.Settings_LOAD(_slctd_CNFG_);
-           _common_FRM_.Enabled:=TRUE;
-        end
+        if Assigned(_slctd_CNFG_) then _safeCall__common_FRM__Settings_LOAD_(_common_FRM_,_slctd_CNFG_)
         else begin
            _common_FRM_.Enabled:=false;
         end;
@@ -967,7 +992,8 @@ var tmp:pCbSFP_OPTN;
 begin
     //--- добавляем и "копируем" настройки из текущей
     tmp:=nodeEditor.lstOPTN_addItem;
-    if Assigned(_slctd_CNFG_) then _common_FRM_.Settings_SAVE(nodeEditor.itmOPTN_getCNFG(tmp));
+    if Assigned(_slctd_CNFG_) then
+   _safeCall__common_FRM__Settings_SAVE_(_common_FRM_,nodeEditor.itmOPTN_getCNFG(tmp));
     //--- вставляем в контрол
     idx:=OPTNs_lBox.Items.AddObject('',tObject(tmp));
    _OPTNs_lBox__reSetITEM(idx);
@@ -1198,7 +1224,7 @@ end;
 function tCbSFP_ideCallEditor.GetTitle:String;
 begin
    _common_FRM__Tst2CRT;
-    if Assigned(_common_FRM_) then result:=_common_FRM_.GetTitle
+    if Assigned(_common_FRM_) then result:=_safeCall__common_FRM__getTitle_(_common_FRM_)
     else result:=self.Name;
 end;
 
