@@ -201,9 +201,9 @@ type
   {%region --- SubScriber поиск ----------------------------------- /fold}
   protected
     function  _SubScrbr_REGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):pCbSFP_Node;
-    function  _SubScrbr_testPTTN(const node:pCbSFP_Node; const item:pCbSFP_PTTN; const fileName:string):boolean; inline;
-    function  _SubScrbr_findPTTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_PTTN; inline;
-    function  _SubScrbr_findOPTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_OPTN; inline;
+    function  _SubScrbr_testPTTN(const item:pCbSFP_PTTN; const fileName:string):boolean; //inline;
+    function  _SubScrbr_findPTTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_PTTN; //inline;
+    function  _SubScrbr_findOPTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_OPTN; //inline;
     function  _SubScrbr_Cnfg_OBJ(const node:pCbSFP_Node; const fileName:string):pointer;
   public
     function   SubScriber_byIdeREC(const value:PIDEOptionsEditorRec):tCbSFP_SubScriber;
@@ -302,7 +302,8 @@ type
     function  itmPTTN_getUsed (const item:pCbSFP_PTTN):boolean;
   public //< это можно почитать
     function  itmPTTN_test    (const item:pCbSFP_PTTN; const fileName:string):boolean;
-
+    function  itmPTTN_find    (const item:pCbSFP_PTTN; const fileName:string):pCbSFP_PTTN;
+    function  itmOPTN_find    (const item:pCbSFP_PTTN; const fileName:string):pCbSFP_OPTN;
   {%endregion}
   end;
 
@@ -1123,7 +1124,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-function  tCbSFP_ideCallCenter._SubScrbr_testPTTN(const node:pCbSFP_Node; const item:pCbSFP_PTTN; const fileName:string):boolean;
+function  tCbSFP_ideCallCenter._SubScrbr_testPTTN(const item:pCbSFP_PTTN; const fileName:string):boolean;
 var RegexObj:TRegExpr;
 begin
     RegexObj:=TRegExpr.Create;
@@ -1555,7 +1556,17 @@ end;
 
 function tCbSFP_ideEditorNODE.itmPTTN_test(const item:pCbSFP_PTTN; const fileName:string):boolean;
 begin
-    _CallCenter_._SubScrbr_testPTTN(_SubScriber_,item,fileName);
+    result:=_CallCenter_._SubScrbr_testPTTN(item,fileName);
+end;
+
+function tCbSFP_ideEditorNODE.itmPTTN_find(const item:pCbSFP_PTTN; const fileName:string):pCbSFP_PTTN;
+begin
+    result:=_CallCenter_._SubScrbr_findPTTN(_SubScriber_,fileName);
+end;
+
+function tCbSFP_ideEditorNODE.itmOPTN_find(const item:pCbSFP_PTTN; const fileName:string):pCbSFP_OPTN;
+begin
+    result:=_CallCenter_._SubScrbr_findOPTN(_SubScriber_,fileName);
 end;
 
 {%endregion}

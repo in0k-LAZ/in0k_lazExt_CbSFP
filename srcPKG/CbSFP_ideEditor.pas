@@ -104,7 +104,12 @@ type
     function nodeEditor:tCbSFP_ideEditorNODE;
   {%endregion}
   {%region --- выход на IDE lazarus ------------------------------- /fold}
+  protected
+   _testFileName:string;
+    procedure _testFileName_set(const value:string);
+    {$ifDef ideLazExtMODE}
     function _ideLazarus_ActivEditFileName:string;
+    {$endIf}
   {%endregion}
   {%region --- основные контроля списков_... ---------------------- /fold}
   protected
@@ -129,6 +134,7 @@ type
     function  _OPTNs_lBox__clcCPTN(const itm:pCbSFP_OPTN):string;
     function  _PTTNs_lBox__clcCPTN(const itm:pCbSFP_PTTN):string;
   protected
+    procedure _lBOXs_reSetITEMs;
     procedure _OPTNs_lBox__reSetITEM(const i:integer);
     procedure _PTTNs_lBox__reSetITEM(const i:integer);
   {%endregion}
@@ -208,6 +214,10 @@ type
     constructor Create(TheOwner: TComponent); override;
     destructor DESTROY; override;
   public
+   {$ifDef uiDevelopPRJ}
+    property testFileName:string read _testFileName write _testFileName_set;
+   {$endif}
+  public
     function GetTitle: String; override;
     class function SupportedOptionsClass:TAbstractIDEOptionsClass; override;
   public
@@ -246,6 +256,11 @@ begin
    _onCreate_fixActionsName;
    _onCreate_setActionsEVNT;
    _onCreate_setButtonsIMGs;
+    //---
+   _testFileName:='';
+    {$ifDef ideLazExtMODE}
+   _testFileName_set(_ideLazarus_ActivEditFileName);
+    {$endIf}
     //---
    _ideEditorNODE_:=NIL;
     //---
@@ -289,27 +304,13 @@ end;
 {%region --- внутренняя КУХНЯ .. ---------------------------------- /fold}
 
 procedure tCbSFP_ideCallEditor._onCreate_fixHimSelfName;
-var SystemTime: TSystemTime;
-begin {
-        при создании ОДИНАКОВЫХ (с одним self.Name) возникает ошибка,
-        поэтому для КАЖДОВОГО НОВОГО фрейма задаем "УНИКАЛЬНОЕ" имя.
-        Будем надеяться что этого будет достаточно
-        //--- не помогает, наверно надо точнее
-        with DateTimeToTimeStamp(Now) do begin
-            Name:=Name+inttostr(Date)+inttostr(Time);
-        end;
-        Name:=Name+inttostr(Date)+inttostr(Time);
-      } // ОДИН ФИГ нЕ ХВАТАЕТ
-        GetLocalTime(SystemTime);
-        with SystemTime do begin
-            Name:=Name+inttostr(Year)
-                      +inttostr(Month)
-                      +inttostr(Day)
-                      +inttostr(Hour)
-                      +inttostr(Minute)
-                      +inttostr(Second)
-                      +inttostr(Millisecond)
-        end;
+begin {--- объяснительная --- [fold]
+       *  при создании ОДИНАКОВЫХ (с одним self.Name) возникает ошибка,
+       *  поэтому для КАЖДОВОГО НОВОГО фрейма задаем "УНИКАЛЬНОЕ" имя,
+       *  основанное на его УКАЗАТЕЛЕ.
+       *  Будем надеяться что этого будет достаточно
+       *---------------------------}
+      Name:=Name+IntToHex(PtrUInt(self),sizeOf(PtrUInt)*2);
 end;
 
 procedure tCbSFP_ideCallEditor._onCreate_fixActionsName;
@@ -427,6 +428,15 @@ end;
 
 {$endregion}
 
+procedure tCbSFP_ideCallEditor._testFileName_set(const value:string);
+begin
+    if _testFileName<>value then begin
+        _testFileName:=value;
+        _lBOXs_reSetITEMs;
+    end;
+end;
+
+{$ifDef ideLazExtMODE}
 function tCbSFP_ideCallEditor._ideLazarus_ActivEditFileName:string;
 var tmp:TSourceEditorInterface;
 begin
@@ -436,9 +446,7 @@ begin
         result:=tmp.FileName;
     end;
 end;
-
-
-
+{$endIf}
 
 {%region --- основные контроля списков_ ... ----------------------- /fold}
 
@@ -597,23 +605,33 @@ function tCbSFP_ideCallEditor._OPTNs_lBox__clcCPTN(const itm:pCbSFP_OPTN; const 
 begin
     result:=nodeEditor.itmOPTN_getName(itm);
     if cnt>0
-    then result:=result+' ['+inttostr(cnt)+']'
+    then result:=result+' ['+inttostr(cnt)+']';
+    //---
+    if (_testFileName<>'') then begin
+        if (nodeEditor.itmOPTN_find(itm,_testFileName)=itm) then begin
+            result:='*'+result;
+        end;
+    end;
 end;
 
 function tCbSFP_ideCallEditor._OPTNs_lBox__clcCPTN(const itm:pCbSFP_OPTN):string;
 var cnt:integer;
 begin
     cnt:=nodeEditor.lstPTTN_cntOPTN(itm);
-    result:=_OPTNs_lBox__clcCPTN(itm,cnt)
+    result:=_OPTNs_lBox__clcCPTN(itm,cnt);
 end;
 
 function tCbSFP_ideCallEditor._PTTNs_lBox__clcCPTN(const itm:pCbSFP_PTTN):string;
 begin
-    result:=nodeEditor.itmPTTN_getSeek(itm);
-
-    if nodeEditor.itmPTTN_test(itm,_ideLazarus_ActivEditFileName)
-    then begin
-        result:=result+'{+}';
+    result:=nodeEditor.itmPTTN_getSeek(itm)+' '+result;
+    //---
+    if (_testFileName<>'') then begin
+        if (nodeEditor.itmPTTN_find(itm,_testFileName)=itm) then begin
+            result:='(*)->'+result;
+        end;
+        if (nodeEditor.itmPTTN_test(itm,_testFileName)) then begin
+            result:=result+'<-[+]';
+        end;
     end;
 end;
 
@@ -651,6 +669,13 @@ begin
     end;
 end;
 
+procedure tCbSFP_ideCallEditor._lBOXs_reSetITEMs;
+var i:integer;
+begin
+    for i:=0 to PTTNs_lBox.Count-1 do _PTTNs_lBox__reSetITEM(i);
+    for i:=0 to OPTNs_lBox.Count-1 do _OPTNs_lBox__reSetITEM(i);
+end;
+
 {%endregion}
 
 {%region --- общие контролы Common_.. ----------------------------- /fold}
@@ -685,7 +710,8 @@ procedure tCbSFP_ideCallEditor._Common_CHB_asOPTN__onChange(Sender: TObject);
 begin
     if (_slctd_FROM_=cILECBSPiEOA_selected_OPT)and(Assigned(_slctd_ITEM_)) then begin
         nodeEditor.itmOPTN_setUsed(_slctd_ITEM_,TCheckBox(Sender).Checked);
-        OPTNs_lBox.Checked[_slctd_INDX_]:=TCheckBox(Sender).Checked;
+        // OPTNs_lBox.Checked[_slctd_INDX_]:=TCheckBox(Sender).Checked;
+       _lBOXs_reSetITEMs;
     end;
 end;
 
@@ -693,7 +719,8 @@ procedure tCbSFP_ideCallEditor._Common_CHB_asPTTN__onChange(Sender: TObject);
 begin
     if (_slctd_FROM_=cILECBSPiEOA_selected_PTN)and(Assigned(_slctd_ITEM_)) then begin
         nodeEditor.itmPTTN_setUsed(_slctd_ITEM_,TCheckBox(Sender).Checked);
-        PTTNs_lBox.Checked[_slctd_INDX_]:=TCheckBox(Sender).Checked;
+        // PTTNs_lBox.Checked[_slctd_INDX_]:=TCheckBox(Sender).Checked;
+       _lBOXs_reSetITEMs;
     end;
 end;
 
@@ -782,8 +809,7 @@ begin
     nodeEditor.itmPTTN_setOPTN(_slctd_ITEM_, pointer(Common_OPT.Items.Objects[Common_OPT.ItemIndex]));
    _PTTNs_lBox__onSelectionChange(PTTNs_lBox,TRUE);
     //--
-   _OPTNs_lBox__reSetITEM(i);
-   _OPTNs_lBox__reSetITEM(Common_OPT.ItemIndex);
+   _lBOXs_reSetITEMs;
 end;
 
 procedure tCbSFP_ideCallEditor._Common_OPT_asPTTN__onExit(Sender: TObject);
@@ -1039,7 +1065,8 @@ begin
     //--- вырезаем из списка
     nodeEditor.lstPTTN_delItem(tmp);
     //--- отразим изменения в целевой
-   _OPTNs_lBox__reSetITEM(_OPTNs_lBox__fndOPTN(nodeEditor.itmPTTN_getOPTN(tmp))); //< у него теперь изменится
+    //  _OPTNs_lBox__reSetITEM(_OPTNs_lBox__fndOPTN(nodeEditor.itmPTTN_getOPTN(tmp))); //< у него теперь изменится
+   _lBOXs_reSetITEMs;
     //--- выделяем, устанавливаем фокус
     if PTTNs_lBox.Count=0 then begin
        _OPTNs_lBox__onSelectionChange(OPTNs_lBox,TRUE);

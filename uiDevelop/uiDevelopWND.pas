@@ -30,12 +30,12 @@ unit uiDevelopWND;
 
 interface
 
-uses Forms, Dialogs, ExtCtrls, StdCtrls,
+uses Forms, Dialogs, ExtCtrls, StdCtrls, EditBtn,
   //--- что тестируем
   CbSFP_ideCenter, CbSFP_ideEditor,
   //--- чем тестируем
   CbSFP_DemoSubScriber_HNDL, //< тестовый Обработчик
-  CbSFP_DemoSubScriber_EDTR; //< тестовый Редактор
+  CbSFP_DemoSubScriber_EDTR, Classes; //< тестовый Редактор
 
 type
 
@@ -45,11 +45,14 @@ type
     Button1: TButton;
     Button2: TButton;
     CbSFP_ideCallEditor1: TCbSFP_ideCallEditor;
+    FileNameEdit1: TFileNameEdit;
     Panel1: TPanel;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure FileNameEdit1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure Panel1Resize(Sender: TObject);
   end;
 
 var mainWND: TmainWND;
@@ -76,6 +79,11 @@ begin
     CbSFP_ideCallEditor1.ReadSettings(nil);
 end;
 
+procedure TmainWND.Panel1Resize(Sender: TObject);
+begin
+    FileNameEdit1.Width:=Button1.Left-FileNameEdit1.Left-FileNameEdit1.Height*2;
+end;
+
 //------------------------------------------------------------------------------
 
 procedure TmainWND.Button1Click(Sender:TObject);
@@ -88,6 +96,11 @@ procedure TmainWND.Button2Click(Sender:TObject);
 begin
     CbSFP_ideCallEditor1.RestoreSettings(nil);
     Dialogs.ShowMessage('Restore Settings END!');
+end;
+
+procedure TmainWND.FileNameEdit1Change(Sender: TObject);
+begin
+    CbSFP_ideCallEditor1.testFileName:=TFileNameEdit(Sender).FileName;
 end;
 
 end.

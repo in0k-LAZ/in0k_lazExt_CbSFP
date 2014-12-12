@@ -8,7 +8,7 @@ object mainWND: TmainWND
   ClientWidth = 645
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '1.2.2.0'
+  LCLVersion = '1.2.6.0'
   object Panel1: TPanel
     Left = 0
     Height = 25
@@ -22,6 +22,7 @@ object mainWND: TmainWND
     ClientHeight = 25
     ClientWidth = 645
     TabOrder = 0
+    OnResize = Panel1Resize
     object Button1: TButton
       AnchorSideTop.Control = Panel1
       AnchorSideRight.Control = Button2
@@ -46,6 +47,24 @@ object mainWND: TmainWND
       Caption = 'Cansel'
       OnClick = Button2Click
       TabOrder = 1
+    end
+    object FileNameEdit1: TFileNameEdit
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = Button1
+      Left = 2
+      Height = 23
+      Top = 1
+      Width = 441
+      FilterIndex = 0
+      HideDirectories = False
+      ButtonWidth = 23
+      NumGlyphs = 1
+      BorderSpacing.Left = 2
+      MaxLength = 0
+      TabOrder = 2
+      OnChange = FileNameEdit1Change
     end
   end
   inline CbSFP_ideCallEditor1: TCbSFP_ideCallEditor
