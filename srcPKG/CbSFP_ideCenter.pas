@@ -339,66 +339,146 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$region --- safeCall`s TCbSFP_SubScriber_editor methods ---------- /fold}
+// не то чтоб я не доверяю ... предохранимся просто
+
+const cPRMisNIL_megaFAIL=' in0k Mega FAIL !!! '+LineEnding+'parameter is NULL'+LineEnding;
+type  tPRMisNIL=Exception;
+
+//------------------------------------------------------------------------------
+
 function _safeCall__SubSiCLASS__Identifier_(const SubSiCLASS:tCbSFP_SubScriber_Handle):string;
 begin
-    try result:=SubSiCLASS.Identifier;
+    try // проверка моих косяков
+        if not Assigned(SubSiCLASS) then raise tPRMisNIL.Create('_safeCall__SubSiCLASS__Identifier_ : SubSiCLASS');
+        // ВНЕШНИЙ .. вызов
+        result:=SubSiCLASS.Identifier;
     except
-        result:='';
-        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.Identifier : ERROR');
+        on E:tPRMisNIL do begin
+            ShowMessage(cPRMisNIL_megaFAIL+e.Message);
+        end;
+        on E:Exception do begin
+            result:=SubSiCLASS.ClassName;
+            ShowMessage(SubSiCLASS.ClassName+'.GetTitle : ERROR'+LineEnding+E.Message);
+        end;
     end;
 end;
 
+//------------------------------------------------------------------------------
+
 function _safeCall__SubSiCLASS__ConfigOBJ_CRT(const SubSiCLASS:tCbSFP_SubScriber_Handle):tCbSFP_SubScriber_cnfOBJ;
 begin
-    try result:=SubSiCLASS.ConfigOBJ_CRT;
+    try // проверка моих косяков
+        if not Assigned(SubSiCLASS) then raise tPRMisNIL.Create('_safeCall__SubSiCLASS__ConfigOBJ_CRT : SubSiCLASS');
+        // ВНЕШНИЙ .. вызов
+        result:=SubSiCLASS.ConfigOBJ_CRT;
     except
-        result:=nil;
-        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_CRT : ERROR');
+        on E:tPRMisNIL do begin
+            result:=nil;
+            ShowMessage(cPRMisNIL_megaFAIL+e.Message);
+        end;
+        on E:Exception do begin
+            result:=nil;
+            ShowMessage(SubSiCLASS.ClassName+'.ConfigOBJ_CRT : ERROR'+LineEnding+E.Message);
+        end;
     end;
 end;
 
 procedure _safeCall__SubSiCLASS__ConfigOBJ_DST(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ);
 begin
-    try SubSiCLASS.ConfigOBJ_DST(Obj);
+    try // проверка моих косяков
+        if not Assigned(SubSiCLASS) then raise tPRMisNIL.Create('_safeCall__SubSiCLASS__ConfigOBJ_DST : SubSiCLASS');
+        if not Assigned(Obj)        then raise tPRMisNIL.Create('_safeCall__SubSiCLASS__ConfigOBJ_DST : Obj');
+        // ВНЕШНИЙ .. вызов
+        SubSiCLASS.ConfigOBJ_DST(Obj);
     except
-        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_DST : ERROR');
+        on E:tPRMisNIL do begin
+            ShowMessage(cPRMisNIL_megaFAIL+e.Message);
+        end;
+        on E:Exception do begin
+            ShowMessage(SubSiCLASS.ClassName+'.ConfigOBJ_DST : ERROR'+LineEnding+E.Message);
+        end;
     end;
 end;
 
 procedure _safeCall__SubSiCLASS__ConfigOBJ_DEF(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ);
 begin
-    try SubSiCLASS.ConfigOBJ_DEF(Obj);
+    try // проверка моих косяков
+        if not Assigned(SubSiCLASS) then raise tPRMisNIL.Create('_safeCall__SubSiCLASS__ConfigOBJ_DEF : SubSiCLASS');
+        if not Assigned(Obj)        then raise tPRMisNIL.Create('_safeCall__SubSiCLASS__ConfigOBJ_DEF : Obj');
+        // ВНЕШНИЙ .. вызов
+        SubSiCLASS.ConfigOBJ_DEF(Obj);
     except
-        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_DEF : ERROR');
+        on E:tPRMisNIL do begin
+            ShowMessage(cPRMisNIL_megaFAIL+e.Message);
+        end;
+        on E:Exception do begin
+            ShowMessage(SubSiCLASS.ClassName+'.ConfigOBJ_DEF : ERROR'+LineEnding+E.Message);
+        end;
     end;
 end;
+
+//------------------------------------------------------------------------------
 
 function _safeCall__SubSiCLASS__ConfigOBJ_FileEXT(const SubSiCLASS:tCbSFP_SubScriber_Handle):string;
 begin
-    try result:=SubSiCLASS.ConfigOBJ_FileEXT;
+    try // проверка моих косяков
+        if not Assigned(SubSiCLASS) then raise tPRMisNIL.Create('_safeCall__SubSiCLASS__ConfigOBJ_FileEXT : SubSiCLASS');
+        // ВНЕШНИЙ .. вызов
+        result:=SubSiCLASS.ConfigOBJ_FileEXT;
     except
-        result:='';
-        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_FileEXT : ERROR');
+        on E:tPRMisNIL do begin
+            result:='.xml';
+            ShowMessage(cPRMisNIL_megaFAIL+e.Message);
+        end;
+        on E:Exception do begin
+            result:='.xml';
+            ShowMessage(SubSiCLASS.ClassName+'.ConfigOBJ_FileEXT : ERROR'+LineEnding+E.Message);
+        end;
     end;
 end;
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 function _safeCall__SubSiCLASS__ConfigOBJ_LOAD(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ; const FileName:string):boolean;
 begin
-    try result:=SubSiCLASS.ConfigOBJ_Load(Obj,FileName);
+    try // проверка моих косяков
+        if not Assigned(SubSiCLASS) then raise tPRMisNIL.Create('_safeCall__SubSiCLASS__ConfigOBJ_LOAD : SubSiCLASS');
+        if not Assigned(Obj)        then raise tPRMisNIL.Create('_safeCall__SubSiCLASS__ConfigOBJ_LOAD : Obj');
+        // ВНЕШНИЙ .. вызов
+        result:=SubSiCLASS.ConfigOBJ_Load(Obj,FileName);
     except
-        result:=false;
-        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_Load : ERROR');
+        on E:tPRMisNIL do begin
+            result:=false;
+            ShowMessage(cPRMisNIL_megaFAIL+e.Message);
+        end;
+        on E:Exception do begin
+            result:=false;
+            ShowMessage(SubSiCLASS.ClassName+'.ConfigOBJ_Load : ERROR'+LineEnding+E.Message);
+        end;
     end;
 end;
 
 function _safeCall__SubSiCLASS__ConfigOBJ_SAVE(const SubSiCLASS:tCbSFP_SubScriber_Handle; const Obj:tCbSFP_SubScriber_cnfOBJ; const FileName:string):boolean;
 begin
-    try result:=SubSiCLASS.ConfigOBJ_Save(Obj,FileName);
+    try // проверка моих косяков
+        if not Assigned(SubSiCLASS) then raise tPRMisNIL.Create('_safeCall__SubSiCLASS__ConfigOBJ_SAVE : SubSiCLASS');
+        if not Assigned(Obj)        then raise tPRMisNIL.Create('_safeCall__SubSiCLASS__ConfigOBJ_SAVE : Obj');
+        // ВНЕШНИЙ .. вызов
+        result:=SubSiCLASS.ConfigOBJ_Save(Obj,FileName);
     except
-        result:=false;
-        ShowMessage(cIn0k_LazExt_CbSFP__IDENTIFICATOR+' mega FAIL !!!'+LineEnding+SubSiCLASS.ClassName+'.ConfigOBJ_Save : ERROR');
+        on E:tPRMisNIL do begin
+            result:=false;
+            ShowMessage(cPRMisNIL_megaFAIL+e.Message);
+        end;
+        on E:Exception do begin
+            result:=false;
+            ShowMessage(SubSiCLASS.ClassName+'.ConfigOBJ_Save : ERROR'+LineEnding+E.Message);
+        end;
     end;
 end;
+
+{$endregion}
 
 {%region --- работа с ОЧЕРЕДЬЮ pCbSFP_Node ------------------------ /fold}
 

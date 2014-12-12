@@ -404,6 +404,67 @@ end;
 
 {%endregion}
 
+{$region --- safeCall`s TCbSFP_SubScriber_editor methods ---------- /fold}
+// не то чтоб я не доверяю ... но надо проверить и обезопаситься
+
+const cPRMisNIL_megaFAIL=' in0k Mega FAIL !!! '+LineEnding+'parameter is NULL'+LineEnding;
+type  tPRMisNIL=Exception;
+
+//------------------------------------------------------------------------------
+
+function _safeCall__editor__getTitle_(const cFRM:TCbSFP_SubScriber_editor):string;
+begin
+    try // проверка моих косяков
+        if not Assigned(cFRM) then raise tPRMisNIL.Create('_safeCall__editor__getTitle_ : cFRM');
+        // ВНЕШНИЙ .. вызов
+        result:=cFRM.GetTitle;
+    except
+        on E:tPRMisNIL do begin
+            ShowMessage(cPRMisNIL_megaFAIL+e.Message);
+        end;
+        on E:Exception do begin
+            result:=cFRM.ClassName;
+            ShowMessage(cFRM.ClassName+'.GetTitle : ERROR'+LineEnding+E.Message);
+        end;
+    end;
+end;
+
+procedure _safeCall__editor__Settings_SAVE_(const cFRM:TCbSFP_SubScriber_editor; const CNFG:pointer);
+begin
+    try // проверка моих косяков
+        if not Assigned(cFRM) then raise tPRMisNIL.Create('_safeCall__editor__Settings_SAVE_ : cFRM');
+        if not Assigned(CNFG) then raise tPRMisNIL.Create('_safeCall__editor__Settings_SAVE_ : CNFG');
+        // ВНЕШНИЙ .. вызов
+        cFRM.Settings_SAVE(CNFG);
+    except
+        on E:tPRMisNIL do begin
+            ShowMessage(cPRMisNIL_megaFAIL+e.Message);
+        end;
+        on E:Exception do begin
+            ShowMessage(cFRM.ClassName+'.Settings_SAVE : ERROR'+LineEnding+E.Message);
+        end;
+    end;
+end;
+
+procedure _safeCall__editor__Settings_LOAD_(const cFRM:TCbSFP_SubScriber_editor; const CNFG:pointer);
+begin
+    try // проверка моих косяков
+        if not Assigned(cFRM) then raise tPRMisNIL.Create('_safeCall__editor__Settings_LOAD_ : cFRM');
+        if not Assigned(CNFG) then raise tPRMisNIL.Create('_safeCall__editor__Settings_LOAD_ : CNFG');
+        // ВНЕШНИЙ .. вызов
+        cFRM.Settings_LOAD(CNFG);
+    except
+        on E:tPRMisNIL do begin
+            ShowMessage(cPRMisNIL_megaFAIL+e.Message);
+        end;
+        on E:Exception do begin
+            ShowMessage(cFRM.ClassName+'.Settings_LOAD : ERROR'+LineEnding+E.Message);
+        end;
+    end;
+end;
+
+{$endregion}
+
 {$region --- выход на CallCenter ---------------------------------- /fold}
 
 procedure tCbSFP_ideCallEditor._ideEditorNODE_CLR;
@@ -623,7 +684,7 @@ end;
 
 function tCbSFP_ideCallEditor._PTTNs_lBox__clcCPTN(const itm:pCbSFP_PTTN):string;
 begin
-    result:=nodeEditor.itmPTTN_getSeek(itm)+' '+result;
+    result:=nodeEditor.itmPTTN_getSeek(itm);
     //---
     if (_testFileName<>'') then begin
         if (nodeEditor.itmPTTN_find(itm,_testFileName)=itm) then begin
@@ -767,10 +828,6 @@ begin
         nodeEditor.itmPTTN_setSeek(_slctd_ITEM_,tmpSEEK);
         PTTNs_lBox.Items.Strings[_slctd_INDX_]:=_PTTNs_lBox__clcCPTN(_slctd_ITEM_);
         tEdit(Sender).Font.Color:=clDefault;
-
-
-//       _
-
     end
     else begin
         tEdit(Sender).Font.Color:=clRED;
@@ -802,9 +859,7 @@ begin
 end;
 
 procedure tCbSFP_ideCallEditor._Common_OPT_asPTTN__onChange(Sender:TObject);
-var i:integer;
 begin
-    i:=_common_OPT_asPTTN__findOPTN(nodeEditor.itmPTTN_getOPTN(_slctd_ITEM_));
     //-- изменяем СТАРЫЙ
     nodeEditor.itmPTTN_setOPTN(_slctd_ITEM_, pointer(Common_OPT.Items.Objects[Common_OPT.ItemIndex]));
    _PTTNs_lBox__onSelectionChange(PTTNs_lBox,TRUE);
@@ -889,44 +944,16 @@ end;
 
 {%endregion}
 
-function _safeCall__common_FRM__getTitle_(const cFRM:TCbSFP_SubScriber_editor):string;
-begin
-    try
-        result:=cFRM.GetTitle;
-    except
-        result:=cFRM.ClassName;
-        ShowMessage(cFRM.ClassName+'.GetTitle : ERROR');
-    end;
-end;
-
-procedure _safeCall__common_FRM__Settings_SAVE_(const cFRM:TCbSFP_SubScriber_editor; const CNFG:pointer);
-begin
-    try
-        cFRM.Settings_SAVE(CNFG);
-    except
-        ShowMessage(cFRM.ClassName+'.Settings_SAVE : ERROR');
-    end;
-end;
-
-procedure _safeCall__common_FRM__Settings_LOAD_(const cFRM:TCbSFP_SubScriber_editor; const CNFG:pointer);
-begin
-    try
-        cFRM.Settings_LOAD(CNFG);
-    except
-        ShowMessage(cFRM.ClassName+'.Settings_LOAD : ERROR');
-    end;
-end;
-
 {%region --- что КОНКРЕКТНО выделено _slctd_.. -------------------- /fold}
 
 procedure tCbSFP_ideCallEditor._common_FRM__CNFG_SET(const CNFG:pointer);
 begin
    _common_FRM__Tst2CRT;
-    if Assigned(_slctd_CNFG_) then _safeCall__common_FRM__Settings_SAVE_(_common_FRM_,CNFG);
+    if Assigned(_slctd_CNFG_) then _safeCall__editor__Settings_SAVE_(_common_FRM_,CNFG);
     if _slctd_CNFG_<>CNFG then begin
        _slctd_CNFG_:=CNFG;
         //---
-        if Assigned(_slctd_CNFG_) then _safeCall__common_FRM__Settings_LOAD_(_common_FRM_,_slctd_CNFG_)
+        if Assigned(_slctd_CNFG_) then _safeCall__editor__Settings_LOAD_(_common_FRM_,_slctd_CNFG_)
         else begin
            _common_FRM_.Enabled:=false;
         end;
@@ -993,7 +1020,7 @@ begin
     //--- добавляем и "копируем" настройки из текущей
     tmp:=nodeEditor.lstOPTN_addItem;
     if Assigned(_slctd_CNFG_) then
-   _safeCall__common_FRM__Settings_SAVE_(_common_FRM_,nodeEditor.itmOPTN_getCNFG(tmp));
+   _safeCall__editor__Settings_SAVE_(_common_FRM_,nodeEditor.itmOPTN_getCNFG(tmp));
     //--- вставляем в контрол
     idx:=OPTNs_lBox.Items.AddObject('',tObject(tmp));
    _OPTNs_lBox__reSetITEM(idx);
@@ -1224,7 +1251,7 @@ end;
 function tCbSFP_ideCallEditor.GetTitle:String;
 begin
    _common_FRM__Tst2CRT;
-    if Assigned(_common_FRM_) then result:=_safeCall__common_FRM__getTitle_(_common_FRM_)
+    if Assigned(_common_FRM_) then result:=_safeCall__editor__getTitle_(_common_FRM_)
     else result:=self.Name;
 end;
 
