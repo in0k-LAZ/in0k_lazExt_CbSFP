@@ -7,9 +7,9 @@ unit in0k_lazExt_CbSFP_pkg;
 interface
 
 uses
-  CbSFP__Intf, CbSFP_SubScriber, CbSFP_ideCenter, CbSFP_ideEditor, 
-  CbSFP_ideGENERAL_editor, CbSFP_ideGENERAL_config, CbSFP_ideGENERAL, 
-  {CbSFP_ideConfigStorage,} LazarusPackageIntf;
+  CbSFP_ideGENERAL, CbSFP_SubScriber, CbSFP_ideCenter, CbSFP_ideEditor, 
+  CbSFP_ideGENERAL_editor, CbSFP_ideGENERAL_config, CbSFP__Intf, 
+  LazarusPackageIntf;
 
 implementation
 

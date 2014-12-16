@@ -56,8 +56,8 @@ end;
 
 procedure CbSFP_DemoSubScriber_CNFG__DEF(const Obj:pCbSFP_DemoSubScriber_CNFG);
 begin
-    Obj^.III:=0;
-    Obj^.SSS:=''
+    Obj^.III:=10;
+    Obj^.SSS:='test'
 end;
 
 end.

@@ -53,6 +53,8 @@ uses sysutils, Classes, Graphics,  Dialogs,
 
 type
 
+ { tCbSFP_ideCallEditor }
+
  tCbSFP_ideCallEditor=class(TAbstractIDEOptionsEditor)
     //---
     ActionList: TActionList;
@@ -62,8 +64,10 @@ type
     aPTTN_aDEL: TAction;
     aPTTN_mwUP: TAction;
     aPTTN_mwDW: TAction;
+    aCNFG__DEF: TAction;
     //---
     CMMN_Panel: TPanel;
+    CNFG_toDEF: TSpeedButton;
     Common_CHB: TCheckBox;
     Common_CPT: TLabel;
     Common_EDT: TEdit;
@@ -181,6 +185,9 @@ type
     procedure _aOPTN_aAdd_onUpdate (Sender: TObject);
     procedure _aOPTN_aDEL_onExecute(Sender: TObject);
     procedure _aOPTN_aDEL_onUpdate (Sender: TObject);
+  protected
+    procedure _aCNFG__DEF_onExecute(Sender: TObject);
+    procedure _aCNFG__DEF_onUpdate (Sender: TObject);
   protected
     procedure _aPTTN_aAdd_onExecute(Sender: TObject);
     procedure _aPTTN_aAdd_onUpdate (Sender: TObject);
@@ -322,6 +329,7 @@ begin
     aPTTN_aDEL.Caption:='aDEL';
     aPTTN_mwUP.Caption:='a_Up';
     aPTTN_mwDW.Caption:='aDwn';
+    aCNFG__DEF.Caption:='toDEF';
     {$else}
     aOPTN_aAdd.Caption:='';
     aOPTN_aDEL.Caption:='';
@@ -329,6 +337,7 @@ begin
     aPTTN_aDEL.Caption:='';
     aPTTN_mwUP.Caption:='';
     aPTTN_mwDW.Caption:='';
+    aCNFG__DEF.Caption:='';
     {$endIf}
 end;
 
@@ -338,6 +347,7 @@ begin //< тупо ради красоты
     aOPTN_aAdd.OnUpdate :=@_aOPTN_aAdd_onUpdate;
     aOPTN_aDEL.OnExecute:=@_aOPTN_aDEL_onExecute;
     aOPTN_aDEL.OnUpdate :=@_aOPTN_aDEL_onUpdate;
+    //---
     aPTTN_aAdd.OnExecute:=@_aPTTN_aAdd_onExecute;
     aPTTN_aAdd.OnUpdate :=@_aPTTN_aAdd_onUpdate;
     aPTTN_aDEL.OnExecute:=@_aPTTN_aDEL_onExecute;
@@ -346,6 +356,9 @@ begin //< тупо ради красоты
     aPTTN_mwUP.OnUpdate :=@_aPTTN_mwUP_onUpdate;
     aPTTN_mwDW.OnExecute:=@_aPTTN_mwDW_onExecute;
     aPTTN_mwDW.OnUpdate :=@_aPTTN_mwDW_onUpdate;
+    //---
+    aCNFG__DEF.OnExecute:=@_aCNFG__DEF_onExecute;
+    aCNFG__DEF.OnUpdate :=@_aCNFG__DEF_onUpdate;
 end;
 
 procedure tCbSFP_ideCallEditor._onCreate_setButtonsIMGs;
@@ -358,6 +371,8 @@ begin
         PTTNs_bDel.LoadGlyphFromLazarusResource('laz_delete');
         PTTNs_bUp .LoadGlyphFromLazarusResource('arrow_up');
         PTTNs_bDwn.LoadGlyphFromLazarusResource('arrow_down');
+        //---
+        CNFG_toDEF.LoadGlyphFromLazarusResource('pkg_inherited');
     {$endIf}
 end;
 
@@ -382,7 +397,8 @@ var W:integer;
 begin
     Common_sh2.BorderSpacing.Top:=(Common_OPT.Height div 2)+1;
     Common_PNL.BorderSpacing.Top:= Common_sh2.BorderSpacing.Top;
-    Common_PNL.BorderSpacing.Right:=Splitter_1.Width;
+    Common_PNL.BorderSpacing.Right:=Splitter_1.Width div 2;
+    CNFG_toDEF.BorderSpacing.Right:=Splitter_1.Width div 2;
     //---
     w:=0;
     with Common_CHB do if W<Width then W:=Width;
@@ -1165,6 +1181,22 @@ begin
     PTTNs_lBox.Items.Move(PTTNs_lBox.ItemIndex,i);
     PTTNs_lBox.Selected[i]:=TRUE;
     PTTNs_lBox.SetFocus;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure tCbSFP_ideCallEditor._aCNFG__DEF_onExecute(Sender:TObject);
+begin
+    if Assigned(_slctd_CNFG_) then begin //< на всяк ПЖС. (_aCNFG__DEF_onUpdate)
+       _safeCall__editor__Settings_SAVE_(_common_FRM_,_slctd_CNFG_);
+        nodeEditor.itmCNFG_toDEF(_slctd_CNFG_);
+       _safeCall__editor__Settings_LOAD_(_common_FRM_,_slctd_CNFG_);
+    end;
+end;
+
+procedure tCbSFP_ideCallEditor._aCNFG__DEF_onUpdate(Sender:TObject);
+begin
+    tAction(Sender).Enabled:=Assigned(_slctd_CNFG_);
 end;
 
 {%endregion}

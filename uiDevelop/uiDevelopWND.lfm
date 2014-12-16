@@ -8,7 +8,7 @@ object mainWND: TmainWND
   ClientWidth = 645
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.2.2.0'
   object Panel1: TPanel
     Left = 0
     Height = 25
@@ -113,13 +113,13 @@ object mainWND: TmainWND
       ClientHeight = 427
       ClientWidth = 470
       inherited Common_i_1: TImage
-        Left = 450
+        Left = 454
       end
       inherited Common_OPT: TComboBox
-        Width = 376
+        Width = 341
       end
       inherited Common_EDT: TEdit
-        Width = 376
+        Width = 341
       end
       inherited Common_sh2: TShape
         Width = 468
@@ -130,6 +130,10 @@ object mainWND: TmainWND
       inherited Common_PNL: TPanel
         Height = 362
         Width = 470
+      end
+      inherited CNFG_toDEF: TSpeedButton
+        Left = 399
+        Flat = False
       end
     end
   end

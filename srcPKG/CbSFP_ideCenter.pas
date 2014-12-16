@@ -148,6 +148,8 @@ type
     function  _lstBase_vldText (const itm:pCbSFP_base; const TXT:string; const withOut:pCbSFP_base=nil):boolean;
     function  _lstBase_newText (const itm:pCbSFP_base; const TXT:string):string;
   {%endregion}
+  private
+    procedure _itmCNFG_set_DEF (const node:pCbSFP_Node; const CNFG:pointer); inline;
   {%region --- работа с УЗЛАМИ pCbSFP_OPTN ------------------------ /fold}
   private
     procedure _lstOPTN_CLEAR   (const node:pCbSFP_Node; var FIRST:pCbSFP_OPTN);
@@ -305,6 +307,8 @@ type
     function  itmPTTN_find    (const item:pCbSFP_PTTN; const fileName:string):pCbSFP_PTTN;
     function  itmOPTN_find    (const item:pCbSFP_PTTN; const fileName:string):pCbSFP_OPTN;
   {%endregion}
+  public //<
+    procedure itmCNFG_toDEF   (const item:pointer);
   end;
 
 function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
@@ -998,6 +1002,12 @@ begin
 end;
 
 {%endregion}
+
+procedure tCbSFP_ideCallCenter._itmCNFG_set_DEF(const node:pCbSFP_Node; const CNFG:pointer);
+begin
+    if Assigned(node) and Assigned(node^.SubSiCLASS) and Assigned(CNFG)
+    then _safeCall__SubSiCLASS__ConfigOBJ_DEF(node^.SubSiCLASS,CNFG);
+end;
 
 {%region --- работа с УЗЛАМИ pCbSFP_OPTN -------------------------- /fold}
 
@@ -1698,6 +1708,13 @@ end;
 function tCbSFP_ideEditorNODE.itmOPTN_find(const item:pCbSFP_PTTN; const fileName:string):pCbSFP_OPTN;
 begin
     result:=_CallCenter_._SubScrbr_findOPTN(_SubScriber_,fileName);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure tCbSFP_ideEditorNODE.itmCNFG_toDEF(const item:pointer);
+begin
+   _CallCenter_._itmCNFG_set_DEF(_SubScriber_,item);
 end;
 
 {%endregion}
