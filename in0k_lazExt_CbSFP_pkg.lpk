@@ -34,8 +34,9 @@
     <Version Minor="9" Release="2"/>
     <Files Count="7">
       <Item1>
-        <Filename Value="srcPKG\CbSFP__Intf.pas"/>
-        <UnitName Value="CbSFP__Intf"/>
+        <Filename Value="srcPKG\CbSFP_ideGENERAL.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="CbSFP_ideGENERAL"/>
       </Item1>
       <Item2>
         <Filename Value="srcPKG\CbSFP_SubScriber.pas"/>
@@ -58,9 +59,8 @@
         <UnitName Value="CbSFP_ideGENERAL_config"/>
       </Item6>
       <Item7>
-        <Filename Value="srcPKG\CbSFP_ideGENERAL.pas"/>
-        <HasRegisterProc Value="True"/>
-        <UnitName Value="CbSFP_ideGENERAL"/>
+        <Filename Value="srcPKG\CbSFP__Intf.pas"/>
+        <UnitName Value="CbSFP__Intf"/>
       </Item7>
     </Files>
     <Type Value="DesignTime"/>
