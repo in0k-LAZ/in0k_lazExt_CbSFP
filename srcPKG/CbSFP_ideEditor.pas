@@ -407,8 +407,8 @@ end;
 {$region --- safeCall`s TCbSFP_SubScriber_editor methods ---------- /fold}
 // не то чтоб я не доверяю ... но надо проверить и обезопаситься
 
-const cPRMisNIL_megaFAIL=' in0k Mega FAIL !!! '+LineEnding+'parameter is NULL'+LineEnding;
-type  tPRMisNIL=Exception;
+const cPRMisNIL_megaFAIL='in0k Mega FAIL !!! '+LineEnding+'parameter is NULL'+LineEnding;
+type  tPRMisNIL=class(Exception) end;
 
 //------------------------------------------------------------------------------
 
@@ -949,7 +949,7 @@ end;
 procedure tCbSFP_ideCallEditor._common_FRM__CNFG_SET(const CNFG:pointer);
 begin
    _common_FRM__Tst2CRT;
-    if Assigned(_slctd_CNFG_) then _safeCall__editor__Settings_SAVE_(_common_FRM_,CNFG);
+    if Assigned(_slctd_CNFG_) then _safeCall__editor__Settings_SAVE_(_common_FRM_,_slctd_CNFG_);
     if _slctd_CNFG_<>CNFG then begin
        _slctd_CNFG_:=CNFG;
         //---
