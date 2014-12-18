@@ -31,7 +31,7 @@ unit CbSFP_DemoSubScriber_EDTR;
 interface
 
 uses SysUtils, StdCtrls, Classes,
-  CbSFP_SubScriber,
+  CbSFP_SubScriber, CbSFP__Intf,
   CbSFP_DemoSubScriber_CNFG;
 
 type

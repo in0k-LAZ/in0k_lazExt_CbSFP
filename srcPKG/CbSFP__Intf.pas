@@ -33,9 +33,12 @@ interface
 uses IDEOptionsIntf, CbSFP_ideCenter, CbSFP_SubScriber;
 
 function CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
+{$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"
 function CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
-
 function CbSFP_SubScriber__cnfg_OBJ(const SubScriber:tCbSFP_SubScriber; const srcFileName:string):pointer;
+{$endIf}
+
+procedure CbSFP_SubScriber__DebugMSG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
 
 implementation
 
@@ -44,6 +47,7 @@ begin
     result:=CbSFP_ideCenter.CbSFP_ideCenter__SubScriberREGISTER(Handle,Editor);
 end;
 
+{$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"
 function CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
 begin
     result:=CbSFP_ideCenter.CbSFP_ideCenter__SubScriberREGISTER(Handle,Editor, AGroup,AIndex,AParent);
@@ -52,6 +56,12 @@ end;
 function CbSFP_SubScriber__cnfg_OBJ(const SubScriber:tCbSFP_SubScriber; const srcFileName:string):pointer;
 begin
     result:=CbSFP_ideCenter.CbSFP_ideCenter__SubScriber_CnfgOBJ(SubScriber,srcFileName);
+end;
+{$endIf}
+
+procedure CbSFP_SubScriber__DebugMSG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+begin
+    CbSFP_ideCenter_DEBUG(SubScriber, mType,mText);
 end;
 
 end.

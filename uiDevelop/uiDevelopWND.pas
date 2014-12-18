@@ -32,7 +32,7 @@ interface
 
 uses Forms, Dialogs, ExtCtrls, StdCtrls, EditBtn,
   //--- что тестируем
-  CbSFP_ideCenter, CbSFP_ideEditor,
+  CbSFP_ideCenter, CbSFP_ideEditor, CbSFP_SubScriber,
   //--- чем тестируем
   CbSFP_DemoSubScriber_HNDL, //< тестовый Обработчик
   CbSFP_DemoSubScriber_EDTR, Classes; //< тестовый Редактор
@@ -44,15 +44,19 @@ type
   TmainWND = class(TForm)
     Button1: TButton;
     Button2: TButton;
+    Button3: TButton;
     CbSFP_ideCallEditor1: TCbSFP_ideCallEditor;
     FileNameEdit1: TFileNameEdit;
     Panel1: TPanel;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
     procedure FileNameEdit1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Panel1Resize(Sender: TObject);
+  private
+    SubScriber:tCbSFP_SubScriber;
   end;
 
 var mainWND: TmainWND;
@@ -64,7 +68,7 @@ implementation
 procedure TmainWND.FormCreate(Sender: TObject);
 begin
     // регистрируем ЕДИНСТВЕННОГО абонента в системе
-    CbSFP_ideCenter__SubScriberREGISTER(tCbSFP_DemoSubScriber_HNDL,TCbSFP_DemoSubScriber_EDTR);
+    SubScriber:=CbSFP_ideCenter__SubScriberREGISTER(tCbSFP_DemoSubScriber_HNDL,TCbSFP_DemoSubScriber_EDTR);
 end;
 
 //------------------------------------------------------------------------------
@@ -96,6 +100,11 @@ procedure TmainWND.Button2Click(Sender:TObject);
 begin
     CbSFP_ideCallEditor1.RestoreSettings(nil);
     Dialogs.ShowMessage('Restore Settings END!');
+end;
+
+procedure TmainWND.Button3Click(Sender: TObject);
+begin
+   CbSFP_ideCenter_wndDBG_inComing(SubScriber);
 end;
 
 procedure TmainWND.FileNameEdit1Change(Sender: TObject);

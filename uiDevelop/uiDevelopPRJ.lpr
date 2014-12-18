@@ -41,10 +41,11 @@ uses
   CbSFP_SubScriber,
   CbSFP_ideEditor,
   CbSFP_ideCenter,
+//        wnd_DEBUG
   //---
   CbSFP_DemoSubScriber_CNFG,
   CbSFP_DemoSubScriber_HNDL,
-  CbSFP_DemoSubScriber_EDTR;
+  CbSFP_DemoSubScriber_EDTR, CbSFP_wnd_DEBUG;
 
 {$R *.res}
 

@@ -1,0 +1,58 @@
+object CbSFP_wndDEBUG: TCbSFP_wndDEBUG
+  Left = 251
+  Height = 338
+  Top = 173
+  Width = 705
+  Caption = 'CbSFP_wndDEBUG'
+  ClientHeight = 338
+  ClientWidth = 705
+  OnClose = FormClose
+  OnShow = FormShow
+  LCLVersion = '1.2.2.0'
+  Visible = True
+  object Memo1: TMemo
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Button1
+    Left = 0
+    Height = 313
+    Top = 0
+    Width = 705
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Font.Pitch = fpFixed
+    Lines.Strings = (
+      'Memo1'
+    )
+    ParentFont = False
+    ScrollBars = ssAutoBoth
+    TabOrder = 0
+  end
+  object Button1: TButton
+    AnchorSideLeft.Control = Owner
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 25
+    Top = 313
+    Width = 75
+    Anchors = [akLeft, akBottom]
+    Caption = 'Button1'
+    TabOrder = 1
+  end
+  object Button2: TButton
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 637
+    Height = 25
+    Top = 313
+    Width = 68
+    Anchors = [akRight, akBottom]
+    AutoSize = True
+    Caption = 'Button2'
+    TabOrder = 2
+  end
+end

@@ -37,6 +37,7 @@ unit CbSFP_ideCenter;
 interface
 
 uses sysutils, LazFileUtils, IDEOptionsIntf, RegExpr, Dialogs,
+    CbSFP_wnd_DEBUG,
     {$ifDef ideLazExtMODE}
     BaseIDEIntf,
     LazConfigStorage,
@@ -66,6 +67,7 @@ type
     IDEOptERec:PIDEOptionsEditorRec;
     list_OPTNs:pCbSFP_OPTN;
     list_PTTNs:pCbSFP_PTTN;
+   _wnd_DEBUG_:TCbSFP_wndDEBUG;
   end;
 
  tCbSFP_ideFileStorage={$ifDef ideLazExtMODE} //< боевой режим
@@ -318,6 +320,13 @@ function CbSFP_ideCenter__SubScriber_CnfgOBJ(const SubScriber:tCbSFP_SubScriber;
 {$endIf}
 function CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
 
+function  CbSFP_ideCenter_SubScriber_INDF(const SubScriber:tCbSFP_SubScriber):string;
+procedure CbSFP_ideCenter_wndDBG_inComing(const SubScriber:tCbSFP_SubScriber);
+procedure CbSFP_ideCenter_wndDBG_outGoing(const SubScriber:tCbSFP_SubScriber);
+
+procedure CbSFP_ideCenter_DEBUG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+
+
 implementation
 
 {$ifDef ideLazExtMODE}
@@ -542,6 +551,7 @@ begin
         SubSiCLASS:=HNDL.Create;
         list_OPTNs:=nil;
         list_PTTNs:=nil;
+       _wnd_DEBUG_:=nil;
     end;
 end;
 
@@ -557,9 +567,13 @@ end;
 
 procedure tCbSFP_ideCallCenter._node_DST(const node:pCbSFP_Node);
 begin
+    if Assigned(node^._wnd_DEBUG_) then begin
+        node^._wnd_DEBUG_.Close;
+    end;
    _lstPTTN_CLEAR(node^.list_PTTNs);
    _lstOPTN_CLEAR(node,node^.list_OPTNs);
     node^.SubSiCLASS.FREE;
+
     dispose(node);
 end;
 
@@ -1732,6 +1746,36 @@ begin
     result:=tCbSFP_ideEditorNODE.Create(_CallCenter_,_CallCenter_.SubScriber_byEDITOR(value));
 end;
 
+//------------------------------------------------------------------------------
+
+function CbSFP_ideCenter_SubScriber_INDF(const SubScriber:tCbSFP_SubScriber):string;
+begin
+    if Assigned(SubScriber) then begin
+       result:=_CallCenter_._node_identifier(SubScriber);
+    end
+    else result:='NDF';
+end;
+
+//------------------------------------------------------------------------------
+
+procedure CbSFP_ideCenter_wndDBG_inComing(const SubScriber:tCbSFP_SubScriber);
+begin
+    pCbSFP_Node(SubScriber)^._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(SubScriber);
+end;
+
+procedure CbSFP_ideCenter_wndDBG_outGoing(const SubScriber:tCbSFP_SubScriber);
+begin
+    pCbSFP_Node(SubScriber)^._wnd_DEBUG_:=NIL;
+end;
+
+procedure CbSFP_ideCenter_DEBUG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+begin
+    if Assigned(SubScriber)and Assigned(pCbSFP_Node(SubScriber)^._wnd_DEBUG_)
+    then begin
+        pCbSFP_Node(SubScriber)^._wnd_DEBUG_.message(mType,mText);
+    end;
+end;
+
 {$ifNDef uiDevelopPRJ} //< боевой режм "Расширения IDE"
 
 function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
@@ -1749,6 +1793,7 @@ begin
     result:=tCbSFP_ideCallCenterIDE(_CallCenter_).SubScriber_Cnfg_OBJ(SubScriber,FileName);
 end;
 
+
 {$else} //< режим ТЕСТИРОВАНИЯ
 
 function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
@@ -1757,6 +1802,7 @@ begin
 end;
 
 {$endIf}
+
 
 {%endregion}
 

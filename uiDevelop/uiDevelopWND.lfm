@@ -1,7 +1,7 @@
 object mainWND: TmainWND
-  Left = 323
+  Left = 281
   Height = 462
-  Top = 145
+  Top = 105
   Width = 645
   Caption = 'mainWND'
   ClientHeight = 462
@@ -26,7 +26,7 @@ object mainWND: TmainWND
     object Button1: TButton
       AnchorSideTop.Control = Panel1
       AnchorSideRight.Control = Button2
-      Left = 489
+      Left = 414
       Height = 25
       Top = 0
       Width = 81
@@ -37,9 +37,8 @@ object mainWND: TmainWND
     end
     object Button2: TButton
       AnchorSideTop.Control = Panel1
-      AnchorSideRight.Control = Panel1
-      AnchorSideRight.Side = asrBottom
-      Left = 570
+      AnchorSideRight.Control = Button3
+      Left = 495
       Height = 25
       Top = 0
       Width = 75
@@ -56,7 +55,7 @@ object mainWND: TmainWND
       Left = 2
       Height = 23
       Top = 1
-      Width = 441
+      Width = 310
       FilterIndex = 0
       HideDirectories = False
       ButtonWidth = 23
@@ -65,6 +64,19 @@ object mainWND: TmainWND
       MaxLength = 0
       TabOrder = 2
       OnChange = FileNameEdit1Change
+    end
+    object Button3: TButton
+      AnchorSideTop.Control = Panel1
+      AnchorSideRight.Control = Panel1
+      AnchorSideRight.Side = asrBottom
+      Left = 570
+      Height = 25
+      Top = 0
+      Width = 75
+      Anchors = [akTop, akRight]
+      Caption = 'DEBUG'
+      OnClick = Button3Click
+      TabOrder = 3
     end
   end
   inline CbSFP_ideCallEditor1: TCbSFP_ideCallEditor
@@ -110,6 +122,7 @@ object mainWND: TmainWND
     inherited CMMN_Panel: TPanel
       Height = 427
       Width = 470
+      Align = alNone
       ClientHeight = 427
       ClientWidth = 470
       inherited Common_i_1: TImage

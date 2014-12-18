@@ -42,7 +42,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="9">
       <Unit0>
         <Filename Value="uiDevelopPRJ.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -95,6 +95,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="CbSFP_DemoSubScriber_CNFG"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="..\srcPKG\CbSFP_wnd_DEBUG.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CbSFP_wndDEBUG"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="CbSFP_wnd_DEBUG"/>
+      </Unit8>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
