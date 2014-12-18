@@ -162,14 +162,11 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
     end
   end
   object CMMN_Panel: TPanel
-    AnchorSideTop.Control = Splitter_1
-    AnchorSideTop.Side = asrCenter
     Left = 175
     Height = 548
     Top = 0
     Width = 409
     Align = alClient
-    Anchors = []
     BevelOuter = bvNone
     ClientHeight = 548
     ClientWidth = 409
@@ -268,7 +265,7 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
       Top = 65
       Width = 409
       Align = alBottom
-      Anchors = [akTop]
+      Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Top = 12
       BevelOuter = bvNone
       TabOrder = 3
