@@ -37,6 +37,7 @@ unit CbSFP_ideGENERAL_config;
 interface
 
 uses IDEOptionsIntf, LazConfigStorage, BaseIDEIntf,
+  CbSFP_ideGENERAL ,
   sysutils;
 
 type
@@ -45,7 +46,7 @@ type
    protected
     _mustSAVE:boolean;
    protected //< почемуто рекомендуют использовать именно это
-     function _ConfigStorage_get:TConfigStorage;
+     function _ConfigStorage_get:tCbSFP_configFile;
    protected
      procedure _Init;
      procedure _Save;
@@ -62,16 +63,23 @@ type
    end;
 
 
-implementation
-{$ifDef ideLazExtMODE}
-uses CbSFP_ideGENERAL;
+{$ifDef uiDevelopPRJ}
+function CbSFP_ideGeneral_Config__GET:tCbSFP_ideGeneral_Config;
 {$endif}
 
-{$ifdef ideLazExtMODE}
+
+ // GetInstance:TAbstractIDEOptions; override;
+
+implementation
+{.$ifDef ideLazExtMODE}
+//uses ;
+{.$endif}
+
+{.$ifdef ideLazExtMODE}
 const cCbSFP_ideGeneral_Config__GroupGeneral=cIn0k_LazExt_CbSFP__GroupGeneral;
-{$else}
-const cCbSFP_ideGeneral_Config__GroupGeneral='';
-{$endif}
+{/$else}
+//const cCbSFP_ideGeneral_Config__GroupGeneral='';
+{/$endif}
 
 
 //------------------------------------------------------------------------------
@@ -97,6 +105,13 @@ begin
     end;
     result:=_CbSFP_ideGeneral_Config_;
 end;
+
+{$ifDef uiDevelopPRJ}
+function CbSFP_ideGeneral_Config__GET:tCbSFP_ideGeneral_Config;
+begin
+    result:=_CbSFP_ideGeneral_Config__GET_;
+end;
+{$endif}
 
 {%endregion}
 //------------------------------------------------------------------------------
@@ -130,12 +145,10 @@ end;
 
 //------------------------------------------------------------------------------
 
-function tCbSFP_ideGeneral_Config._ConfigStorage_get:TConfigStorage;
+function tCbSFP_ideGeneral_Config._ConfigStorage_get:tCbSFP_configFile;
 begin
-    result:=GetIDEConfigStorage(
-        CbSFP_ideGENERAL__Config_fileName,
-        FileExists(CbSFP_ideGENERAL__Config_fileName) //< если он есть то ЧИТАЕМ
-                );
+    CbSFP_forceDir_Config_RootPath;
+    result:=CbSFP_configFile_CREATE(CbSFP_Config_FileName);
 end;
 
 //------------------------------------------------------------------------------
@@ -146,7 +159,7 @@ begin
 end;
 
 procedure tCbSFP_ideGeneral_Config._Save;
-var Config:TConfigStorage;
+var Config:tCbSFP_configFile;
 begin
     Config:=_ConfigStorage_get;
     try if Assigned(Config) then begin
@@ -160,7 +173,7 @@ begin
 end;
 
 procedure tCbSFP_ideGeneral_Config._Load;
-var Config:TConfigStorage;
+var Config:tCbSFP_configFile;
 begin
     Config:=_ConfigStorage_get;
     try if Assigned(Config) then begin
@@ -181,19 +194,18 @@ const
   cNodeName_V2='V2';
 
 procedure tCbSFP_ideGeneral_Config.SubScriber_saveEditorVALUEs(const INDF:string; const V1,V2:integer);
-var Config:TConfigStorage;
+var Config:tCbSFP_configFile;
 begin
     Config:=_ConfigStorage_get;
     try Config.SetValue(INDF+cPathDELIM+cNodeName_V1,V1);
         Config.SetValue(INDF+cPathDELIM+cNodeName_V2,V2);
-        Config.WriteToDisk;
     finally
        Config.Free;
     end;
 end;
 
 procedure tCbSFP_ideGeneral_Config.SubScriber_loadEditorVALUEs(const INDF:string; out V1,V2:integer);
-var Config:TConfigStorage;
+var Config:tCbSFP_configFile;
 begin
     Config:=_ConfigStorage_get;
     try V1:=Config.GetValue(INDF+cPathDELIM+cNodeName_V1,1);

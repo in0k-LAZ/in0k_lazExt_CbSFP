@@ -30,9 +30,9 @@ unit CbSFP_ideGENERAL;
 
 interface
 
-uses IDEOptionsIntf, LazIDEIntf, LazFileUtils,
-  {StdCtrls,} Buttons, CbSFP_ideEditor,
-  CbSFP_ideGENERAL_editor, CbSFP_ideGENERAL_config;
+uses LazFileUtils, sysutils,
+  {StdCtrls,} Buttons, XMLConf;//,
+  //CbSFP_ideGENERAL_editor, CbSFP_ideGENERAL_config;
 
 const
 
@@ -42,49 +42,161 @@ const
 
   cIn0k_LazExt_CbSFP__defCnfFileExt='.xml';
 
+{%region --- file, dir names--------------------------------------- /fold}
 
-function CbSFP_ideGENERAL__Config_fileName:string;
+function  CbSFP_Config_RootPath:string;
+function  CbSFP_Config_FileName:string;
+function  CbSFP_ConfigsRootPath:string;
 
-// директория внутри которой будем хранить наши настройки
-function CbSFP_ideGENERAL__ConfigsRootPath:string;
+{%endregion}
 
-function CbSFP_ideGENERAL__register_SubScrbr(const AGroup,AIndex:Integer; const AParent:Integer=NoParent):PIDEOptionsEditorRec; overload;
-function CbSFP_ideGENERAL__register_SubScrbr:PIDEOptionsEditorRec;                                                              overload;
+{%region --- forceDir.. ------------------------------------------- /fold}
 
-procedure Register;
+procedure CbSFP_forceDirectories(const dir:string); inline;
+procedure CbSFP_forceDir_Config_RootPath;           inline;
+procedure CbSFP_forceDir_ConfigsRootPath;           inline;
 
-function CbSFP_ideGENERAL__ConfigFileName:string;
+{%endregion}
 
-implementation
+{%region --- tCbSFP_configFile ------------------------------------ /fold}
 
+type
+  // хранитель настроек
+ tCbSFP_configFile={$ifDef ideLazExtMODE} //< боевой режим
+                    TConfigStorage
+                   {$else}
+                    TXMLConfig
+                   {$endif};
 
-{%region --- tCbSFP_ideGeneral_Config  -----------------------------------}
-
-function CbSFP_ideGENERAL__ConfigFileName:string;
-begin
-   result:=LazarusIDE.GetPrimaryConfigPath;
-   result:=AppendPathDelim(result)+cIn0k_LazExt_CbSFP__IDENTIFICATOR;
-end;
-
-function CbSFP_ideGENERAL__Config_fileName:string;
-begin
-    result:=LazarusIDE.GetPrimaryConfigPath;
-    result:=AppendPathDelim(result);
-    result:=result+cIn0k_LazExt_CbSFP__IDENTIFICATOR+cIn0k_LazExt_CbSFP__defCnfFileExt;
-    //result:=AppendPathDelim(CbSFP_ideGENERAL__ConfigFileName);
-end;
-
-function CbSFP_ideGENERAL__ConfigsRootPath:string;
-begin
-    result:=LazarusIDE.GetPrimaryConfigPath;
-    result:=AppendPathDelim(result);
-    result:=result+cIn0k_LazExt_CbSFP__IDENTIFICATOR;
-    result:=AppendPathDelim(CbSFP_ideGENERAL__ConfigFileName);
-end;
+function CbSFP_configFile_CREATE(const fileName:string):tCbSFP_configFile;
+function CbSFP_configFile_DELETE(const fileName:string):boolean;
 
 {%endregion}
 
 
+// директория внутри которой будем хранить наши настройки
+//function CbSFP_ConfigsRootPath:string;
+
+//function CbSFP_ideGENERAL__register_SubScrbr(const AGroup,AIndex:Integer; const AParent:Integer=NoParent):PIDEOptionsEditorRec; overload;
+//function CbSFP_ideGENERAL__register_SubScrbr:PIDEOptionsEditorRec;                                                              overload;
+
+//procedure Register;
+
+//function CbSFP_ideGENERAL__ConfigFileName:string;
+
+implementation
+
+{%ReGioN --- inLine functions ------------------------------------- /fold}
+
+
+function _forceDirectories_(const dirPath:string):boolean;
+begin
+    result:=ForceDirectories(dirPath);
+end;
+
+function _fileDelete_(const fileName:string):boolean;
+begin
+    result:=DeleteFile(fileName);
+end;
+
+function _fileExists_(const fileName:string):boolean;
+begin
+    result:=FileExists(fileName);
+end;
+
+{%endRegion}
+
+{%region --- file, dir names--------------------------------------- /fold}
+
+{$ifDef uiDevelopPRJ}
+const cUiDevelopPRJ_rootConfigDIR='CNFGs';
+{$endif}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// корень-Директория хранения конфигов
+function CbSFP_Config_RootPath:string;
+begin
+    {$ifDef ideLazExtMODE}
+      result:=LazarusIDE.GetPrimaryConfigPath;
+    {$else} //< режим ТЕСТИРОВАНИЯ
+      {$ifDef uiDevelopPRJ}
+      {todo: заменить на нормально место хранения, системное}
+      result:=ExtractFileDir(ParamStr(0));
+      result:=AppendPathDelim(result)+cUiDevelopPRJ_rootConfigDIR;
+      {$else}
+      {$error method is implemented}
+      {$endif}
+    {$endIf}
+    result:=AppendPathDelim(result);
+end;
+
+// ПОЛНОЕ имя фала собственного конфигурационного файла
+function CbSFP_Config_FileName:string;
+begin
+    result:=CbSFP_Config_RootPath;
+    result:=result+cIn0k_LazExt_CbSFP__IDENTIFICATOR;
+    result:=result+cIn0k_LazExt_CbSFP__defCnfFileExt;
+end;
+
+// корень-Директория для хранения конфигов "ПОДПИСЧИКОВ"
+function CbSFP_ConfigsRootPath:string;
+begin
+    result:=CbSFP_Config_RootPath;
+    result:=result+cIn0k_LazExt_CbSFP__IDENTIFICATOR;
+    result:=AppendPathDelim(result);
+end;
+
+{%endregion}
+
+{%region --- forceDir.. ------------------------------------------- /fold}
+
+procedure CbSFP_forceDirectories(const dir:string);
+begin
+   _forceDirectories_(dir);
+end;
+
+procedure CbSFP_forceDir_Config_RootPath;
+begin
+    CbSFP_forceDirectories(CbSFP_Config_RootPath);
+end;
+
+procedure CbSFP_forceDir_ConfigsRootPath;
+begin
+    CbSFP_forceDirectories(CbSFP_ConfigsRootPath);
+end;
+
+{%endregion}
+
+{%region --- tCbSFP_configFile ------------------------------------ /fold}
+
+function CbSFP_configFile_CREATE(const fileName:string):tCbSFP_configFile;
+begin
+    {$ifDef ideLazExtMODE}
+      // создаем и если он есть читаем
+      result:=GetIDEConfigStorage(fileName,_fileExists_(fileName));
+    {$else}
+      {$ifDef uiDevelopPRJ}
+      result:=TXMLConfig.Create(nil);
+      result.Filename:=fileName;
+      {$else}
+      {$error method is implemented}
+      {$endif}
+    {$endif}
+end;
+
+function CbSFP_configFile_DELETE(const fileName:string):boolean;
+begin
+    if _fileExists_(fileName) then begin
+       _fileDelete_(fileName);
+    end;
+end;
+
+{%endregion}
+
+//------------------------------------------------------------------------------
+
+{
 var
 
  _CBSP_IdeOptions_GRP_:PIDEOptionsGroupRec;
@@ -110,19 +222,19 @@ procedure Register;
 begin
     REGISTER_in_IdeOptions;
 end;
+     }
 
-
-function CbSFP_ideGENERAL__register_SubScrbr(const AGroup,AIndex:Integer; const AParent:Integer=NoParent):PIDEOptionsEditorRec;
+{function CbSFP_ideGENERAL__register_SubScrbr(const AGroup,AIndex:Integer; const AParent:Integer=NoParent):PIDEOptionsEditorRec;
 begin
     REGISTER_in_IdeOptions;
     result:=RegisterIDEOptionsEditor(AGroup,tCbSFP_ideCallEditor,AIndex,AParent,TRUE);
-end;
+end;}
 
-function CbSFP_ideGENERAL__register_SubScrbr:PIDEOptionsEditorRec;
+{function CbSFP_ideGENERAL__register_SubScrbr:PIDEOptionsEditorRec;
 begin
     REGISTER_in_IdeOptions;
     result:=CbSFP_ideGENERAL__register_SubScrbr(_CBSP_IdeOptions_GRP_^.Index,GetFreeIDEOptionsIndex(_CBSP_IdeOptions_GRP_^.Index,0));
-end;
+end;}
 
 
 end.

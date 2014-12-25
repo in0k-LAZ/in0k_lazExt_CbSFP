@@ -5,6 +5,7 @@ object CbSFP_ideGeneral_Editor: TCbSFP_ideGeneral_Editor
   Width = 490
   ClientHeight = 240
   ClientWidth = 490
+  LCLVersion = '1.2.2.0'
   TabOrder = 0
   DesignLeft = 90
   DesignTop = 210

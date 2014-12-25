@@ -1,0 +1,35 @@
+object GnrlWND: TGnrlWND
+  Left = 395
+  Height = 240
+  Top = 170
+  Width = 320
+  Caption = 'GnrlWND'
+  ClientHeight = 240
+  ClientWidth = 320
+  OnShow = FormShow
+  LCLVersion = '1.2.2.0'
+  Visible = True
+  inline CbSFP_ideGeneral_Editor1: TCbSFP_ideGeneral_Editor
+    Width = 320
+    Align = alClient
+    ClientWidth = 320
+    inherited CheckBox1: TCheckBox
+      AnchorSideLeft.Control = CbSFP_ideGeneral_Editor1
+      AnchorSideTop.Control = CbSFP_ideGeneral_Editor1
+    end
+    inherited Memo1: TMemo
+      AnchorSideLeft.Control = CbSFP_ideGeneral_Editor1
+      AnchorSideRight.Control = CbSFP_ideGeneral_Editor1
+      AnchorSideBottom.Control = CbSFP_ideGeneral_Editor1
+      Width = 320
+    end
+    inherited SpeedButton1: TSpeedButton
+      AnchorSideRight.Control = CbSFP_ideGeneral_Editor1
+      Left = 316
+    end
+    inherited Edit1: TEdit
+      AnchorSideLeft.Control = CbSFP_ideGeneral_Editor1
+      Width = 316
+    end
+  end
+end

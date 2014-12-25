@@ -37,6 +37,7 @@ unit CbSFP_ideCenter;
 interface
 
 uses sysutils, LazFileUtils, IDEOptionsIntf, RegExpr, Dialogs,
+    CbSFP_ideGENERAL,
     CbSFP_wnd_DEBUG,
     {$ifDef ideLazExtMODE}
     BaseIDEIntf,
@@ -70,11 +71,11 @@ type
    _wnd_DEBUG_:TCbSFP_wndDEBUG;
   end;
 
- tCbSFP_ideFileStorage={$ifDef ideLazExtMODE} //< боевой режим
+ {tCbSFP_ideFileStorage={$ifDef ideLazExtMODE} //< боевой режим
                         TConfigStorage
                        {$else}
                         TXMLConfig
-                       {$endif};
+                       {$endif}; }
 
 
 
@@ -117,17 +118,17 @@ type
   {%endregion}
   {%region --- Сохранение и Загрузка ------------------------------ /fold}
   private
-    function  _node_configStorageCRT(const file_Name:string):tCbSFP_ideFileStorage; overload;
-    function  _node_configStorageCRT(const node:pCbSFP_Node):tCbSFP_ideFileStorage; overload;
+    function  _node_configStorageCRT(const file_Name:string):tCbSFP_configFile; overload;
+    function  _node_configStorageCRT(const node:pCbSFP_Node):tCbSFP_configFile; overload;
   private
-    procedure _node_load_ListItmSEEK(const node:pCbSFP_Node; const fileSTRG:tCbSFP_ideFileStorage);
+    procedure _node_load_ListItmSEEK(const node:pCbSFP_Node; const fileSTRG:tCbSFP_configFile);
     procedure _node_load_ListItmOPTN(const node:pCbSFP_Node);
-    procedure _node_load_ListOptnUSE(const node:pCbSFP_Node; const fileSTRG:tCbSFP_ideFileStorage);
+    procedure _node_load_ListOptnUSE(const node:pCbSFP_Node; const fileSTRG:tCbSFP_configFile);
     procedure _node_LOAD            (const node:pCbSFP_Node);
   private
-    procedure _node_save_ListItmSEEK(const node:pCbSFP_Node; const fileSTRG:tCbSFP_ideFileStorage);
+    procedure _node_save_ListItmSEEK(const node:pCbSFP_Node; const fileSTRG:tCbSFP_configFile);
     procedure _node_save_ListItmOPTN(const node:pCbSFP_Node);
-    procedure _node_save_ListOptnUSE(const node:pCbSFP_Node; const fileSTRG:tCbSFP_ideFileStorage);
+    procedure _node_save_ListOptnUSE(const node:pCbSFP_Node; const fileSTRG:tCbSFP_configFile);
     procedure _node_SAVE            (const node:pCbSFP_Node);
   {%endregion}
   {%region --- работа с УЗЛАМИ pCbSFP_BASE ------------------------ /fold}
@@ -311,6 +312,7 @@ type
   {%endregion}
   public //<
     procedure itmCNFG_toDEF   (const item:pointer);
+    procedure ideCenter_DEBUG(const mType,mText:string);
   end;
 
 function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
@@ -321,7 +323,7 @@ function CbSFP_ideCenter__SubScriber_CnfgOBJ(const SubScriber:tCbSFP_SubScriber;
 function CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
 
 function  CbSFP_ideCenter_SubScriber_INDF(const SubScriber:tCbSFP_SubScriber):string;
-procedure CbSFP_ideCenter_wndDBG_inComing(const SubScriber:tCbSFP_SubScriber);
+procedure CbSFP_ideCenter_wndDBG_Activate(const SubScriber:tCbSFP_SubScriber);
 procedure CbSFP_ideCenter_wndDBG_outGoing(const SubScriber:tCbSFP_SubScriber);
 
 procedure CbSFP_ideCenter_DEBUG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
@@ -330,7 +332,7 @@ procedure CbSFP_ideCenter_DEBUG(const SubScriber:tCbSFP_SubScriber; const mType,
 implementation
 
 {$ifDef ideLazExtMODE}
-uses CbSFP_ideGENERAL;
+//uses CbSFP_ideGENERAL;
 {$endIf}
 
 const
@@ -607,20 +609,12 @@ end;
 {%region --- работа с ПУТЯМИ файловой системы --------------------- /fold}
 
 const
-   cCbSFP_fileStorageEXT='.xml';
+   cCbSFP_fileStorageEXT=cIn0k_LazExt_CbSFP__defCnfFileExt;
 
 
 function tCbSFP_ideCallCenter._callCenter_rootPath:string;
 begin
-  {$ifDef ideLazExtMODE}
-    result:=CbSFP_ideGENERAL__ConfigsRootPath;
-  {$else} //< режим ТЕСТИРОВАНИЯ
-    {$ifDef uiDevelopPRJ}
-    result:=ExtractFileDir(ParamStr(0))+'\TMP\';
-    {$else}
-    {$error method is implemented}
-    {$endif}
-  {$endIf}
+    result:=CbSFP_ConfigsRootPath;
 end;
 
 // имя файла КОНФИГУРАЦИИ конкретного узла
@@ -650,12 +644,13 @@ end;
 
 procedure tCbSFP_ideCallCenter._forceDirectories_(const Path:string);
 begin
-    ForceDirectories(Path);
+    CbSFP_forceDirectories(Path);
 end;
 
 procedure tCbSFP_ideCallCenter._forceDirectories_callCenter;
 begin
-   _forceDirectories_(_callCenter_rootPath);
+    CbSFP_forceDir_Config_RootPath;
+    // _forceDirectories_(_callCenter_rootPath);
 end;
 
 procedure tCbSFP_ideCallCenter._forceDirectories_subScriber(const node:pCbSFP_Node);
@@ -667,18 +662,18 @@ procedure tCbSFP_ideCallCenter._deleteFileFromFS_subScriber(const node:pCbSFP_No
 var S:string;
 begin
     s:=_subScriber_OPTN_fileName(node,itm);
-    if FileExists(s) then begin
-       DeleteFile(s);
-    end;
+    CbSFP_configFile_DELETE(S);
 end;
 
 {%endregion}
 
 {%region --- Сохранение и Загрузка -------------------------------- /fold}
 
-function tCbSFP_ideCallCenter._node_configStorageCRT(const file_Name:string):tCbSFP_ideFileStorage;
+function tCbSFP_ideCallCenter._node_configStorageCRT(const file_Name:string):tCbSFP_configFile;
 begin
-  {$ifDef ideLazExtMODE}
+    CbSFP_configFile_CREATE(file_Name);
+  (*
+    {$ifDef ideLazExtMODE}
     // создаем и если он есть читаем
     result:=GetIDEConfigStorage(file_Name,FileExists(file_Name));
   {$else}
@@ -688,10 +683,10 @@ begin
     {$else}
     {$error method is implemented}
     {$endif}
-  {$endif}
+  {$endif} *)
 end;
 
-function tCbSFP_ideCallCenter._node_configStorageCRT(const node:pCbSFP_Node):tCbSFP_ideFileStorage;
+function tCbSFP_ideCallCenter._node_configStorageCRT(const node:pCbSFP_Node):tCbSFP_configFile;
 begin
     result:=_node_configStorageCRT(_subScriber_node_fileName(node));
 end;
@@ -715,7 +710,7 @@ const
 
 //------------------------------------------------------------------------------
 
-procedure tCbSFP_ideCallCenter._node_save_ListItmSEEK(const node:pCbSFP_Node; const fileSTRG:tCbSFP_ideFileStorage);
+procedure tCbSFP_ideCallCenter._node_save_ListItmSEEK(const node:pCbSFP_Node; const fileSTRG:tCbSFP_configFile);
 var cfgPATH:string;
     tmpPTTN:pCbSFP_PTTN;
     cnt_idx:integer;
@@ -738,7 +733,7 @@ begin
     fileSTRG.SetDeleteValue(cfgPATH+cTXT_count,cnt_idx,0);
 end;
 
-procedure tCbSFP_ideCallCenter._node_load_ListItmSEEK(const node:pCbSFP_Node; const fileSTRG:tCbSFP_ideFileStorage);
+procedure tCbSFP_ideCallCenter._node_load_ListItmSEEK(const node:pCbSFP_Node; const fileSTRG:tCbSFP_configFile);
 var CfgPATH:string;
     count,i:integer;
     tmpPTTN:pCbSFP_PTTN;
@@ -820,7 +815,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure tCbSFP_ideCallCenter._node_save_ListOptnUSE(const node:pCbSFP_Node; const fileSTRG:tCbSFP_ideFileStorage);
+procedure tCbSFP_ideCallCenter._node_save_ListOptnUSE(const node:pCbSFP_Node; const fileSTRG:tCbSFP_configFile);
 var cfgPATH:string;
     tmpOPTN:pCbSFP_PTTN;
     cnt_idx:integer;
@@ -844,7 +839,7 @@ begin
     fileSTRG.SetDeleteValue(cfgPATH+cTXT_count,cnt_idx,0);
 end;
 
-procedure tCbSFP_ideCallCenter._node_load_ListOptnUSE(const node:pCbSFP_Node; const fileSTRG:tCbSFP_ideFileStorage);
+procedure tCbSFP_ideCallCenter._node_load_ListOptnUSE(const node:pCbSFP_Node; const fileSTRG:tCbSFP_configFile);
 var CfgPATH:string;
     count,i:integer;
     tmpNAME:string;
@@ -868,7 +863,7 @@ end;
 //------------------------------------------------------------------------------
 
 procedure tCbSFP_ideCallCenter._node_LOAD(const node:pCbSFP_Node);
-var fileSTRG:tCbSFP_ideFileStorage;
+var fileSTRG:tCbSFP_configFile;
 begin
    _forceDirectories_callCenter;
     fileSTRG:=_node_configStorageCRT(node);
@@ -882,7 +877,7 @@ begin
 end;
 
 procedure tCbSFP_ideCallCenter._node_SAVE(const node:pCbSFP_Node);
-var fileSTRG:tCbSFP_ideFileStorage;
+var fileSTRG:tCbSFP_configFile;
 begin
    _forceDirectories_callCenter;
     fileSTRG:=_node_configStorageCRT(node);
@@ -1731,6 +1726,11 @@ begin
    _CallCenter_._itmCNFG_set_DEF(_SubScriber_,item);
 end;
 
+procedure tCbSFP_ideEditorNODE.ideCenter_DEBUG(const mType,mText:string);
+begin
+    CbSFP_ideCenter_DEBUG(_SubScriber_,mType,mText);
+end;
+
 {%endregion}
 
 {$endRegion}
@@ -1758,9 +1758,14 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure CbSFP_ideCenter_wndDBG_inComing(const SubScriber:tCbSFP_SubScriber);
+procedure CbSFP_ideCenter_wndDBG_Activate(const SubScriber:tCbSFP_SubScriber);
 begin
-    pCbSFP_Node(SubScriber)^._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(SubScriber);
+    if not Assigned(pCbSFP_Node(SubScriber)^._wnd_DEBUG_) then begin
+        pCbSFP_Node(SubScriber)^._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(SubScriber);
+    end
+    else begin
+        pCbSFP_Node(SubScriber)^._wnd_DEBUG_.BringToFront;
+    end;
 end;
 
 procedure CbSFP_ideCenter_wndDBG_outGoing(const SubScriber:tCbSFP_SubScriber);

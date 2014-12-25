@@ -6,6 +6,7 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
   Align = alClient
   ClientHeight = 548
   ClientWidth = 584
+  LCLVersion = '1.2.2.0'
   TabOrder = 0
   DesignLeft = 596
   DesignTop = 108

@@ -62,15 +62,15 @@ type
 
 
 implementation
-{$ifdef ideLazExtMODE}
+{.$ifdef ideLazExtMODE}
 uses  CbSFP_ideGENERAL;
-{$endif}
+{.$endif}
 
-{$ifdef ideLazExtMODE}
+{.$ifdef ideLazExtMODE}
 const cCbSFP_ideGeneral_Editor__frmTitle=cIn0k_LazExt_CbSFP__Node_General;
-{$else}
-const cCbSFP_ideGeneral_Editor__frmTitle='';
-{$endif}
+{.$else}
+//const cCbSFP_ideGeneral_Editor__frmTitle='';
+{.$endif}
 
 {$region tCbSFP_ideGeneral_Editor}
 {$R *.lfm}
@@ -83,7 +83,9 @@ end;
 constructor tCbSFP_ideGeneral_Editor.Create(TheOwner:TComponent);
 begin
     inherited;
-    SpeedButton1.LoadGlyphFromLazarusResource('laz_open');
+    {$ifDEF ideLazExtMODE}
+        SpeedButton1.LoadGlyphFromLazarusResource('laz_open');
+    {$endIF}
 end;
 
 destructor tCbSFP_ideGeneral_Editor.Destroy;
@@ -112,7 +114,7 @@ end;
 
 procedure tCbSFP_ideGeneral_Editor.ReadSettings(AOptions:TAbstractIDEOptions);
 begin
-    Edit1.Text:=CbSFP_ideGENERAL__ConfigsRootPath;
+    Edit1.Text:=CbSFP_ConfigsRootPath;
 
 
 

@@ -104,7 +104,7 @@ end;
 
 procedure TmainWND.Button3Click(Sender: TObject);
 begin
-   CbSFP_ideCenter_wndDBG_inComing(SubScriber);
+   CbSFP_ideCenter_wndDBG_Activate(SubScriber);
 end;
 
 procedure TmainWND.FileNameEdit1Change(Sender: TObject);

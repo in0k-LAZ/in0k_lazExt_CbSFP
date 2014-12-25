@@ -42,7 +42,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="12">
       <Unit0>
         <Filename Value="uiDevelopPRJ.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -103,6 +103,27 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="CbSFP_wnd_DEBUG"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="..\srcPKG\CbSFP_ideGENERAL_editor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CbSFP_ideGeneral_Editor"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="CbSFP_ideGENERAL_editor"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="uiGeneralWND.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="GnrlWND"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uiGeneralWND"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\srcPKG\CbSFP_ideGENERAL_config.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CbSFP_ideGENERAL_config"/>
+      </Unit11>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

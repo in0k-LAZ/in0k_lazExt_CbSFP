@@ -1302,7 +1302,7 @@ end;
 
 procedure tCbSFP_ideCallEditor.Setup(ADialog:TAbstractOptionsEditorDialog);
 begin
-    {do nofing}
+    CbSFP_ideCenter_DEBUG(nodeEditor,'M','Setup');
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('Setup');
     {$endIf}
@@ -1313,6 +1313,7 @@ procedure tCbSFP_ideCallEditor.ReadSettings(AOptions:TAbstractIDEOptions);
 var v1,v2:integer;
 {$endIf}
 begin
+    nodeEditor.ideCenter_DEBUG('M','ReadSettings');
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('ReadSettings');
     {$endIf}
@@ -1334,6 +1335,7 @@ procedure tCbSFP_ideCallEditor.WriteSettings(AOptions:TAbstractIDEOptions);
 var v1,v2:integer;
 {$endIf}
 begin
+    nodeEditor.ideCenter_DEBUG('M','WriteSettings');
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('WriteSettings');
     {$endIf}
@@ -1350,6 +1352,7 @@ end;
 
 procedure tCbSFP_ideCallEditor.RestoreSettings({%H-}AOptions:TAbstractIDEOptions);
 begin
+    nodeEditor.ideCenter_DEBUG('M','RestoreSettings');
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('RestoreSettings');
     {$endIf}

@@ -51,7 +51,7 @@ end;
 
 procedure TCbSFP_wndDEBUG.Message(const mType,mText:string);
 begin
-   memo1.Lines.Insert(0,DateTimeToStr(now)+'['+mType+'] '+mText);
+   memo1.Lines.Insert(0,DateTimeToStr(now)+' ['+mType+'] '+mText);
    memo1.SelStart:=0;
    memo1.SelLength:=0;
 end;
