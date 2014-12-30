@@ -5,7 +5,7 @@ unit uiGeneralWND;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   CbSFP_ideGENERAL_editor, CbSFP_ideGENERAL_config;
 
 type
@@ -13,6 +13,7 @@ type
   { TGnrlWND }
 
   TGnrlWND = class(TForm)
+    Button1: TButton;
     CbSFP_ideGeneral_Editor1: TCbSFP_ideGeneral_Editor;
     procedure FormShow(Sender: TObject);
   private

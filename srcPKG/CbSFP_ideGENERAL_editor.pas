@@ -36,17 +36,21 @@ unit CbSFP_ideGENERAL_editor;
 
 interface
 
-uses IDEOptionsIntf, LCLIntf,
+uses IDEOptionsIntf, LCLIntf,  CbSFP_ideCenter,
     sysutils, Classes, StdCtrls, Buttons,
-    CbSFP_ideGENERAL_config;
+    CbSFP_ideGENERAL, CbSFP_ideGENERAL_config;
 
 type
 
+ { tCbSFP_ideGeneral_Editor }
+
  tCbSFP_ideGeneral_Editor=class(TAbstractIDEOptionsEditor)
+    Button1: TButton;
     CheckBox1: TCheckBox;
     Edit1: TEdit;
     Memo1: TMemo;
     SpeedButton1: TSpeedButton;
+    procedure Button1Click(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
   public
     constructor Create(TheOwner: TComponent); override;
@@ -63,7 +67,7 @@ type
 
 implementation
 {.$ifdef ideLazExtMODE}
-uses  CbSFP_ideGENERAL;
+
 {.$endif}
 
 {.$ifdef ideLazExtMODE}
@@ -78,6 +82,11 @@ const cCbSFP_ideGeneral_Editor__frmTitle=cIn0k_LazExt_CbSFP__Node_General;
 procedure tCbSFP_ideGeneral_Editor.SpeedButton1Click(Sender: TObject);
 begin
     OpenDocument(Edit1.Text)
+end;
+
+procedure tCbSFP_ideGeneral_Editor.Button1Click(Sender: TObject);
+begin
+  CbSFP_ideCenter_wndDBG_Activate;
 end;
 
 constructor tCbSFP_ideGeneral_Editor.Create(TheOwner:TComponent);

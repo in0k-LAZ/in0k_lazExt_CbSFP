@@ -79,6 +79,10 @@ type
 
 
  tCbSFP_ideCallCenter=class
+  private
+  _wnd_DEBUG_:TCbSFP_wndDEBUG;
+
+
   {%region --- работа с УЗЛАМИ pCbSFP_Node ------------------------ /fold}
   private
     procedure _node_CRT(out   node:pCbSFP_Node; const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor; const ideRec:PIDEOptionsEditorRec);
@@ -99,6 +103,7 @@ type
     procedure _lair_DST;
     function  _lair_FND_byIDEOptERec(const value:PIDEOptionsEditorRec):pCbSFP_Node;
     function  _lair_FND_byIdentifier(const value:string):pCbSFP_Node;
+    procedure _lair_CLS_dbgWindows;
   {%endregion}
   {%region --- работа с ПУТЯМИ файловой системы ------------------- /fold}
   protected
@@ -365,6 +370,7 @@ function CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbS
 
 function  CbSFP_ideCenter_SubScriber_INDF(const SubScriber:tCbSFP_SubScriber):string;
 procedure CbSFP_ideCenter_wndDBG_Activate(const SubScriber:tCbSFP_SubScriber);
+procedure CbSFP_ideCenter_wndDBG_Activate;
 procedure CbSFP_ideCenter_wndDBG_outGoing(const SubScriber:tCbSFP_SubScriber);
 
 procedure CbSFP_ideCenter_DEBUG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
@@ -390,6 +396,10 @@ end;
 
 destructor tCbSFP_ideCallCenter.DESTROY;
 begin
+    // чистим (закрываем) окна отладки
+   _lair_CLS_dbgWindows;
+    if Assigned(_wnd_DEBUG_) then _wnd_DEBUG_.Close;
+    // чистим список "подписчиков"
    _lair_DST;
 end;
 
@@ -577,6 +587,16 @@ begin
     while Assigned(result) do begin
         if result^.IDEOptERec=value then break;
         result:=result^.next;
+    end;
+end;
+
+procedure tCbSFP_ideCallCenter._lair_CLS_dbgWindows;
+var tmp:pCbSFP_Node;
+begin
+    tmp:=_lair;
+    while Assigned(tmp) do begin
+        if Assigned(tmp^._wnd_DEBUG_) then tmp^._wnd_DEBUG_.Close;
+        tmp:=tmp^.next;
     end;
 end;
 
@@ -1945,26 +1965,51 @@ end;
 function CbSFP_ideCenter_SubScriber_INDF(const SubScriber:tCbSFP_SubScriber):string;
 begin
     if Assigned(SubScriber) then begin
-       result:=_CallCenter_._node_identifier(SubScriber);
+        if pointer(SubScriber)=pointer(_CallCenter_) then begin
+            result:=cIn0k_LazExt_CbSFP__IDENTIFICATOR;
+        end
+        else begin
+            result:=_CallCenter_._node_identifier(SubScriber);
+        end;
     end
     else result:='NDF';
 end;
 
 //------------------------------------------------------------------------------
 
-procedure CbSFP_ideCenter_wndDBG_Activate(const SubScriber:tCbSFP_SubScriber);
+procedure CbSFP_ideCenter_wndDBG_Activate;
 begin
-    if not Assigned(pCbSFP_Node(SubScriber)^._wnd_DEBUG_) then begin
-        pCbSFP_Node(SubScriber)^._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(SubScriber);
+    CbSFP_ideCenter_wndDBG_Activate(_CallCenter_);
+end;
+
+procedure CbSFP_ideCenter_wndDBG_Activate(const SubScriber:tCbSFP_SubScriber);
+begin //< как-то не надежно все это выглядит
+    if pointer(SubScriber)=pointer(_CallCenter_) then begin
+        if not Assigned(_CallCenter_._wnd_DEBUG_) then begin
+           _CallCenter_._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(_CallCenter_);
+        end
+        else begin
+           _CallCenter_._wnd_DEBUG_.BringToFront;
+        end;
     end
     else begin
-        pCbSFP_Node(SubScriber)^._wnd_DEBUG_.BringToFront;
+        if not Assigned(pCbSFP_Node(SubScriber)^._wnd_DEBUG_) then begin
+            pCbSFP_Node(SubScriber)^._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(SubScriber);
+        end
+        else begin
+            pCbSFP_Node(SubScriber)^._wnd_DEBUG_.BringToFront;
+        end;
     end;
 end;
 
 procedure CbSFP_ideCenter_wndDBG_outGoing(const SubScriber:tCbSFP_SubScriber);
-begin
-    pCbSFP_Node(SubScriber)^._wnd_DEBUG_:=NIL;
+begin //< как-то не надежно все это выглядит
+    if pointer(SubScriber)=pointer(_CallCenter_) then begin
+       _CallCenter_._wnd_DEBUG_:=NIL;
+    end
+    else begin
+        pCbSFP_Node(SubScriber)^._wnd_DEBUG_:=NIL;
+    end;
 end;
 
 procedure CbSFP_ideCenter_DEBUG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
