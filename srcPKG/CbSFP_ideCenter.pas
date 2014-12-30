@@ -202,22 +202,25 @@ type
     function  _itmPTTN_getNAME (const item:pCbSFP_PTTN):string;
     function  _itmPTTN_getCNFG (const item:pCbSFP_PTTN):pointer;
   {%endregion}
-
-    function  _regExprs_Create  (const InString:string):TRegExpr;
-    procedure _regExprs_Destroy (const regExprs:TRegExpr);
-    procedure _regExprs_SOURCE  (const regExprs:TRegExpr; const SOURCE:string);
-
-    function  _regExprs_testPTTN(const regExprs:TRegExpr; const PTTN:string; out mathPos,mathLen:PtrInt):boolean;
-    function  _regExprs_testPTTN(const regExprs:TRegExpr; const PTTN:string):boolean;
-
+  {%region --- работа _regExpr_ ----------------------------------- /fold}
+  private
+    procedure _regExpr_Create  (out   regExpr:TRegExpr; const InString:string);
+    procedure _regExpr_Destroy (const regExpr:TRegExpr);
+  private
+    procedure _regExpr_SOURCE  (const regExpr:TRegExpr; const SOURCE:string);
+    function  _regExpr_testPTTN(const regExpr:TRegExpr; const PTTN:string; out mathPos,mathLen:PtrInt):boolean;
+    function  _regExpr_testPTTN(const regExpr:TRegExpr; const PTTN:string):boolean;
+  private
+    function  _regExpr_FindPTTN(const source,PTTN:string; out mathPos,mathLen:PtrInt):boolean;
+  {%endregion}
   {%region --- SubScriber поиск ----------------------------------- /fold}
   protected
     function  _SubScrbr_REGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor; const ideRec:PIDEOptionsEditorRec):pCbSFP_Node;
-    function  _SubScrbr_testPTTN(const item:pCbSFP_PTTN; const testText:string):boolean; //inline;
-    function  _SubScrbr_testPTTN(const item:pCbSFP_PTTN; const testText:string; out mathPos,mathLen:PtrInt):boolean; //inline;
-    function  _SubScrbr_findPTTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_PTTN; //inline;
-    function  _SubScrbr_findOPTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_OPTN; //inline;
-    function  _SubScrbr_Cnfg_OBJ(const node:pCbSFP_Node; const fileName:string):pointer;
+    function  _SubScrbr_testPTTN(const item:pCbSFP_PTTN; const source:string):boolean; //inline;
+    function  _SubScrbr_testPTTN(const item:pCbSFP_PTTN; const source:string; out mathPos,mathLen:PtrInt):boolean; //inline;
+    function  _SubScrbr_findPTTN(const node:pCbSFP_Node; const source:string):pCbSFP_PTTN; //inline;
+    function  _SubScrbr_findOPTN(const node:pCbSFP_Node; const source:string):pCbSFP_OPTN; //inline;
+    function  _SubScrbr_Cnfg_OBJ(const node:pCbSFP_Node; const source:string):pointer;
   public
     function   SubScriber_byIdeREC(const value:PIDEOptionsEditorRec):tCbSFP_SubScriber;
     function   SubScriber_byEDITOR(const value:TAbstractIDEOptionsEditor):tCbSFP_SubScriber;
@@ -331,6 +334,9 @@ type
   public //<
     procedure itmCNFG_toDEF   (const item:pointer);
     //procedure ideCenter_DEBUG(const mType,mText:string);
+
+    function  FindPttnInSource(const source,PTTN:string; out mathPos,mathLen:PtrInt):boolean;
+
   end;
 
 //function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
@@ -1291,7 +1297,7 @@ end;
 
 {%endregion}
 
-(*
+(*  /fold
 type
 
  tCbSFP_RegExpr_core=class
@@ -1371,37 +1377,38 @@ end;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+{%region --- работа _regExpr_ ----------------------------------- /fold}
 
-
-function tCbSFP_ideCallCenter._regExprs_Create(const InString:string):TRegExpr;
+procedure tCbSFP_ideCallCenter._regExpr_Create(out regExpr:TRegExpr; const InString:string);
 begin
-    result:=nil;
-    if ImputSTR<>'' then begin
-        result:=TRegExpr.Create;
-        result.InputString:=InString;
-    end;
+    regExpr:=TRegExpr.Create;
+   _regExpr_SOURCE(regExpr,InString);
 end;
 
-procedure tCbSFP_ideCallCenter._regExprs_Destroy(const regExprs:TRegExpr);
+procedure tCbSFP_ideCallCenter._regExpr_Destroy(const regExpr:TRegExpr);
 begin
-    regExprs.FREE;
+    regExpr.FREE;
 end;
 
-procedure tCbSFP_ideCallCenter._regExprs_SOURCE(const regExprs:TRegExpr; const SOURCE:string);
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+procedure tCbSFP_ideCallCenter._regExpr_SOURCE(const regExpr:TRegExpr; const SOURCE:string);
 begin
-    regExprs.InputString:=SOURCE;
+    regExpr.InputString:=SOURCE;
 end;
 
-function tCbSFP_ideCallCenter._regExprs_testPTTN(const regExprs:TRegExpr; const PTTN:string; out mathPos,mathLen:PtrInt):boolean;
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+function tCbSFP_ideCallCenter._regExpr_testPTTN(const regExpr:TRegExpr; const PTTN:string; out mathPos,mathLen:PtrInt):boolean;
 begin
-    result:=(regExprs.InputString<>nil)and(PTTN<>'');
+    result:=(regExpr.InputString<>'')and(PTTN<>'');
     if result then begin
         try
-            regExprs.Expression:=value;
-            result:=regExprs.Exec(1);
+            regExpr.Expression:=PTTN;
+            result:=regExpr.Exec(1);
             if result then begin
-                mPos:=regExprs.MatchPos[0];
-                mLen:=regExprs.MatchLen[0];
+                mathPos:=regExpr.MatchPos[0];
+                mathLen:=regExpr.MatchLen[0];
             end;
         except
             result:=FALSE;
@@ -1409,12 +1416,23 @@ begin
     end;
 end;
 
-function tCbSFP_ideCallCenter._regExprs_testPTTN(const regExprs:TRegExpr; const PTTN:string):boolean;
+function tCbSFP_ideCallCenter._regExpr_testPTTN(const regExpr:TRegExpr; const PTTN:string):boolean;
 var mathPos,mathLen:PtrInt;
 begin
-    result:=_regExprs_testPTTN(regExprs,PTTN,mathPos,mathLen);
+    result:=_regExpr_testPTTN(regExpr,PTTN,mathPos,mathLen);
 end;
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+function tCbSFP_ideCallCenter._regExpr_FindPTTN(const source,PTTN:string; out mathPos,mathLen:PtrInt):boolean;
+var regExpr:TRegExpr;
+begin
+   _regExpr_Create(regExpr,source);
+    result:=_regExpr_testPTTN(regExpr,PTTN,mathPos,mathLen);
+   _regExpr_Destroy(regExpr);
+end;
+
+{%endregion}
 
 {%region --- SubScriber поиск ------------------------------------- /fold}
 
@@ -1434,62 +1452,47 @@ end;
 
 //------------------------------------------------------------------------------
 
-function tCbSFP_ideCallCenter._SubScrbr_testPTTN(const item:pCbSFP_PTTN; const testText:string; out mathPos,mathLen:PtrInt):boolean;
-var RegexObj:TRegExpr;
+function tCbSFP_ideCallCenter._SubScrbr_testPTTN(const item:pCbSFP_PTTN; const source:string; out mathPos,mathLen:PtrInt):boolean;
 begin
-    RegexObj:=TRegExpr.Create;
-    RegexObj.InputString:=testText;
-    RegexObj.Expression:=_itmPTTN_getSeek(item);
-    result  :=RegexObj.Exec(1);
-    if not result then begin
-        mathPos:=0;
-        mathLen:=0;
-    end
-    else begin
-        mathPos:=RegexObj.MatchPos[0];
-        mathLen:=RegexObj.MatchLen[0];
-    end;
-    RegexObj.FREE;
+    result:=_regExpr_FindPTTN(source,_itmPTTN_getSeek(item),mathPos,mathLen);
 end;
 
-function  tCbSFP_ideCallCenter._SubScrbr_testPTTN(const item:pCbSFP_PTTN; const testText:string):boolean;
+function  tCbSFP_ideCallCenter._SubScrbr_testPTTN(const item:pCbSFP_PTTN; const source:string):boolean;
 var mathPos,mathLen:PtrInt;
 begin
-    result:=_SubScrbr_testPTTN(item,testText,mathPos,mathLen);
+    result:=_SubScrbr_testPTTN(item,source,mathPos,mathLen);
 end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-function tCbSFP_ideCallCenter._SubScrbr_findPTTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_PTTN;
-var RegexObj:TRegExpr;
+function tCbSFP_ideCallCenter._SubScrbr_findPTTN(const node:pCbSFP_Node; const source:string):pCbSFP_PTTN;
+var regExpr:TRegExpr;
 begin
-    RegexObj:=TRegExpr.Create;
-    RegexObj.InputString:=fileName;
+   _regExpr_Create(regExpr,source);
     //---
     result:=_lstPTTN_getFirst(node);
     while result<>nil do begin
         if _itmPTTN_getUsed(result) and _itmOPTN_getUsed(_itmPTTN_getOPTN(result))
         then begin
-            RegexObj.Expression:=_itmPTTN_getSeek(result);
-            if RegexObj.Exec(1) then break;
+            if _regExpr_testPTTN(regExpr,_itmPTTN_getSeek(result)) then BREAK;
         end;
         result:=_itmPTTN_getNext(result);
     end;
     //---
-    RegexObj.FREE;
+   _regExpr_Destroy(regExpr);
 end;
 
-function tCbSFP_ideCallCenter._SubScrbr_findOPTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_OPTN;
+function tCbSFP_ideCallCenter._SubScrbr_findOPTN(const node:pCbSFP_Node; const source:string):pCbSFP_OPTN;
 begin
-    result:=_SubScrbr_findPTTN(node,fileName);
+    result:=_SubScrbr_findPTTN(node,source);
     if Assigned(result)
     then result:=_itmPTTN_getOPTN(result)
     else result:=_lstOPTN_defOPTNs(node);
 end;
 
-function tCbSFP_ideCallCenter._SubScrbr_Cnfg_OBJ(const node:pCbSFP_Node; const fileName:string):pointer;
+function tCbSFP_ideCallCenter._SubScrbr_Cnfg_OBJ(const node:pCbSFP_Node; const source:string):pointer;
 begin
-    result:=_SubScrbr_findOPTN(node,fileName);
+    result:=_SubScrbr_findOPTN(node,source);
     if Assigned(result) then begin //< по идее это ЛИШНЕ
        {todo: это по ходу лишняя проверки, её надо исключить}
        result:=_itmOPTN_getCNFG(result);
@@ -1917,6 +1920,11 @@ begin
 end;}
 
 {%endregion}
+
+function tCbSFP_ideEditorNODE.FindPttnInSource(const source,PTTN:string; out mathPos,mathLen:PtrInt):boolean;
+begin
+   _CallCenter_._regExpr_FindPTTN(source,PTTN,mathPos,mathLen);
+end;
 
 {$endRegion}
 

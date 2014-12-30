@@ -79,6 +79,7 @@ type
     Common_sh2: TShape;
     //---
     GBox_Panel: TPanel;
+    Shape1: TShape;
     TESTs_lbl0: TLabel;
     TESTs_lbl1: TLabel;
     TESTs_lbl2: TLabel;
@@ -98,6 +99,7 @@ type
     PTTNs_bDwn: TSpeedButton;
     //---
     TESTs_gBOX: TGroupBox;
+    procedure TESTs_lbl1Resize(Sender: TObject);
 
 
 
@@ -117,6 +119,7 @@ type
   protected
    _testFileName:string;
     procedure _testFileName_set(const value:string);
+    procedure _testFileName_ini;
     {$ifDef ideLazExtMODE}
     function _ideLazarus_ActivEditFileName:string;
     {$endIf}
@@ -219,11 +222,8 @@ type
    _tst_TEXT_:string;
     procedure _TST_setLBLs(const tst_TEXT:string);
     procedure _TST_setLBLs(const t0,t1,t2:string);
-    procedure _TST_re_CALC;
-
-
-    procedure _TST_setTEXT(const txt:string);
-    procedure _TST_setPTTN(const txt:string);
+    procedure _TST_re_CALC(const SRC,PTTN:string);
+    procedure _TST__update;
   {%endregion}
   protected //<-----------------------------------------------------------------
     procedure _onCreate_fixHimSelfName;
@@ -309,6 +309,7 @@ begin
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('CreatED');
     {$endIf}
+   _testFileName_ini;
 end;
 
 destructor tCbSFP_ideCallEditor.DESTROY;
@@ -501,6 +502,11 @@ end;
 
 {$region --- выход на CallCenter ---------------------------------- /fold}
 
+procedure tCbSFP_ideCallEditor.TESTs_lbl1Resize(Sender: TObject);
+begin
+    Shape1.SetBounds(TESTs_lbl1.Left-2,TESTs_lbl1.Top-1,TESTs_lbl1.Width+4,TESTs_lbl1.Height+2);
+end;
+
 procedure tCbSFP_ideCallEditor._ideEditorNODE_CLR;
 begin
     tCbSFP_ideEditorNODE(_ideEditorNODE_).FREE;
@@ -529,7 +535,16 @@ begin
         _testFileName:=value;
         _lBOXs_reSetITEMs;
     end;
-   _TST_setTEXT(_testFileName);
+   _TST__update;
+end;
+
+procedure tCbSFP_ideCallEditor._testFileName_ini;
+begin
+    {$ifDef ideLazExtMODE}
+   _testFileName_set(_ideLazarus_ActivEditFileName);
+    {$else}
+   _testFileName_set(ParamStr(0));
+    {$endIf}
 end;
 
 {$ifDef ideLazExtMODE}
@@ -867,7 +882,7 @@ begin
     else begin
         tEdit(Sender).Font.Color:=clRED;
     end;
-   _TST_setPTTN('');
+   _TST__update;
 end;
 
 procedure tCbSFP_ideCallEditor._Common_EDT_asPTTN__onEnter(Sender: TObject);
@@ -1027,6 +1042,7 @@ begin
     Common_CHB.Checked:=nodeEditor.itmPTTN_getUsed(_slctd_ITEM_);
     Common_EDT.Text   :=nodeEditor.itmPTTN_getSeek(_slctd_ITEM_);
    _common_OPT_asPTTN__doSelect(nodeEditor.itmPTTN_getOPTN(_slctd_ITEM_));
+   _TST__update;
     //---
     Common_CHB.Enabled:=TRUE;
     Common_EDT.Enabled:=TRUE;
@@ -1312,31 +1328,30 @@ begin
    _TST_SetLBLs(tst_TEXT,'','');
 end;
 
-procedure tCbSFP_ideCallEditor._TST_re_CALC;
+procedure tCbSFP_ideCallEditor._TST_re_CALC(const SRC,PTTN:string);
 var mathPos,mathLen:PtrInt;
     t0,t1,t2:string;
 begin
-    if (PTTNs_lBox.ItemIndex<0)
-    or (not nodeEditor.itmPTTN_test(_PTTNs_lBox__getPTTN(PTTNs_lBox.ItemIndex),_tst_TEXT_,mathPos,mathLen))
-    then _TST_SetLBLs(_tst_TEXT_)
+    if (SRC<>'')and(PTTN<>'')AND(nodeEditor.FindPttnInSource(SRC,PTTN, mathPos,mathLen))
+    then begin
+        t0:=Copy(SRC,0,mathPos-1);
+        t1:=Copy(SRC,mathPos,mathLen);
+        t2:=Copy(SRC,mathPos+mathLen,Length(src)-(mathPos+mathLen)+1);
+       _TST_SetLBLs(t0,t1,t2);
+    end
     else begin
-        t0:=Copy(_tst_TEXT_,0,mathPos-1);
-        t1:=Copy(_tst_TEXT_,mathPos,mathLen);
-        t2:=_tst_TEXT_;
-        Delete(t2,1,mathPos+mathLen-1);
-       _TST_SetLBLs(t0,t1,t2);   //_testFileName:=;
+       _TST_SetLBLs(SRC);
     end;
 end;
 
-procedure tCbSFP_ideCallEditor._TST_setTEXT(const txt:string);
+procedure tCbSFP_ideCallEditor._TST__update;
 begin
-   _tst_TEXT_:=txt;
-   _TST_re_CALC;
-end;
-
-procedure tCbSFP_ideCallEditor._TST_setPTTN(const txt:string);
-begin
-   _TST_re_CALC;
+    if _slctd_FROM_<>cILECBSPiEOA_selected_PTN then begin
+        _TST_re_CALC(_testFileName,'')
+    end
+    else begin
+        _TST_re_CALC(_testFileName,nodeEditor.itmPTTN_getSeek(_slctd_ITEM_));
+    end;
 end;
 
 {%endregion}
@@ -1353,7 +1368,7 @@ end;
 
 class function tCbSFP_ideCallEditor.SupportedOptionsClass:TAbstractIDEOptionsClass;
 begin
-    {$ifDef ideLazExtMODE}
+    {$ifDef ideLazExtMODE} -
     result:=tCbSFP_ideGeneral_Config;
     {$else}
         {$ifDef uiDevelopPRJ}

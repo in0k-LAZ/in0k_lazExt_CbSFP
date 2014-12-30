@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CONFIG>
+  <PattensList Count="3">
+    <Item0 name="DEFAULT" seek="Base" used="False"/>
+    <Item1 name="DEFAULT" seek="in0k" used="False"/>
+    <Item2 name="DEFAULT" seek="fileName11" used="False"/>
+  </PattensList>
+</CONFIG>

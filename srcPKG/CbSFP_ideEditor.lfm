@@ -337,6 +337,17 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
     ClientHeight = 31
     ClientWidth = 580
     TabOrder = 3
+    object Shape1: TShape
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Side = asrBottom
+      Left = 79
+      Height = 15
+      Top = 7
+      Width = 55
+      Anchors = []
+      Pen.Color = clHotLight
+      Pen.Style = psDot
+    end
     object TESTs_lbl0: TLabel
       Left = 24
       Height = 15
@@ -355,11 +366,10 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
       Top = 7
       Width = 55
       Caption = 'TESTs_lbl1'
-      Color = clDefault
       Font.Color = clHotLight
       ParentColor = False
       ParentFont = False
-      Transparent = False
+      OnResize = TESTs_lbl1Resize
     end
     object TESTs_lbl2: TLabel
       AnchorSideLeft.Control = TESTs_lbl1
