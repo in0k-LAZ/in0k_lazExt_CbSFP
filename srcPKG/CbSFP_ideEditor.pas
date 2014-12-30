@@ -30,12 +30,11 @@ unit CbSFP_ideEditor;
 {$mode objfpc}{$H+}
 
 {$define ideLazExtMODE}  //<----------------------- боевой режм "Расширения IDE"
-
+{.$define CbSFP_log_ON}  //<----------------------- логирование ПОВЕДЕНИЯ
 {$ifDef uiDevelopPRJ}
     {$undef ideLazExtMODE}
 {$endif}
 
-{.$define CbSFP_log_ON}
 
 interface
 
@@ -80,6 +79,9 @@ type
     Common_sh2: TShape;
     //---
     GBox_Panel: TPanel;
+    TESTs_lbl0: TLabel;
+    TESTs_lbl1: TLabel;
+    TESTs_lbl2: TLabel;
     Splitter_1: TSplitter;
     Splitter_2: TSplitter;
     //---
@@ -95,7 +97,11 @@ type
     PTTNs_bUp : TSpeedButton;
     PTTNs_bDwn: TSpeedButton;
     //---
-  protected //<-----------------------------------------------------------------
+    TESTs_gBOX: TGroupBox;
+
+
+
+ protected //<-----------------------------------------------------------------
     {$ifDef CbSFP_log_ON}
    _EventLog_: TEventLog;
     {$endIf}
@@ -207,6 +213,18 @@ type
     procedure _settingsSAVE__PTTNs_lBox__Save;
     procedure _settingsSAVE_;
   {%endregion}
+
+  {%region ---  .. --------------------------- /fold}
+  protected
+   _tst_TEXT_:string;
+    procedure _TST_setLBLs(const tst_TEXT:string);
+    procedure _TST_setLBLs(const t0,t1,t2:string);
+    procedure _TST_re_CALC;
+
+
+    procedure _TST_setTEXT(const txt:string);
+    procedure _TST_setPTTN(const txt:string);
+  {%endregion}
   protected //<-----------------------------------------------------------------
     procedure _onCreate_fixHimSelfName;
     procedure _onCreate_fixActionsName;
@@ -221,9 +239,9 @@ type
     constructor Create(TheOwner: TComponent); override;
     destructor DESTROY; override;
   public
-   {$ifDef uiDevelopPRJ}
+    {$ifDef uiDevelopPRJ}
     property testFileName:string read _testFileName write _testFileName_set;
-   {$endif}
+    {$endif}
   public
     function GetTitle: String; override;
     class function SupportedOptionsClass:TAbstractIDEOptionsClass; override;
@@ -511,6 +529,7 @@ begin
         _testFileName:=value;
         _lBOXs_reSetITEMs;
     end;
+   _TST_setTEXT(_testFileName);
 end;
 
 {$ifDef ideLazExtMODE}
@@ -848,6 +867,7 @@ begin
     else begin
         tEdit(Sender).Font.Color:=clRED;
     end;
+   _TST_setPTTN('');
 end;
 
 procedure tCbSFP_ideCallEditor._Common_EDT_asPTTN__onEnter(Sender: TObject);
@@ -1278,6 +1298,50 @@ end;
 
 {%endregion}
 
+{%region ---  .. --------------------------- /fold}
+
+procedure tCbSFP_ideCallEditor._TST_SetLBLs(const t0,t1,t2:string);
+begin
+    TESTs_lbl0.Caption:=t0;
+    TESTs_lbl1.Caption:=t1;
+    TESTs_lbl2.Caption:=t2;
+end;
+
+procedure tCbSFP_ideCallEditor._TST_SetLBLs(const tst_TEXT:string);
+begin
+   _TST_SetLBLs(tst_TEXT,'','');
+end;
+
+procedure tCbSFP_ideCallEditor._TST_re_CALC;
+var mathPos,mathLen:PtrInt;
+    t0,t1,t2:string;
+begin
+    if (PTTNs_lBox.ItemIndex<0)
+    or (not nodeEditor.itmPTTN_test(_PTTNs_lBox__getPTTN(PTTNs_lBox.ItemIndex),_tst_TEXT_,mathPos,mathLen))
+    then _TST_SetLBLs(_tst_TEXT_)
+    else begin
+        t0:=Copy(_tst_TEXT_,0,mathPos-1);
+        t1:=Copy(_tst_TEXT_,mathPos,mathLen);
+        t2:=_tst_TEXT_;
+        Delete(t2,1,mathPos+mathLen-1);
+       _TST_SetLBLs(t0,t1,t2);   //_testFileName:=;
+    end;
+end;
+
+procedure tCbSFP_ideCallEditor._TST_setTEXT(const txt:string);
+begin
+   _tst_TEXT_:=txt;
+   _TST_re_CALC;
+end;
+
+procedure tCbSFP_ideCallEditor._TST_setPTTN(const txt:string);
+begin
+   _TST_re_CALC;
+end;
+
+{%endregion}
+
+
 //------------------------------------------------------------------------------
 
 function tCbSFP_ideCallEditor.GetTitle:String;
@@ -1302,7 +1366,7 @@ end;
 
 procedure tCbSFP_ideCallEditor.Setup(ADialog:TAbstractOptionsEditorDialog);
 begin
-    CbSFP_ideCenter_DEBUG(nodeEditor,'M','Setup');
+    //CbSFP_ideCenter_DEBUG(nodeEditor,'M','Setup');
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('Setup');
     {$endIf}
@@ -1313,7 +1377,7 @@ procedure tCbSFP_ideCallEditor.ReadSettings(AOptions:TAbstractIDEOptions);
 var v1,v2:integer;
 {$endIf}
 begin
-    nodeEditor.ideCenter_DEBUG('M','ReadSettings');
+    //nodeEditor.ideCenter_DEBUG('M','ReadSettings');
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('ReadSettings');
     {$endIf}
@@ -1335,7 +1399,7 @@ procedure tCbSFP_ideCallEditor.WriteSettings(AOptions:TAbstractIDEOptions);
 var v1,v2:integer;
 {$endIf}
 begin
-    nodeEditor.ideCenter_DEBUG('M','WriteSettings');
+    //nodeEditor.ideCenter_DEBUG('M','WriteSettings');
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('WriteSettings');
     {$endIf}
@@ -1352,7 +1416,7 @@ end;
 
 procedure tCbSFP_ideCallEditor.RestoreSettings({%H-}AOptions:TAbstractIDEOptions);
 begin
-    nodeEditor.ideCenter_DEBUG('M','RestoreSettings');
+    //nodeEditor.ideCenter_DEBUG('M','RestoreSettings');
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('RestoreSettings');
     {$endIf}
@@ -1360,6 +1424,9 @@ begin
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
 end;
+
+
+
 
 end.
 

@@ -32,7 +32,7 @@ interface
 
 uses Forms, Dialogs, ExtCtrls, StdCtrls, EditBtn,
   //--- что тестируем
-  CbSFP_ideCenter, CbSFP_ideEditor, CbSFP_SubScriber,
+  CbSFP_ideCenter, CbSFP_ideEditor, CbSFP_SubScriber,   CbSFP__Intf,
   //--- чем тестируем
   CbSFP_DemoSubScriber_HNDL, //< тестовый Обработчик
   CbSFP_DemoSubScriber_EDTR, Classes; //< тестовый Редактор
@@ -68,7 +68,7 @@ implementation
 procedure TmainWND.FormCreate(Sender: TObject);
 begin
     // регистрируем ЕДИНСТВЕННОГО абонента в системе
-    SubScriber:=CbSFP_ideCenter__SubScriberREGISTER(tCbSFP_DemoSubScriber_HNDL,TCbSFP_DemoSubScriber_EDTR);
+    SubScriber:=CbSFP_SubScriber__REGISTER(tCbSFP_DemoSubScriber_HNDL,TCbSFP_DemoSubScriber_EDTR);
 end;
 
 //------------------------------------------------------------------------------

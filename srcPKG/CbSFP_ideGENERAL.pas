@@ -30,9 +30,25 @@ unit CbSFP_ideGENERAL;
 
 interface
 
-uses LazFileUtils, sysutils,
-  {StdCtrls,} Buttons, XMLConf;//,
-  //CbSFP_ideGENERAL_editor, CbSFP_ideGENERAL_config;
+{$define ideLazExtMODE}  //<----------------------- боевой режм "Расширения IDE"
+
+{$ifDef uiDevelopPRJ}
+    {$undef ideLazExtMODE}
+{$endif}
+
+
+uses
+    {$ifDef ideLazExtMODE}
+    BaseIDEIntf,
+    IDEIntf, IDEOptionsIntf,
+    LazIDEIntf,
+    LazConfigStorage,
+    {$else}
+      {$ifDef uiDevelopPRJ}
+    XMLConf,
+      {$endif}
+    {$endif}
+    sysutils,LazFileUtils;
 
 const
 
@@ -72,17 +88,6 @@ function CbSFP_configFile_CREATE(const fileName:string):tCbSFP_configFile;
 function CbSFP_configFile_DELETE(const fileName:string):boolean;
 
 {%endregion}
-
-
-// директория внутри которой будем хранить наши настройки
-//function CbSFP_ConfigsRootPath:string;
-
-//function CbSFP_ideGENERAL__register_SubScrbr(const AGroup,AIndex:Integer; const AParent:Integer=NoParent):PIDEOptionsEditorRec; overload;
-//function CbSFP_ideGENERAL__register_SubScrbr:PIDEOptionsEditorRec;                                                              overload;
-
-//procedure Register;
-
-//function CbSFP_ideGENERAL__ConfigFileName:string;
 
 implementation
 
@@ -195,47 +200,6 @@ end;
 {%endregion}
 
 //------------------------------------------------------------------------------
-
-{
-var
-
- _CBSP_IdeOptions_GRP_:PIDEOptionsGroupRec;
- _CBSP_IdeOtnsEDT_GNR_:PIDEOptionsEditorRec;
-
-function _Ide_OptnCBSP_isRGSTER:boolean;
-begin
-    result:=( Assigned(_CBSP_IdeOptions_GRP_) and Assigned(_CBSP_IdeOtnsEDT_GNR_));
-end;
-
-procedure _Ide_OptnCBSP_REGISTER;
-begin
-    _CBSP_IdeOptions_GRP_:=RegisterIDEOptionsGroup (GroupEditor                 ,tCbSFP_ideGeneral_Config,TRUE);
-    _CBSP_IdeOtnsEDT_GNR_:=RegisterIDEOptionsEditor(_CBSP_IdeOptions_GRP_^.Index,tCbSFP_ideGeneral_Editor,0);
-end;
-
-procedure REGISTER_in_IdeOptions;
-begin
-    if not _Ide_OptnCBSP_isRGSTER then _Ide_OptnCBSP_REGISTER;
-end;
-
-procedure Register;
-begin
-    REGISTER_in_IdeOptions;
-end;
-     }
-
-{function CbSFP_ideGENERAL__register_SubScrbr(const AGroup,AIndex:Integer; const AParent:Integer=NoParent):PIDEOptionsEditorRec;
-begin
-    REGISTER_in_IdeOptions;
-    result:=RegisterIDEOptionsEditor(AGroup,tCbSFP_ideCallEditor,AIndex,AParent,TRUE);
-end;}
-
-{function CbSFP_ideGENERAL__register_SubScrbr:PIDEOptionsEditorRec;
-begin
-    REGISTER_in_IdeOptions;
-    result:=CbSFP_ideGENERAL__register_SubScrbr(_CBSP_IdeOptions_GRP_^.Index,GetFreeIDEOptionsIndex(_CBSP_IdeOptions_GRP_^.Index,0));
-end;}
-
 
 end.
 

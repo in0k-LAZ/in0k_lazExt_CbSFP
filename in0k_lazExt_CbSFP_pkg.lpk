@@ -32,36 +32,40 @@
    See the License for the specific language governing permissions and
    limitations under the License.                "/>
     <Version Minor="9" Release="2"/>
-    <Files Count="7">
+    <Files Count="8">
       <Item1>
         <Filename Value="srcPKG\CbSFP_ideGENERAL.pas"/>
-        <HasRegisterProc Value="True"/>
         <UnitName Value="CbSFP_ideGENERAL"/>
       </Item1>
       <Item2>
-        <Filename Value="srcPKG\CbSFP_SubScriber.pas"/>
-        <UnitName Value="CbSFP_SubScriber"/>
+        <Filename Value="srcPKG\CbSFP_ideREGISTER.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="CbSFP_ideREGISTER"/>
       </Item2>
       <Item3>
-        <Filename Value="srcPKG\CbSFP_ideCenter.pas"/>
-        <UnitName Value="CbSFP_ideCenter"/>
-      </Item3>
-      <Item4>
-        <Filename Value="srcPKG\CbSFP_ideEditor.pas"/>
-        <UnitName Value="CbSFP_ideEditor"/>
-      </Item4>
-      <Item5>
-        <Filename Value="srcPKG\CbSFP_ideGENERAL_editor.pas"/>
-        <UnitName Value="CbSFP_ideGENERAL_editor"/>
-      </Item5>
-      <Item6>
-        <Filename Value="srcPKG\CbSFP_ideGENERAL_config.pas"/>
-        <UnitName Value="CbSFP_ideGENERAL_config"/>
-      </Item6>
-      <Item7>
         <Filename Value="srcPKG\CbSFP__Intf.pas"/>
         <UnitName Value="CbSFP__Intf"/>
+      </Item3>
+      <Item4>
+        <Filename Value="srcPKG\CbSFP_SubScriber.pas"/>
+        <UnitName Value="CbSFP_SubScriber"/>
+      </Item4>
+      <Item5>
+        <Filename Value="srcPKG\CbSFP_ideEditor.pas"/>
+        <UnitName Value="CbSFP_ideEditor"/>
+      </Item5>
+      <Item6>
+        <Filename Value="srcPKG\CbSFP_ideCenter.pas"/>
+        <UnitName Value="CbSFP_ideCenter"/>
+      </Item6>
+      <Item7>
+        <Filename Value="srcPKG\CbSFP_ideGENERAL_editor.pas"/>
+        <UnitName Value="CbSFP_ideGENERAL_editor"/>
       </Item7>
+      <Item8>
+        <Filename Value="srcPKG\CbSFP_ideGENERAL_config.pas"/>
+        <UnitName Value="CbSFP_ideGENERAL_config"/>
+      </Item8>
     </Files>
     <Type Value="DesignTime"/>
     <RequiredPkgs Count="2">

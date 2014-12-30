@@ -67,20 +67,9 @@ type
 function CbSFP_ideGeneral_Config__GET:tCbSFP_ideGeneral_Config;
 {$endif}
 
-
- // GetInstance:TAbstractIDEOptions; override;
-
 implementation
-{.$ifDef ideLazExtMODE}
-//uses ;
-{.$endif}
 
-{.$ifdef ideLazExtMODE}
 const cCbSFP_ideGeneral_Config__GroupGeneral=cIn0k_LazExt_CbSFP__GroupGeneral;
-{/$else}
-//const cCbSFP_ideGeneral_Config__GroupGeneral='';
-{/$endif}
-
 
 //------------------------------------------------------------------------------
 {%region --- INSTANCE --------------------------------------------= /fold}

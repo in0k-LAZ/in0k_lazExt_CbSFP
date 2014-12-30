@@ -30,11 +30,26 @@ unit CbSFP__Intf;
 
 interface
 
-uses IDEOptionsIntf, CbSFP_ideCenter, CbSFP_SubScriber;
+{$define ideLazExtMODE}  //<----------------------- боевой режм "Расширения IDE"
+{$ifDef uiDevelopPRJ}
+    {$undef ideLazExtMODE}
+{$endif}
+
+
+uses
+    {$ifDef ideLazExtMODE}
+    IDEOptionsIntf,
+    CbSFP_ideREGISTER,
+    {$else}
+        {$ifDef uiDevelopPRJ}
+        {$endif}
+    {$endif}
+    CbSFP_ideCenter, CbSFP_SubScriber;
+
 
 function CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
 {$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"
-function CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
+//function CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
 function CbSFP_SubScriber__cnfg_OBJ(const SubScriber:tCbSFP_SubScriber; const srcFileName:string):pointer;
 {$endIf}
 
@@ -44,14 +59,18 @@ implementation
 
 function CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
 begin
-    result:=CbSFP_ideCenter.CbSFP_ideCenter__SubScriberREGISTER(Handle,Editor);
+    {$ifDef ideLazExtMODE}
+    result:=CbSFP_ideCenter__SubScriber_REGISTER(Handle,Editor,CbSFP_ideREGISTER_register_SubScrbr);
+    {$else}
+    result:=CbSFP_ideCenter__SubScriber_REGISTER(Handle,Editor);
+    {$endif}
 end;
 
 {$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"
-function CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
+{function CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
 begin
     result:=CbSFP_ideCenter.CbSFP_ideCenter__SubScriberREGISTER(Handle,Editor, AGroup,AIndex,AParent);
-end;
+end;}
 
 function CbSFP_SubScriber__cnfg_OBJ(const SubScriber:tCbSFP_SubScriber; const srcFileName:string):pointer;
 begin

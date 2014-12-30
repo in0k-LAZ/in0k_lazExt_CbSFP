@@ -6,26 +6,25 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
   Align = alClient
   ClientHeight = 548
   ClientWidth = 584
-  LCLVersion = '1.2.2.0'
   TabOrder = 0
   DesignLeft = 596
   DesignTop = 108
   object Splitter_1: TSplitter
     Left = 170
-    Height = 548
-    Top = 0
+    Height = 499
+    Top = 49
     Width = 5
     Anchors = [akLeft]
   end
   object GBox_Panel: TPanel
     Left = 0
-    Height = 548
-    Top = 0
+    Height = 499
+    Top = 49
     Width = 170
     Align = alLeft
     Anchors = []
     BevelOuter = bvNone
-    ClientHeight = 548
+    ClientHeight = 499
     ClientWidth = 170
     TabOrder = 1
     object OPTNs_GBox: TGroupBox
@@ -80,13 +79,13 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
     end
     object PTTNs_GBox: TGroupBox
       Left = 0
-      Height = 293
+      Height = 244
       Top = 255
       Width = 170
       Align = alClient
       Anchors = []
       Caption = 'set of search PATTERNs'
-      ClientHeight = 275
+      ClientHeight = 226
       ClientWidth = 166
       TabOrder = 1
       object PTTNs_bAdd: TSpeedButton
@@ -142,7 +141,7 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
         AnchorSideBottom.Control = PTTNs_GBox
         AnchorSideBottom.Side = asrBottom
         Left = 4
-        Height = 275
+        Height = 226
         Top = 0
         Width = 162
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -164,12 +163,12 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
   end
   object CMMN_Panel: TPanel
     Left = 175
-    Height = 548
-    Top = 0
+    Height = 499
+    Top = 49
     Width = 409
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 548
+    ClientHeight = 499
     ClientWidth = 409
     Constraints.MinWidth = 100
     TabOrder = 2
@@ -262,7 +261,7 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
       AnchorSideTop.Control = Common_sh2
       AnchorSideTop.Side = asrBottom
       Left = 0
-      Height = 483
+      Height = 434
       Top = 65
       Width = 409
       Align = alBottom
@@ -326,6 +325,53 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
       Action = aCNFG__DEF
       Anchors = [akTop, akRight]
       AutoSize = True
+    end
+  end
+  object TESTs_gBOX: TGroupBox
+    Left = 0
+    Height = 49
+    Top = 0
+    Width = 584
+    Align = alTop
+    Caption = 'TESTs_gBOX'
+    ClientHeight = 31
+    ClientWidth = 580
+    TabOrder = 3
+    object TESTs_lbl0: TLabel
+      Left = 24
+      Height = 15
+      Top = 7
+      Width = 55
+      Caption = 'TESTs_lbl0'
+      ParentColor = False
+    end
+    object TESTs_lbl1: TLabel
+      AnchorSideLeft.Control = TESTs_lbl0
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = TESTs_lbl0
+      AnchorSideTop.Side = asrCenter
+      Left = 79
+      Height = 15
+      Top = 7
+      Width = 55
+      Caption = 'TESTs_lbl1'
+      Color = clDefault
+      Font.Color = clHotLight
+      ParentColor = False
+      ParentFont = False
+      Transparent = False
+    end
+    object TESTs_lbl2: TLabel
+      AnchorSideLeft.Control = TESTs_lbl1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = TESTs_lbl0
+      AnchorSideTop.Side = asrCenter
+      Left = 134
+      Height = 15
+      Top = 7
+      Width = 55
+      Caption = 'TESTs_lbl2'
+      ParentColor = False
     end
   end
   object ActionList: TActionList

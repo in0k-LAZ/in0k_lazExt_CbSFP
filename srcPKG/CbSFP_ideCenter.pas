@@ -29,7 +29,6 @@ unit CbSFP_ideCenter;
 {$mode objfpc}{$H+}
 
 {$define ideLazExtMODE}  //<----------------------- боевой режм "Расширения IDE"
-
 {$ifDef uiDevelopPRJ}
     {$undef ideLazExtMODE}
 {$endif}
@@ -37,7 +36,7 @@ unit CbSFP_ideCenter;
 interface
 
 uses sysutils, LazFileUtils, IDEOptionsIntf, RegExpr, Dialogs,
-    CbSFP_ideGENERAL,
+    CbSFP_ideGENERAL, CbSFP_ideGENERAL_config, CbSFP_ideGENERAL_editor,
     CbSFP_wnd_DEBUG,
     {$ifDef ideLazExtMODE}
     BaseIDEIntf,
@@ -82,7 +81,7 @@ type
  tCbSFP_ideCallCenter=class
   {%region --- работа с УЗЛАМИ pCbSFP_Node ------------------------ /fold}
   private
-    procedure _node_CRT(out   node:pCbSFP_Node; const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor);
+    procedure _node_CRT(out   node:pCbSFP_Node; const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor; const ideRec:PIDEOptionsEditorRec);
     procedure _node_INI(const node:pCbSFP_Node);
     procedure _node_DST(const node:pCbSFP_Node);
   protected
@@ -203,10 +202,19 @@ type
     function  _itmPTTN_getNAME (const item:pCbSFP_PTTN):string;
     function  _itmPTTN_getCNFG (const item:pCbSFP_PTTN):pointer;
   {%endregion}
+
+    function  _regExprs_Create  (const InString:string):TRegExpr;
+    procedure _regExprs_Destroy (const regExprs:TRegExpr);
+    procedure _regExprs_SOURCE  (const regExprs:TRegExpr; const SOURCE:string);
+
+    function  _regExprs_testPTTN(const regExprs:TRegExpr; const PTTN:string; out mathPos,mathLen:PtrInt):boolean;
+    function  _regExprs_testPTTN(const regExprs:TRegExpr; const PTTN:string):boolean;
+
   {%region --- SubScriber поиск ----------------------------------- /fold}
   protected
-    function  _SubScrbr_REGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):pCbSFP_Node;
-    function  _SubScrbr_testPTTN(const item:pCbSFP_PTTN; const fileName:string):boolean; //inline;
+    function  _SubScrbr_REGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor; const ideRec:PIDEOptionsEditorRec):pCbSFP_Node;
+    function  _SubScrbr_testPTTN(const item:pCbSFP_PTTN; const testText:string):boolean; //inline;
+    function  _SubScrbr_testPTTN(const item:pCbSFP_PTTN; const testText:string; out mathPos,mathLen:PtrInt):boolean; //inline;
     function  _SubScrbr_findPTTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_PTTN; //inline;
     function  _SubScrbr_findOPTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_OPTN; //inline;
     function  _SubScrbr_Cnfg_OBJ(const node:pCbSFP_Node; const fileName:string):pointer;
@@ -222,9 +230,18 @@ type
  {$ifDef ideLazExtMODE} //<------------------------ боевой режм "Расширения IDE"
 
  tCbSFP_ideCallCenterIDE=class(tCbSFP_ideCallCenter)
+  private
+  private
+   // function  _lazIDE_register_SubScrbr(const AGroup,AIndex:Integer; const AParent:Integer=NoParent):PIDEOptionsEditorRec;
+   // function  _lazIDE_register_SubScrbr:PIDEOptionsEditorRec;
   public
-    function SubScriber_REGISTER(HNDL:tCbSFP_SubScriberTHandle; EDTR:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber; overload;
-    function SubScriber_REGISTER(HNDL:tCbSFP_SubScriberTHandle; EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber; overload;
+    //procedure REGISTER_in_LazIDE;
+
+  public
+    constructor Create;
+
+  public
+    function SubScriber_REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor; const IdeOER:PIDEOptionsEditorRec):tCbSFP_SubScriber;
     function SubScriber_Cnfg_OBJ(const node:pCbSFP_Node; const FileName:string):pointer;
   end;
 
@@ -306,20 +323,38 @@ type
     function  itmPTTN_getSeek (const item:pCbSFP_PTTN):string;
     function  itmPTTN_getUsed (const item:pCbSFP_PTTN):boolean;
   public //< это можно почитать
-    function  itmPTTN_test    (const item:pCbSFP_PTTN; const fileName:string):boolean;
+    function  itmPTTN_test    (const item:pCbSFP_PTTN; const testText:string; out mathPos,mathLen:PtrInt):boolean;
+    function  itmPTTN_test    (const item:pCbSFP_PTTN; const testText:string):boolean;
     function  itmPTTN_find    (const item:pCbSFP_PTTN; const fileName:string):pCbSFP_PTTN;
     function  itmOPTN_find    (const item:pCbSFP_PTTN; const fileName:string):pCbSFP_OPTN;
   {%endregion}
   public //<
     procedure itmCNFG_toDEF   (const item:pointer);
-    procedure ideCenter_DEBUG(const mType,mText:string);
+    //procedure ideCenter_DEBUG(const mType,mText:string);
   end;
 
-function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
+//function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
 {$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"
-function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
+
+function CbSFP_ideCenter__SubScriber_REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor; const IdeOER:PIDEOptionsEditorRec):tCbSFP_SubScriber;
+
+
+//function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
 function CbSFP_ideCenter__SubScriber_CnfgOBJ(const SubScriber:tCbSFP_SubScriber; const FileName:string):pointer;
+
+{$else}
+
+{$ifDef uiDevelopPRJ}
+function CbSFP_ideCenter__SubScriber_REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
+{$endif}
+
 {$endIf}
+
+
+
+
+
+
 function CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
 
 function  CbSFP_ideCenter_SubScriber_INDF(const SubScriber:tCbSFP_SubScriber):string;
@@ -543,12 +578,12 @@ end;
 
 {%region --- работа с УЗЛАМИ pCbSFP_Node -------------------------- /fold}
 
-procedure tCbSFP_ideCallCenter._node_CRT(out node:pCbSFP_Node; const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor);
+procedure tCbSFP_ideCallCenter._node_CRT(out node:pCbSFP_Node; const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor; const ideRec:PIDEOptionsEditorRec);
 begin
     new(node);
     with node^ do begin
         next      :=nil;
-        IDEOptERec:=nil;
+        IDEOptERec:=ideRec;
         SubStFRAME:=EDTR;
         SubSiCLASS:=HNDL.Create;
         list_OPTNs:=nil;
@@ -1256,16 +1291,141 @@ end;
 
 {%endregion}
 
+(*
+type
+
+ tCbSFP_RegExpr_core=class
+  private
+   _finder_:TRegExpr;
+  protected
+    procedure _set_Source(const value:string);
+    function  _get_Source:string;
+  public
+    property find_Source:string read _get_Source write _set_Source;
+    function find_Patten(const value:string; mPos,mLen:PtrInt):boolean;
+    function find_Patten(const value:string):boolean;
+  public
+    constructor Create;
+    destructor DESTROY;
+  end;
+
+//------------------------------------------------------------------------------
+
+constructor tCbSFP_RegExpr_core.Create;
+begin
+    inherited;
+   _finder_:=TRegExpr.Create;
+end;
+
+destructor tCbSFP_RegExpr_core.DESTROY;
+begin
+   _finder_.FREE;
+    inherited;
+end;
+
+//------------------------------------------------------------------------------
+
+function tCbSFP_RegExpr_core.find_Patten(const value:string; out mPos,mLen:PtrInt):boolean;
+begin
+    result:=(value<>'')and(_get_Source<>'');
+    if result then begin
+       _finder_.Expression:=value;
+        try result:=_finder_.Exec(1);
+            if result then begin
+                mPos:=_finder_.MatchPos[0];
+                mLen:=_finder_.MatchLen[0];
+            end;
+        except
+            result:=FALSE;
+        end;
+    end;
+end;
+
+function tCbSFP_RegExpr_core.find_Patten(const value:string):boolean;
+var mPos,mLen:PtrInt;
+begin
+    result:=find_Patten(value,mPos,mLen);
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+procedure tCbSFP_RegExpr_core._set_Source(const value:string);
+begin
+    {$ifOpt D+}
+        Assert(Assigned(_finder_),self.ClassName+'._set_fileName: _finder_=NIL');
+    {$endIF}
+   _finder_.InputString:=value;
+end;
+
+function tCbSFP_RegExpr_core._get_Source:string;
+begin
+    {$ifOpt D+}
+        Assert(Assigned(_finder_),self.ClassName+'._get_fileName: _finder_=NIL');
+    {$endIF}
+    result:=_finder_.InputString;
+end;
+*)
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+
+
+function tCbSFP_ideCallCenter._regExprs_Create(const InString:string):TRegExpr;
+begin
+    result:=nil;
+    if ImputSTR<>'' then begin
+        result:=TRegExpr.Create;
+        result.InputString:=InString;
+    end;
+end;
+
+procedure tCbSFP_ideCallCenter._regExprs_Destroy(const regExprs:TRegExpr);
+begin
+    regExprs.FREE;
+end;
+
+procedure tCbSFP_ideCallCenter._regExprs_SOURCE(const regExprs:TRegExpr; const SOURCE:string);
+begin
+    regExprs.InputString:=SOURCE;
+end;
+
+function tCbSFP_ideCallCenter._regExprs_testPTTN(const regExprs:TRegExpr; const PTTN:string; out mathPos,mathLen:PtrInt):boolean;
+begin
+    result:=(regExprs.InputString<>nil)and(PTTN<>'');
+    if result then begin
+        try
+            regExprs.Expression:=value;
+            result:=regExprs.Exec(1);
+            if result then begin
+                mPos:=regExprs.MatchPos[0];
+                mLen:=regExprs.MatchLen[0];
+            end;
+        except
+            result:=FALSE;
+        end;
+    end;
+end;
+
+function tCbSFP_ideCallCenter._regExprs_testPTTN(const regExprs:TRegExpr; const PTTN:string):boolean;
+var mathPos,mathLen:PtrInt;
+begin
+    result:=_regExprs_testPTTN(regExprs,PTTN,mathPos,mathLen);
+end;
+
+
 {%region --- SubScriber поиск ------------------------------------- /fold}
 
-function tCbSFP_ideCallCenter._SubScrbr_REGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):pCbSFP_Node;
+function tCbSFP_ideCallCenter._SubScrbr_REGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor; const ideRec:PIDEOptionsEditorRec):pCbSFP_Node;
 begin
     result:=_lair_FND_byIdentifier(HNDL.Identifier);
     if Assigned(result) then begin //< это ПЛОХО ... мы не сможем добавть
         result:=NIL;
     end
     else begin
-       _node_CRT (result,HNDL,EDTR);
+       _node_CRT (result,HNDL,EDTR,ideRec);
        _node_INI (result);
        _node_LOAD(result);
        _lair_ADD (result);
@@ -1274,15 +1434,31 @@ end;
 
 //------------------------------------------------------------------------------
 
-function  tCbSFP_ideCallCenter._SubScrbr_testPTTN(const item:pCbSFP_PTTN; const fileName:string):boolean;
+function tCbSFP_ideCallCenter._SubScrbr_testPTTN(const item:pCbSFP_PTTN; const testText:string; out mathPos,mathLen:PtrInt):boolean;
 var RegexObj:TRegExpr;
 begin
     RegexObj:=TRegExpr.Create;
-    RegexObj.InputString:=fileName;
+    RegexObj.InputString:=testText;
     RegexObj.Expression:=_itmPTTN_getSeek(item);
     result  :=RegexObj.Exec(1);
+    if not result then begin
+        mathPos:=0;
+        mathLen:=0;
+    end
+    else begin
+        mathPos:=RegexObj.MatchPos[0];
+        mathLen:=RegexObj.MatchLen[0];
+    end;
     RegexObj.FREE;
 end;
+
+function  tCbSFP_ideCallCenter._SubScrbr_testPTTN(const item:pCbSFP_PTTN; const testText:string):boolean;
+var mathPos,mathLen:PtrInt;
+begin
+    result:=_SubScrbr_testPTTN(item,testText,mathPos,mathLen);
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 function tCbSFP_ideCallCenter._SubScrbr_findPTTN(const node:pCbSFP_Node; const fileName:string):pCbSFP_PTTN;
 var RegexObj:TRegExpr;
@@ -1338,29 +1514,33 @@ end;
 
 {$ifDef ideLazExtMODE} //<------------------------- боевой режм "Расширения IDE"
 
-function tCbSFP_ideCallCenterIDE.SubScriber_REGISTER(
-            HNDL:tCbSFP_SubScriberTHandle;
-            EDTR:tCbSFP_SubScriberTEditor;
-            //---
-            const AGroup,AIndex:Integer;
-            const AParent:Integer=NoParent
-            ):tCbSFP_SubScriber;
+
+constructor tCbSFP_ideCallCenterIDE.Create;
 begin
-    result:=_SubScrbr_REGISTER(HNDL,EDTR);
-    if Assigned(result) then begin
-        pCbSFP_Node(result)^.IDEOptERec:=CbSFP_ideGENERAL__register_SubScrbr(AGroup,AIndex,AParent);
-    end;
+    inherited;
+   //_CBSP_IdeOptions_GRP_:=nil;
+   //_CBSP_IdeOtnsEDT_GNR_:=nil;
 end;
 
+//------------------------------------------------------------------------------
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+//------------------------------------------------------------------------------
+
 function tCbSFP_ideCallCenterIDE.SubScriber_REGISTER(
-            HNDL:tCbSFP_SubScriberTHandle;
-            EDTR:tCbSFP_SubScriberTEditor
+            const Handle:tCbSFP_SubScriberTHandle;
+            const Editor:tCbSFP_SubScriberTEditor;
+            const IdeOER:PIDEOptionsEditorRec
             ):tCbSFP_SubScriber;
 begin
-    result:=_SubScrbr_REGISTER(HNDL,EDTR);
-    if Assigned(result) then begin
-        pCbSFP_Node(result)^.IDEOptERec:=CbSFP_ideGENERAL__register_SubScrbr;
-    end;
+    result:=_SubScrbr_REGISTER(Handle,Editor,IdeOER);
 end;
 
 function tCbSFP_ideCallCenterIDE.SubScriber_Cnfg_OBJ(const node:pCbSFP_Node; const FileName:string):pointer;
@@ -1375,7 +1555,7 @@ function tCbSFP_ideCallCenterTST.SubScriber_REGISTER(HNDL:tCbSFP_SubScriberTHand
 begin // очищаем ВСЕ и создаем ЗАНОГО, чтобы был тока ЕДИНСТВЕННЫЙ
    _lair_DST;
    _lair_CRT;
-    result:=_SubScrbr_REGISTER(HNDL,EDTR);
+    result:=_SubScrbr_REGISTER(HNDL,EDTR,nil);
 end;
 {$endIf}
 
@@ -1704,9 +1884,14 @@ end;
 
 //------------------------------------------------------------------------------
 
-function tCbSFP_ideEditorNODE.itmPTTN_test(const item:pCbSFP_PTTN; const fileName:string):boolean;
+function tCbSFP_ideEditorNODE.itmPTTN_test(const item:pCbSFP_PTTN; const testText:string; out mathPos,mathLen:PtrInt):boolean;
 begin
-    result:=_CallCenter_._SubScrbr_testPTTN(item,fileName);
+    result:=_CallCenter_._SubScrbr_testPTTN(item,testText,mathPos,mathLen);
+end;
+
+function tCbSFP_ideEditorNODE.itmPTTN_test(const item:pCbSFP_PTTN; const testText:string):boolean;
+begin
+    result:=_CallCenter_._SubScrbr_testPTTN(item,testText);
 end;
 
 function tCbSFP_ideEditorNODE.itmPTTN_find(const item:pCbSFP_PTTN; const fileName:string):pCbSFP_PTTN;
@@ -1726,10 +1911,10 @@ begin
    _CallCenter_._itmCNFG_set_DEF(_SubScriber_,item);
 end;
 
-procedure tCbSFP_ideEditorNODE.ideCenter_DEBUG(const mType,mText:string);
+{procedure tCbSFP_ideEditorNODE.ideCenter_DEBUG(const mType,mText:string);
 begin
     CbSFP_ideCenter_DEBUG(_SubScriber_,mType,mText);
-end;
+end;}
 
 {%endregion}
 
@@ -1744,6 +1929,7 @@ var _CallCenter_:tCbSFP_ideCallCenter;
 function CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
 begin
     result:=tCbSFP_ideEditorNODE.Create(_CallCenter_,_CallCenter_.SubScriber_byEDITOR(value));
+    Assert(false,'asdf');
 end;
 
 //------------------------------------------------------------------------------
@@ -1781,16 +1967,11 @@ begin
     end;
 end;
 
-{$ifNDef uiDevelopPRJ} //< боевой режм "Расширения IDE"
+{$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"
 
-function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
+function CbSFP_ideCenter__SubScriber_REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor; const IdeOER:PIDEOptionsEditorRec):tCbSFP_SubScriber;
 begin
-    result:=tCbSFP_ideCallCenterIDE(_CallCenter_).SubScriber_REGISTER(HNDL,EDTR);
-end;
-
-function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
-begin
-    result:=tCbSFP_ideCallCenterIDE(_CallCenter_).SubScriber_REGISTER(HNDL,EDTR, AGroup,AIndex,AParent);
+    result:=tCbSFP_ideCallCenterIDE(_CallCenter_).SubScriber_REGISTER(Handle,Editor,IdeOER);
 end;
 
 function CbSFP_ideCenter__SubScriber_CnfgOBJ(const SubScriber:tCbSFP_SubScriber; const FileName:string):pointer;
@@ -1798,13 +1979,14 @@ begin
     result:=tCbSFP_ideCallCenterIDE(_CallCenter_).SubScriber_Cnfg_OBJ(SubScriber,FileName);
 end;
 
-
 {$else} //< режим ТЕСТИРОВАНИЯ
 
-function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
+{$ifDef uiDevelopPRJ}
+function CbSFP_ideCenter__SubScriber_REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
 begin
-    result:=tCbSFP_ideCallCenterTST(_CallCenter_).SubScriber_REGISTER(HNDL,EDTR);
+    result:=tCbSFP_ideCallCenterTST(_CallCenter_).SubScriber_REGISTER(Handle,Editor);
 end;
+{$endIf}
 
 {$endIf}
 
