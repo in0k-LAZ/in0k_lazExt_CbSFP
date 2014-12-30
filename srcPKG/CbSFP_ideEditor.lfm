@@ -74,6 +74,7 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
         Anchors = [akTop, akLeft, akRight, akBottom]
         ExtendedSelect = False
         ItemHeight = 0
+        OnDrawItem = OPTNs_lBoxDrawItem
         TabOrder = 0
       end
     end

@@ -48,7 +48,7 @@ uses sysutils, Classes, Graphics,  Dialogs,
      {$ifDef ideLazExtMODE}
      SrcEditorIntf,
      {$endIf}
-     IDEOptionsIntf;
+     IDEOptionsIntf, types;
 
 type
 
@@ -99,6 +99,8 @@ type
     PTTNs_bDwn: TSpeedButton;
     //---
     TESTs_gBOX: TGroupBox;
+    procedure OPTNs_lBoxDrawItem(Control: TWinControl; Index: Integer;
+      ARect: TRect; State: TOwnerDrawState);
     procedure TESTs_lbl1Resize(Sender: TObject);
 
 
@@ -505,6 +507,12 @@ end;
 procedure tCbSFP_ideCallEditor.TESTs_lbl1Resize(Sender: TObject);
 begin
     Shape1.SetBounds(TESTs_lbl1.Left-2,TESTs_lbl1.Top-1,TESTs_lbl1.Width+4,TESTs_lbl1.Height+2);
+end;
+
+procedure tCbSFP_ideCallEditor.OPTNs_lBoxDrawItem(Control: TWinControl;
+  Index: Integer; ARect: TRect; State: TOwnerDrawState);
+begin
+  //
 end;
 
 procedure tCbSFP_ideCallEditor._ideEditorNODE_CLR;
@@ -1368,7 +1376,7 @@ end;
 
 class function tCbSFP_ideCallEditor.SupportedOptionsClass:TAbstractIDEOptionsClass;
 begin
-    {$ifDef ideLazExtMODE} -
+    {$ifDef ideLazExtMODE}
     result:=tCbSFP_ideGeneral_Config;
     {$else}
         {$ifDef uiDevelopPRJ}
