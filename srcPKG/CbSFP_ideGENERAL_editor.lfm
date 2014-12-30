@@ -1,13 +1,13 @@
 object CbSFP_ideGeneral_Editor: TCbSFP_ideGeneral_Editor
   Left = 0
-  Height = 240
+  Height = 398
   Top = 0
   Width = 490
-  ClientHeight = 240
+  ClientHeight = 398
   ClientWidth = 490
   TabOrder = 0
-  DesignLeft = 90
-  DesignTop = 210
+  DesignLeft = 423
+  DesignTop = 207
   object CheckBox1: TCheckBox
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -26,11 +26,11 @@ object CbSFP_ideGeneral_Editor: TCbSFP_ideGeneral_Editor
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 0
-    Height = 198
-    Top = 42
-    Width = 490
-    Anchors = [akTop, akLeft, akRight, akBottom]
+    Left = 224
+    Height = 214
+    Top = 184
+    Width = 266
+    Anchors = [akRight, akBottom]
     Lines.Strings = (
       'Memo1'
     )
@@ -72,5 +72,13 @@ object CbSFP_ideGeneral_Editor: TCbSFP_ideGeneral_Editor
     Caption = 'Button1'
     OnClick = Button1Click
     TabOrder = 3
+  end
+  object ListBox1: TListBox
+    Left = 7
+    Height = 332
+    Top = 48
+    Width = 185
+    ItemHeight = 0
+    TabOrder = 4
   end
 end

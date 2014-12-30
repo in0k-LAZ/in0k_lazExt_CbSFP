@@ -36,7 +36,7 @@ unit CbSFP_ideCenter;
 interface
 
 uses sysutils, LazFileUtils, IDEOptionsIntf, RegExpr, Dialogs,
-    CbSFP_ideGENERAL, CbSFP_ideGENERAL_config, CbSFP_ideGENERAL_editor,
+    CbSFP_ideGENERAL, CbSFP_ideGENERAL_config, //CbSFP_ideGENERAL_editor,
     CbSFP_wnd_DEBUG,
     {$ifDef ideLazExtMODE}
     BaseIDEIntf,
@@ -373,6 +373,7 @@ procedure CbSFP_ideCenter_wndDBG_Activate(const SubScriber:tCbSFP_SubScriber);
 procedure CbSFP_ideCenter_wndDBG_Activate;
 procedure CbSFP_ideCenter_wndDBG_outGoing(const SubScriber:tCbSFP_SubScriber);
 
+procedure CbSFP_ideCenter_DEBUG(const mType,mText:string);
 procedure CbSFP_ideCenter_DEBUG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
 
 
@@ -2018,6 +2019,11 @@ begin
     then begin
         pCbSFP_Node(SubScriber)^._wnd_DEBUG_.message(mType,mText);
     end;
+end;
+
+procedure CbSFP_ideCenter_DEBUG(const mType,mText:string);
+begin
+    CbSFP_ideCenter_DEBUG()
 end;
 
 {$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"

@@ -48,6 +48,7 @@ type
     Button1: TButton;
     CheckBox1: TCheckBox;
     Edit1: TEdit;
+    ListBox1: TListBox;
     Memo1: TMemo;
     SpeedButton1: TSpeedButton;
     procedure Button1Click(Sender: TObject);
@@ -86,7 +87,7 @@ end;
 
 procedure tCbSFP_ideGeneral_Editor.Button1Click(Sender: TObject);
 begin
-  CbSFP_ideCenter_wndDBG_Activate;
+    CbSFP_ideCenter_wndDBG_Activate;
 end;
 
 constructor tCbSFP_ideGeneral_Editor.Create(TheOwner:TComponent);
@@ -118,11 +119,14 @@ end;
 
 procedure tCbSFP_ideGeneral_Editor.Setup(ADialog:TAbstractOptionsEditorDialog);
 begin
+    CbSFP_ideCenter_DEBUG('M','Setup');
+
     memo1.Append('Setup');
 end;
 
 procedure tCbSFP_ideGeneral_Editor.ReadSettings(AOptions:TAbstractIDEOptions);
 begin
+    CbSFP_ideCenter_DEBUG('M','ReadSettings');
     Edit1.Text:=CbSFP_ConfigsRootPath;
 
 
@@ -147,6 +151,9 @@ end;
 
 procedure tCbSFP_ideGeneral_Editor.WriteSettings(AOptions:TAbstractIDEOptions);
 begin
+    CbSFP_ideCenter_DEBUG('M','WriteSettings ..');
+
+
    memo1.Append('WriteSettings'+IntToHex(integer(AOptions),8));
    if AOptions is tCbSFP_ideGeneral_Config
    then begin
@@ -161,6 +168,7 @@ begin
             //---
             SAVE;
         end; }
+    CbSFP_ideCenter_DEBUG('M','WriteSettings OK');
 end;
 {$endRegion}
 
