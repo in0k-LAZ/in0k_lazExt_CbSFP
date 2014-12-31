@@ -80,8 +80,11 @@ type
 
  tCbSFP_ideCallCenter=class
   private
-  _wnd_DEBUG_:TCbSFP_wndDEBUG;
-
+   _wnd_DEBUG_:TCbSFP_wndDEBUG;
+  private
+    procedure _wnd_DEBUG_OPN(const node:pCbSFP_Node);
+    procedure _wnd_DEBUG_CLS(const node:pCbSFP_Node);
+    procedure _wnd_DEBUG_MSG(const node:pCbSFP_Node; const mType,mText:string);
 
   {%region --- работа с УЗЛАМИ pCbSFP_Node ------------------------ /fold}
   private
@@ -339,9 +342,10 @@ type
   public //<
     procedure itmCNFG_toDEF   (const item:pointer);
     //procedure ideCenter_DEBUG(const mType,mText:string);
-
     function  FindPttnInSource(const source,PTTN:string; out mathPos,mathLen:PtrInt):boolean;
-
+  public //<
+    procedure DEBUG_Show;
+    procedure DEBUG_MSG(const mType,mText:string);
   end;
 
 //function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
@@ -366,15 +370,24 @@ function CbSFP_ideCenter__SubScriber_REGISTER(const Handle:tCbSFP_SubScriberTHan
 
 
 
-function CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
+function  CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
 
 function  CbSFP_ideCenter_SubScriber_INDF(const SubScriber:tCbSFP_SubScriber):string;
-procedure CbSFP_ideCenter_wndDBG_Activate(const SubScriber:tCbSFP_SubScriber);
-procedure CbSFP_ideCenter_wndDBG_Activate;
-procedure CbSFP_ideCenter_wndDBG_outGoing(const SubScriber:tCbSFP_SubScriber);
+//procedure CbSFP_ideCenter_wndDBG_Activate(const SubScriber:tCbSFP_SubScriber);
+//procedure CbSFP_ideCenter_wndDBG_Activate;
+//procedure CbSFP_ideCenter_wndDBG_outGoing(const SubScriber:tCbSFP_SubScriber);
+//procedure CbSFP_ideCenter_wndDBG_Message (const SubScriber:tCbSFP_SubScriber);
 
-procedure CbSFP_ideCenter_DEBUG(const mType,mText:string);
-procedure CbSFP_ideCenter_DEBUG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+procedure CbSFP_ideCenter_DEBUG_outGoing (const SubScriber:tCbSFP_SubScriber);
+procedure CbSFP_ideCenter_DEBUG          (const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+
+procedure CbSFP_ideCenter_DEBUG_Show;
+//procedure CbSFP_ideCenter_DEBUG          (const mType,mText:string);
+
+
+
+//procedure CbSFP_ideCenter_DEBDEBUG_Show(const SubScriber:tCbSFP_SubScriber);
+//procedure CbSFP_ideCenter_DEBUG     (const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
 
 
 implementation
@@ -667,6 +680,54 @@ begin
 end;
 
 {%endregion}
+
+
+procedure tCbSFP_ideCallCenter._wnd_DEBUG_OPN(const node:pCbSFP_Node);
+begin //< как-то не надежно все это выглядит
+    if pointer(node)=pointer(self) then begin
+        if not Assigned(self._wnd_DEBUG_) then begin
+           self._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(self);
+        end
+        else begin
+           self._wnd_DEBUG_.BringToFront;
+        end;
+    end
+    else begin
+        if not Assigned(pCbSFP_Node(node)^._wnd_DEBUG_) then begin
+            pCbSFP_Node(node)^._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(node);
+        end
+        else begin
+            pCbSFP_Node(node)^._wnd_DEBUG_.BringToFront;
+        end;
+    end;
+end;
+
+procedure tCbSFP_ideCallCenter._wnd_DEBUG_CLS(const node:pCbSFP_Node);
+begin //< как-то не надежно все это выглядит
+    if pointer(node)=pointer(self) then begin
+       self._wnd_DEBUG_:=NIL;
+    end
+    else begin
+        pCbSFP_Node(node)^._wnd_DEBUG_:=NIL;
+    end;
+end;
+
+procedure tCbSFP_ideCallCenter._wnd_DEBUG_MSG(const node:pCbSFP_Node; const mType,mText:string);
+var wndDEBUG:TCbSFP_wndDEBUG;
+begin
+    wndDEBUG:=nil;
+    if Assigned(node) then begin
+        if pointer(node)=pointer(self) then begin
+            wndDEBUG:=self._wnd_DEBUG_;
+        end
+        else begin
+            wndDEBUG:=pCbSFP_Node(node)^._wnd_DEBUG_;
+        end;
+    end;
+    if Assigned(wndDEBUG) then begin
+        wndDEBUG.message(mType,mText);
+    end;
+end;
 
 {%region --- работа с ПУТЯМИ файловой системы --------------------- /fold}
 
@@ -1935,16 +1996,24 @@ begin
    _CallCenter_._itmCNFG_set_DEF(_SubScriber_,item);
 end;
 
-{procedure tCbSFP_ideEditorNODE.ideCenter_DEBUG(const mType,mText:string);
-begin
-    CbSFP_ideCenter_DEBUG(_SubScriber_,mType,mText);
-end;}
-
 {%endregion}
 
 function tCbSFP_ideEditorNODE.FindPttnInSource(const source,PTTN:string; out mathPos,mathLen:PtrInt):boolean;
 begin
    _CallCenter_._regExpr_FindPTTN(source,PTTN,mathPos,mathLen);
+end;
+
+
+procedure tCbSFP_ideEditorNODE.DEBUG_Show;
+begin
+   _CallCenter_._wnd_DEBUG_OPN(_SubScriber_);
+end;
+
+procedure tCbSFP_ideEditorNODE.DEBUG_MSG(const mType,mText:string);
+begin
+    ShowMessage('tCbSFP_ideEditorNODE.DEBUG_MSG ...');
+   _CallCenter_._wnd_DEBUG_MSG(_SubScriber_,mType,mText);
+    ShowMessage('tCbSFP_ideEditorNODE.DEBUG_MSG 0k');
 end;
 
 {$endRegion}
@@ -1956,9 +2025,15 @@ end;
 var _CallCenter_:tCbSFP_ideCallCenter;
 
 function CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
+var SubScriber:tCbSFP_SubScriber;
 begin
-    result:=tCbSFP_ideEditorNODE.Create(_CallCenter_,_CallCenter_.SubScriber_byEDITOR(value));
-    Assert(false,'asdf');
+    result:=nil;
+    if Assigned(_CallCenter_) and Assigned(value) then begin
+        SubScriber:=_CallCenter_.SubScriber_byEDITOR(value);
+        if Assigned(SubScriber) then begin
+            result:=tCbSFP_ideEditorNODE.Create(_CallCenter_,SubScriber);
+        end;
+    end;
 end;
 
 //------------------------------------------------------------------------------
@@ -1978,52 +2053,25 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure CbSFP_ideCenter_wndDBG_Activate;
+{procedure CbSFP_ideCenter_wndDBG_Activate;
 begin
-    CbSFP_ideCenter_wndDBG_Activate(_CallCenter_);
-end;
+   _CallCenter_._wnd_DEBUG_OPN(pointer(_CallCenter_));
+end;}
 
-procedure CbSFP_ideCenter_wndDBG_Activate(const SubScriber:tCbSFP_SubScriber);
-begin //< как-то не надежно все это выглядит
-    if pointer(SubScriber)=pointer(_CallCenter_) then begin
-        if not Assigned(_CallCenter_._wnd_DEBUG_) then begin
-           _CallCenter_._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(_CallCenter_);
-        end
-        else begin
-           _CallCenter_._wnd_DEBUG_.BringToFront;
-        end;
-    end
-    else begin
-        if not Assigned(pCbSFP_Node(SubScriber)^._wnd_DEBUG_) then begin
-            pCbSFP_Node(SubScriber)^._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(SubScriber);
-        end
-        else begin
-            pCbSFP_Node(SubScriber)^._wnd_DEBUG_.BringToFront;
-        end;
-    end;
-end;
 
-procedure CbSFP_ideCenter_wndDBG_outGoing(const SubScriber:tCbSFP_SubScriber);
-begin //< как-то не надежно все это выглядит
-    if pointer(SubScriber)=pointer(_CallCenter_) then begin
-       _CallCenter_._wnd_DEBUG_:=NIL;
-    end
-    else begin
-        pCbSFP_Node(SubScriber)^._wnd_DEBUG_:=NIL;
-    end;
+procedure CbSFP_ideCenter_DEBUG_outGoing(const SubScriber:tCbSFP_SubScriber);
+begin
+   //_CallCenter_._wnd_DEBUG_CLS(SubScriber);
 end;
 
 procedure CbSFP_ideCenter_DEBUG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
 begin
-    if Assigned(SubScriber)and Assigned(pCbSFP_Node(SubScriber)^._wnd_DEBUG_)
-    then begin
-        pCbSFP_Node(SubScriber)^._wnd_DEBUG_.message(mType,mText);
-    end;
+   //_CallCenter_._wnd_DEBUG_MSG(SubScriber,mType,mText);
 end;
 
-procedure CbSFP_ideCenter_DEBUG(const mType,mText:string);
+procedure CbSFP_ideCenter_DEBUG_Show;
 begin
-    CbSFP_ideCenter_DEBUG()
+  // _CallCenter_._wnd_DEBUG_OPN(pointer(_CallCenter_));
 end;
 
 {$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"

@@ -2,7 +2,7 @@
 <CONFIG>
   <PattensList Count="3">
     <Item0 name="DEFAULT" seek="fileName" used="False"/>
-    <Item1 name="custom" seek="fileName1" used="False"/>
+    <Item1 name="custom" seek="Base" used="False"/>
     <Item2 name="custom" seek="fileName11" used="False"/>
   </PattensList>
 </CONFIG>

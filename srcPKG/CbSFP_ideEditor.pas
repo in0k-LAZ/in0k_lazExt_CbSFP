@@ -64,6 +64,7 @@ type
     aPTTN_mwUP: TAction;
     aPTTN_mwDW: TAction;
     aCNFG__DEF: TAction;
+    Button1: TButton;
     //---
     CMMN_Panel: TPanel;
     CNFG_toDEF: TSpeedButton;
@@ -99,6 +100,7 @@ type
     PTTNs_bDwn: TSpeedButton;
     //---
     TESTs_gBOX: TGroupBox;
+    procedure Button1Click(Sender: TObject);
     procedure OPTNs_lBoxDrawItem(Control: TWinControl; Index: Integer;
       ARect: TRect; State: TOwnerDrawState);
     procedure TESTs_lbl1Resize(Sender: TObject);
@@ -274,6 +276,7 @@ const
 constructor tCbSFP_ideCallEditor.Create(TheOwner:TComponent);
 begin
     inherited;
+    self.Rec:=NIL;
     {$ifDef CbSFP_log_ON}
    _EventLog_:=TEventLog.Create(self);
    _EventLog_.LogType :=ltFile;
@@ -506,13 +509,25 @@ end;
 
 procedure tCbSFP_ideCallEditor.TESTs_lbl1Resize(Sender: TObject);
 begin
-    Shape1.SetBounds(TESTs_lbl1.Left-2,TESTs_lbl1.Top-1,TESTs_lbl1.Width+4,TESTs_lbl1.Height+2);
+    with TESTs_lbl1 do begin
+        if TESTs_lbl1.Width<=1 then Shape1.Hide
+        else begin
+            {todo: взять стандартные размеры}
+            Shape1.SetBounds(Left-2,Top-1,Width+5,Height+2);
+            Shape1.Show;
+        end;
+    end;
 end;
 
 procedure tCbSFP_ideCallEditor.OPTNs_lBoxDrawItem(Control: TWinControl;
   Index: Integer; ARect: TRect; State: TOwnerDrawState);
 begin
   //
+end;
+
+procedure tCbSFP_ideCallEditor.Button1Click(Sender: TObject);
+begin
+    nodeEditor.DEBUG_Show;
 end;
 
 procedure tCbSFP_ideCallEditor._ideEditorNODE_CLR;
@@ -533,6 +548,8 @@ begin
        _ideEditorNODE_SET;
     end;
     result:=tCbSFP_ideEditorNODE(_ideEditorNODE_);
+    if result=nil then ShowMessage('nodeEditor=nil');
+
 end;
 
 {$endregion}
@@ -549,7 +566,7 @@ end;
 procedure tCbSFP_ideCallEditor._testFileName_ini;
 begin
     {$ifDef ideLazExtMODE}
-   _testFileName_set(_ideLazarus_ActivEditFileName);
+   _testFileName_set('dfgsdf'{_ideLazarus_ActivEditFileName});
     {$else}
    _testFileName_set(ParamStr(0));
     {$endIf}
@@ -1389,10 +1406,21 @@ end;
 
 procedure tCbSFP_ideCallEditor.Setup(ADialog:TAbstractOptionsEditorDialog);
 begin
-    //CbSFP_ideCenter_DEBUG(nodeEditor,'M','Setup');
+
+
+
+    ShowMessage('SETUP');
+    try
+    nodeEditor.DEBUG_MSG('M','Setup ..');
+    finally
+    end;
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('Setup');
     {$endIf}
+    try
+    //nodeEditor.DEBUG_MSG('M','Setup 0k');
+    finally
+    end;
 end;
 
 procedure tCbSFP_ideCallEditor.ReadSettings(AOptions:TAbstractIDEOptions);
@@ -1400,7 +1428,7 @@ procedure tCbSFP_ideCallEditor.ReadSettings(AOptions:TAbstractIDEOptions);
 var v1,v2:integer;
 {$endIf}
 begin
-    //nodeEditor.ideCenter_DEBUG('M','ReadSettings');
+    nodeEditor.DEBUG_MSG('M','ReadSettings ..');
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('ReadSettings');
     {$endIf}
@@ -1415,6 +1443,7 @@ begin
    _common_FRM__Tst2CRT; //< НЕ хорошо (см. реализацию)
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
+    nodeEditor.DEBUG_MSG('M','ReadSettings 0k');
 end;
 
 procedure tCbSFP_ideCallEditor.WriteSettings(AOptions:TAbstractIDEOptions);
@@ -1422,7 +1451,7 @@ procedure tCbSFP_ideCallEditor.WriteSettings(AOptions:TAbstractIDEOptions);
 var v1,v2:integer;
 {$endIf}
 begin
-    //nodeEditor.ideCenter_DEBUG('M','WriteSettings');
+    nodeEditor.DEBUG_MSG('M','WriteSettings ..');
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('WriteSettings');
     {$endIf}
@@ -1435,21 +1464,20 @@ begin
    _settingsSAVE_;
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
+    nodeEditor.DEBUG_MSG('M','WriteSettings 0k');
 end;
 
 procedure tCbSFP_ideCallEditor.RestoreSettings({%H-}AOptions:TAbstractIDEOptions);
 begin
-    //nodeEditor.ideCenter_DEBUG('M','RestoreSettings');
+    nodeEditor.DEBUG_MSG('M','RestoreSettings ..');
     {$ifDef CbSFP_log_ON}
    _EventLog_.Debug('RestoreSettings');
     {$endIf}
     nodeEditor.EDIT_doEnd(FALSE); //<НЕТ, ОТМЕНЯЕМ все изменения
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
+    nodeEditor.DEBUG_MSG('M','RestoreSettings 0k');
 end;
-
-
-
 
 end.
 

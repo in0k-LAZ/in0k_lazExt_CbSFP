@@ -32,7 +32,7 @@ uses CbSFP_ideCenter;
 
 procedure TCbSFP_wndDEBUG.FormClose(Sender:TObject; var CloseAction:TCloseAction);
 begin
-    CbSFP_ideCenter_wndDBG_outGoing(_subScriber_);
+    CbSFP_ideCenter_DEBUG_outGoing(_subScriber_);
     CloseAction:=caFree;
 end;
 

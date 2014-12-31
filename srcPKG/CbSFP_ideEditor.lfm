@@ -341,9 +341,9 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
     object Shape1: TShape
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Side = asrBottom
-      Left = 79
+      Left = 209
       Height = 15
-      Top = 7
+      Top = 8
       Width = 55
       Anchors = []
       Pen.Color = clHotLight
@@ -352,7 +352,7 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
     object TESTs_lbl0: TLabel
       Left = 24
       Height = 15
-      Top = 7
+      Top = 0
       Width = 55
       Caption = 'TESTs_lbl0'
       ParentColor = False
@@ -364,7 +364,7 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
       AnchorSideTop.Side = asrCenter
       Left = 79
       Height = 15
-      Top = 7
+      Top = 0
       Width = 55
       Caption = 'TESTs_lbl1'
       Font.Color = clHotLight
@@ -379,10 +379,19 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
       AnchorSideTop.Side = asrCenter
       Left = 134
       Height = 15
-      Top = 7
+      Top = 0
       Width = 55
       Caption = 'TESTs_lbl2'
       ParentColor = False
+    end
+    object Button1: TButton
+      Left = 0
+      Height = 25
+      Top = 0
+      Width = 19
+      Caption = 'Button1'
+      OnClick = Button1Click
+      TabOrder = 0
     end
   end
   object ActionList: TActionList
