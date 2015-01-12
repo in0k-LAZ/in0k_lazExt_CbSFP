@@ -13,8 +13,8 @@ type
   { TGnrlWND }
 
   TGnrlWND = class(TForm)
-    Button1: TButton;
     CbSFP_ideGeneral_Editor1: TCbSFP_ideGeneral_Editor;
+    procedure Button1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     { private declarations }
@@ -39,6 +39,11 @@ begin
     CbSFP_ideGeneral_Editor1.Setup(nil);
     // ... чето-делает
     CbSFP_ideGeneral_Editor1.ReadSettings(CbSFP_ideGeneral_Config__GET);
+end;
+
+procedure TGnrlWND.Button1Click(Sender: TObject);
+begin
+
 end;
 
 end.

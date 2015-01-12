@@ -80,7 +80,7 @@ end;
 
 procedure CbSFP_SubScriber__DebugMSG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
 begin
-    CbSFP_ideCenter_DEBUG(SubScriber, mType,mText);
+   // CbSFP_ideCenter_DEBUG(SubScriber, mType,mText);
 end;
 
 end.

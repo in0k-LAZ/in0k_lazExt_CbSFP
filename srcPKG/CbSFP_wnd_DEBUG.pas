@@ -22,7 +22,8 @@ type
   public
     constructor Create(subScriber:tCbSFP_SubScriber);
   public
-    procedure message(const mType,mText:string);
+    procedure message(const mText:string);
+    //procedure message(const mType,mText:string);
   end;
 
 implementation
@@ -49,12 +50,19 @@ begin
    _subScriber_:=subScriber;
 end;
 
-procedure TCbSFP_wndDEBUG.Message(const mType,mText:string);
+procedure TCbSFP_wndDEBUG.message(const mText:string);
 begin
-   memo1.Lines.Insert(0,DateTimeToStr(now)+' ['+mType+'] '+mText);
-   memo1.SelStart:=0;
-   memo1.SelLength:=0;
+    memo1.Lines.Insert(0,TimeToStr(now)+' '+mText);
+    memo1.SelStart:=0;
+    memo1.SelLength:=0;
 end;
+
+{procedure TCbSFP_wndDEBUG.Message(const mType,mText:string);
+begin
+    if mType<>''
+    then message(' ['+mType+'] '+mText)
+    else message(mText);
+end;}
 
 end.
 

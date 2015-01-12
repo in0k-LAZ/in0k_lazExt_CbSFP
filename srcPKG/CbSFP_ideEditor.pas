@@ -30,7 +30,7 @@ unit CbSFP_ideEditor;
 {$mode objfpc}{$H+}
 
 {$define ideLazExtMODE}  //<----------------------- боевой режм "Расширения IDE"
-{.$define CbSFP_log_ON}  //<----------------------- логирование ПОВЕДЕНИЯ
+{$define CbSFP_log_ON}  //<----------------------- логирование ПОВЕДЕНИЯ
 {$ifDef uiDevelopPRJ}
     {$undef ideLazExtMODE}
 {$endif}
@@ -108,16 +108,14 @@ type
 
 
  protected //<-----------------------------------------------------------------
-    {$ifDef CbSFP_log_ON}
-   _EventLog_: TEventLog;
-    {$endIf}
   {%region --- выход на CallCenter -------------------------------- /fold}
   strict private
    _ideEditorNODE_:pointer;
     procedure _ideEditorNODE_CLR; inline;
     procedure _ideEditorNODE_SET; inline;
   protected
-    function nodeEditor:tCbSFP_ideEditorNODE;
+    function  nodeEditor:tCbSFP_ideEditorNODE;
+    procedure DEBUG(const msgType,msgText:string);
   {%endregion}
   {%region --- выход на IDE lazarus ------------------------------- /fold}
   protected
@@ -277,11 +275,6 @@ constructor tCbSFP_ideCallEditor.Create(TheOwner:TComponent);
 begin
     inherited;
     self.Rec:=NIL;
-    {$ifDef CbSFP_log_ON}
-   _EventLog_:=TEventLog.Create(self);
-   _EventLog_.LogType :=ltFile;
-   _EventLog_.FileName:=self.ClassName+'.log';
-    {$endIf}
    _onCreate_fixHimSelfName;
    _onCreate_fixActionsName;
    _onCreate_setActionsEVNT;
@@ -311,22 +304,13 @@ begin
     PTTNs_lBox.OnClickCheck     :=@_PTTNs_lBox__onClickCheck;
     //---
     self.OnResize:=@_onResize_controlsPosSET;
-    {$ifDef CbSFP_log_ON}
-   _EventLog_.Debug('CreatED');
-    {$endIf}
    _testFileName_ini;
 end;
 
 destructor tCbSFP_ideCallEditor.DESTROY;
 begin // !!! порядок ВАЖЕН !!!
-    {$ifDef CbSFP_log_ON}
-   _EventLog_.Debug('Destroy');
-    {$endIf}
    _common_FRM__DESTROY; //< уничтожение ФРЕЙМА
    _ideEditorNODE_CLR;   //< чистим объекта
-    {$ifDef CbSFP_log_ON}
-   _EventLog_.Debug('DestroyED');
-    {$endIf}
     inherited;
 end;
 
@@ -539,7 +523,6 @@ end;
 procedure tCbSFP_ideCallEditor._ideEditorNODE_SET;
 begin
    _ideEditorNODE_:=CbSFP_ideCenter__EditorNODE(self);
-    Assert(Assigned(_ideEditorNODE_),'CallCenterNodeForEDIT NOT found');
 end;
 
 function tCbSFP_ideCallEditor.nodeEditor:tCbSFP_ideEditorNODE;
@@ -549,8 +532,14 @@ begin
     end;
     result:=tCbSFP_ideEditorNODE(_ideEditorNODE_);
     if result=nil then ShowMessage('nodeEditor=nil');
-
 end;
+
+{$ifOpt D+}
+procedure tCbSFP_ideCallEditor.DEBUG(const msgType,msgText:string);
+begin
+    nodeEditor.DEBUG_MSG(msgType,msgText);
+end;
+{$endIf}
 
 {$endregion}
 
@@ -1406,21 +1395,15 @@ end;
 
 procedure tCbSFP_ideCallEditor.Setup(ADialog:TAbstractOptionsEditorDialog);
 begin
-
-
-
-    ShowMessage('SETUP');
-    try
-    nodeEditor.DEBUG_MSG('M','Setup ..');
-    finally
-    end;
-    {$ifDef CbSFP_log_ON}
-   _EventLog_.Debug('Setup');
+    {$ifOpt D+}
+        DEBUG('M','Setup ..');
     {$endIf}
-    try
-    //nodeEditor.DEBUG_MSG('M','Setup 0k');
-    finally
-    end;
+    //--------------------------------------------------------------------------
+    // do nofing
+    //--------------------------------------------------------------------------
+    {$ifOpt D+}
+        DEBUG('M','Setup 0k');
+    {$endIf}
 end;
 
 procedure tCbSFP_ideCallEditor.ReadSettings(AOptions:TAbstractIDEOptions);
@@ -1428,10 +1411,10 @@ procedure tCbSFP_ideCallEditor.ReadSettings(AOptions:TAbstractIDEOptions);
 var v1,v2:integer;
 {$endIf}
 begin
-    nodeEditor.DEBUG_MSG('M','ReadSettings ..');
-    {$ifDef CbSFP_log_ON}
-   _EventLog_.Debug('ReadSettings');
+    {$ifOpt D+}
+        DEBUG('M','ReadSettings ..');
     {$endIf}
+    //--------------------------------------------------------------------------
     {$ifDef ideLazExtMODE}
     tCbSFP_ideGeneral_Config(AOptions).SubScriber_loadEditorVALUEs(nodeEditor.Identifier,V1,V2);
    _frame_setSizes(V1,V2);
@@ -1443,7 +1426,10 @@ begin
    _common_FRM__Tst2CRT; //< НЕ хорошо (см. реализацию)
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
-    nodeEditor.DEBUG_MSG('M','ReadSettings 0k');
+    //--------------------------------------------------------------------------
+    {$ifOpt D+}
+        DEBUG('M','ReadSettings 0k');
+    {$endIf}
 end;
 
 procedure tCbSFP_ideCallEditor.WriteSettings(AOptions:TAbstractIDEOptions);
@@ -1451,10 +1437,10 @@ procedure tCbSFP_ideCallEditor.WriteSettings(AOptions:TAbstractIDEOptions);
 var v1,v2:integer;
 {$endIf}
 begin
-    nodeEditor.DEBUG_MSG('M','WriteSettings ..');
-    {$ifDef CbSFP_log_ON}
-   _EventLog_.Debug('WriteSettings');
+    {$ifOpt D+}
+        DEBUG('M','WriteSettings ..');
     {$endIf}
+    //--------------------------------------------------------------------------
     {$ifDef ideLazExtMODE}
    _frame_getSizes(V1,V2);
     with tCbSFP_ideGeneral_Config(AOptions) do begin
@@ -1464,19 +1450,25 @@ begin
    _settingsSAVE_;
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
-    nodeEditor.DEBUG_MSG('M','WriteSettings 0k');
+    //--------------------------------------------------------------------------
+    {$ifOpt D+}
+        DEBUG('M','WriteSettings 0k');
+    {$endIf}
 end;
 
 procedure tCbSFP_ideCallEditor.RestoreSettings({%H-}AOptions:TAbstractIDEOptions);
 begin
-    nodeEditor.DEBUG_MSG('M','RestoreSettings ..');
-    {$ifDef CbSFP_log_ON}
-   _EventLog_.Debug('RestoreSettings');
+    {$ifOpt D+}
+        DEBUG('M','RestoreSettings ..');
     {$endIf}
+    //--------------------------------------------------------------------------
     nodeEditor.EDIT_doEnd(FALSE); //<НЕТ, ОТМЕНЯЕМ все изменения
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
-    nodeEditor.DEBUG_MSG('M','RestoreSettings 0k');
+    //--------------------------------------------------------------------------
+    {$ifOpt D+}
+        DEBUG('M','RestoreSettings 0k');
+    {$endIf}
 end;
 
 end.

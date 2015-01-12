@@ -82,10 +82,18 @@ type
   private
    _wnd_DEBUG_:TCbSFP_wndDEBUG;
   private
-    procedure _wnd_DEBUG_OPN(const node:pCbSFP_Node);
-    procedure _wnd_DEBUG_CLS(const node:pCbSFP_Node);
-    procedure _wnd_DEBUG_MSG(const node:pCbSFP_Node; const mType,mText:string);
-
+    function  _txt_DEBUG_MSG_(const mType,mText:string):string;                        // inline;
+    function  _txt_DEBUG_MSG_(const mType,mText:string; const node:pCbSFP_Node):string;// inline;
+  private
+    procedure _wnd_DEBUG_MAIN_doOPN_;
+    procedure _wnd_DEBUG_MAIN_doCLS_;
+    procedure _wnd_DEBUG_MAIN_onCLS_;
+    procedure _wnd_DEBUG_node_doOPN_(const node:pCbSFP_Node);
+    procedure _wnd_DEBUG_node_doCLS_(const node:pCbSFP_Node);
+    procedure _wnd_DEBUG_node_onCLS_(const node:pCbSFP_Node);
+  private
+    procedure _DEBUG_MAIN_(const node:pCbSFP_Node; const mType,mText:string);
+    procedure _DEBUG_NODE_(const node:pCbSFP_Node; const mType,mText:string);
   {%region --- работа с УЗЛАМИ pCbSFP_Node ------------------------ /fold}
   private
     procedure _node_CRT(out   node:pCbSFP_Node; const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor; const ideRec:PIDEOptionsEditorRec);
@@ -94,6 +102,7 @@ type
   protected
     function  _node_identifier(const node:pCbSFP_Node):string; inline;
     function  _node_cnfFileEXT(const node:pCbSFP_Node):string; inline;
+    function  _node_wndDeBUGin(const node:pCbSFP_Node):TCbSFP_wndDEBUG; inline;
   private
     function  _node_LOAD_CNFG (const node:pCbSFP_Node; const OPTN:pCbSFP_OPTN):boolean;
     function  _node_SAVE_CNFG (const node:pCbSFP_Node; const OPTN:pCbSFP_OPTN):boolean;
@@ -371,6 +380,11 @@ function CbSFP_ideCenter__SubScriber_REGISTER(const Handle:tCbSFP_SubScriberTHan
 
 
 function  CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
+//procedure  CbSFP_ideCenter__ideEditor_DEBUG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+
+
+
+
 
 function  CbSFP_ideCenter_SubScriber_INDF(const SubScriber:tCbSFP_SubScriber):string;
 //procedure CbSFP_ideCenter_wndDBG_Activate(const SubScriber:tCbSFP_SubScriber);
@@ -379,18 +393,15 @@ function  CbSFP_ideCenter_SubScriber_INDF(const SubScriber:tCbSFP_SubScriber):st
 //procedure CbSFP_ideCenter_wndDBG_Message (const SubScriber:tCbSFP_SubScriber);
 
 procedure CbSFP_ideCenter_DEBUG_outGoing (const SubScriber:tCbSFP_SubScriber);
-procedure CbSFP_ideCenter_DEBUG          (const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+//procedure CbSFP_ideCenter_DEBUG          (const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
 
 procedure CbSFP_ideCenter_DEBUG_Show;
-//procedure CbSFP_ideCenter_DEBUG          (const mType,mText:string);
-
-
-
-//procedure CbSFP_ideCenter_DEBDEBUG_Show(const SubScriber:tCbSFP_SubScriber);
-//procedure CbSFP_ideCenter_DEBUG     (const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
-
+procedure CbSFP_ideCenter_DEBUG_main(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+procedure CbSFP_ideCenter_DEBUG_node(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
 
 implementation
+
+
 
 {$ifDef ideLazExtMODE}
 //uses CbSFP_ideGENERAL;
@@ -666,6 +677,11 @@ begin
     result:=_safeCall__SubSiCLASS__ConfigOBJ_FileEXT(node^.SubSiCLASS);
 end;
 
+function tCbSFP_ideCallCenter._node_wndDeBUGin(const node:pCbSFP_Node):TCbSFP_wndDEBUG;
+begin
+    result:=node^._wnd_DEBUG_;
+end;
+
 //------------------------------------------------------------------------------
 
 function tCbSFP_ideCallCenter._node_LOAD_CNFG(const node:pCbSFP_Node; const OPTN:pCbSFP_OPTN):boolean;
@@ -682,37 +698,72 @@ end;
 {%endregion}
 
 
-procedure tCbSFP_ideCallCenter._wnd_DEBUG_OPN(const node:pCbSFP_Node);
-begin //< как-то не надежно все это выглядит
-    if pointer(node)=pointer(self) then begin
-        if not Assigned(self._wnd_DEBUG_) then begin
-           self._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(self);
-        end
-        else begin
-           self._wnd_DEBUG_.BringToFront;
-        end;
+procedure tCbSFP_ideCallCenter._wnd_DEBUG_MAIN_doOPN_;
+begin
+    if not Assigned(self._wnd_DEBUG_) then begin
+       self._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(self);
     end
     else begin
-        if not Assigned(pCbSFP_Node(node)^._wnd_DEBUG_) then begin
-            pCbSFP_Node(node)^._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(node);
-        end
-        else begin
-            pCbSFP_Node(node)^._wnd_DEBUG_.BringToFront;
-        end;
+       self._wnd_DEBUG_.BringToFront;
     end;
 end;
 
-procedure tCbSFP_ideCallCenter._wnd_DEBUG_CLS(const node:pCbSFP_Node);
+procedure tCbSFP_ideCallCenter._wnd_DEBUG_MAIN_doCLS_;
+begin
+    if Assigned(self._wnd_DEBUG_) then begin
+       self._wnd_DEBUG_.Close;
+    end;
+end;
+
+procedure tCbSFP_ideCallCenter._wnd_DEBUG_MAIN_onCLS_;
+begin
+    self._wnd_DEBUG_:=nil;
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+procedure tCbSFP_ideCallCenter._wnd_DEBUG_node_doOPN_(const node:pCbSFP_Node);
+begin
+    if not Assigned(pCbSFP_Node(node)^._wnd_DEBUG_) then begin
+        pCbSFP_Node(node)^._wnd_DEBUG_:=TCbSFP_wndDEBUG.Create(node);
+    end
+    else begin
+        pCbSFP_Node(node)^._wnd_DEBUG_.BringToFront;
+    end;
+end;
+
+procedure tCbSFP_ideCallCenter._wnd_DEBUG_node_doCLS_(const node:pCbSFP_Node);
+begin
+    if Assigned(node^._wnd_DEBUG_) then begin
+        node^._wnd_DEBUG_.Close;
+    end;
+end;
+
+procedure tCbSFP_ideCallCenter._wnd_DEBUG_node_onCLS_(const node:pCbSFP_Node);
+begin
+    node^._wnd_DEBUG_:=nil;
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+{procedure tCbSFP_ideCallCenter._wnd_DEBUG_OPN(const node:pCbSFP_Node);
+begin //< как-то не надежно все это выглядит
+    if pointer(node)=pointer(self) then begin
+    end
+    else begin
+    end;
+end;}
+
+{procedure tCbSFP_ideCallCenter._wnd_DEBUG_CLS(const node:pCbSFP_Node);
 begin //< как-то не надежно все это выглядит
     if pointer(node)=pointer(self) then begin
        self._wnd_DEBUG_:=NIL;
     end
     else begin
-        pCbSFP_Node(node)^._wnd_DEBUG_:=NIL;
     end;
-end;
+end;}
 
-procedure tCbSFP_ideCallCenter._wnd_DEBUG_MSG(const node:pCbSFP_Node; const mType,mText:string);
+{procedure tCbSFP_ideCallCenter._wnd_DEBUG_MSG(const node:pCbSFP_Node; const mType,mText:string);
 var wndDEBUG:TCbSFP_wndDEBUG;
 begin
     wndDEBUG:=nil;
@@ -727,6 +778,41 @@ begin
     if Assigned(wndDEBUG) then begin
         wndDEBUG.message(mType,mText);
     end;
+end;}
+
+procedure tCbSFP_ideCallCenter._DEBUG_MAIN_(const node:pCbSFP_Node; const mType,mText:string);
+begin
+    if Assigned(_wnd_DEBUG_) then begin
+       _wnd_DEBUG_.message(_txt_DEBUG_MSG_(mType,mText,node));
+    end;
+end;
+
+procedure tCbSFP_ideCallCenter._DEBUG_NODE_(const node:pCbSFP_Node; const mType,mText:string);
+begin
+    if Assigned(_node_wndDeBUGin(node)) then begin
+       _node_wndDeBUGin(node).message(_txt_DEBUG_MSG_(mType,mText));
+    end;
+end;
+
+//---------------------------------------------------- формирование DEBUG строки
+
+const cTXT_prbl =' ';
+const cTXT_node ='pkg';
+const cTXT_bkt_O='[';
+const cTXT_bkt_C=']';
+
+function tCbSFP_ideCallCenter._txt_DEBUG_MSG_(const mType,mText:string):string;
+begin
+    result:='';
+    if mType<>'' then result:=result+cTXT_bkt_O+mType+cTXT_bkt_C;
+    result:=result+cTXT_prbl+mText;
+end;
+
+function tCbSFP_ideCallCenter._txt_DEBUG_MSG_(const mType,mText:string; const node:pCbSFP_Node):string;
+begin
+    if Assigned(node)
+    then result:={cTXT_bkt_O+cTXT_node+cTXT_bkt_C+cTXT_prbl+}_node_identifier(node)+cTXT_prbl+_txt_DEBUG_MSG_(mType,mText)
+    else result:=_txt_DEBUG_MSG_(mType,mText);
 end;
 
 {%region --- работа с ПУТЯМИ файловой системы --------------------- /fold}
@@ -2006,14 +2092,17 @@ end;
 
 procedure tCbSFP_ideEditorNODE.DEBUG_Show;
 begin
-   _CallCenter_._wnd_DEBUG_OPN(_SubScriber_);
+   _CallCenter_._wnd_DEBUG_node_doOPN_(_SubScriber_);
 end;
 
 procedure tCbSFP_ideEditorNODE.DEBUG_MSG(const mType,mText:string);
 begin
-    ShowMessage('tCbSFP_ideEditorNODE.DEBUG_MSG ...');
-   _CallCenter_._wnd_DEBUG_MSG(_SubScriber_,mType,mText);
-    ShowMessage('tCbSFP_ideEditorNODE.DEBUG_MSG 0k');
+    //ShowMessage('tCbSFP_ideEditorNODE.DEBUG_MSG ...');
+  // _CallCenter_._DEBUG_NODE_(_SubScriber_,mType,mText);
+   _CallCenter_._DEBUG_MAIN_(_SubScriber_,mType,mText);
+
+
+    //ShowMessage('tCbSFP_ideEditorNODE.DEBUG_MSG 0k');
 end;
 
 {$endRegion}
@@ -2026,7 +2115,7 @@ var _CallCenter_:tCbSFP_ideCallCenter;
 
 function CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
 var SubScriber:tCbSFP_SubScriber;
-begin
+begin // !!!
     result:=nil;
     if Assigned(_CallCenter_) and Assigned(value) then begin
         SubScriber:=_CallCenter_.SubScriber_byEDITOR(value);
@@ -2064,15 +2153,23 @@ begin
    //_CallCenter_._wnd_DEBUG_CLS(SubScriber);
 end;
 
-procedure CbSFP_ideCenter_DEBUG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
-begin
-   //_CallCenter_._wnd_DEBUG_MSG(SubScriber,mType,mText);
-end;
 
 procedure CbSFP_ideCenter_DEBUG_Show;
 begin
-  // _CallCenter_._wnd_DEBUG_OPN(pointer(_CallCenter_));
+   _CallCenter_._wnd_DEBUG_MAIN_doOPN_;//(pointer(_CallCenter_));
 end;
+
+procedure CbSFP_ideCenter_DEBUG_main(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+begin
+   _CallCenter_._DEBUG_MAIN_(SubScriber,mType,mText);
+end;
+
+procedure CbSFP_ideCenter_DEBUG_node(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+begin
+   _CallCenter_._DEBUG_NODE_(SubScriber,mType,mText);
+end;
+
+
 
 {$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"
 

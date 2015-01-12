@@ -67,6 +67,7 @@ implementation
 
 procedure TmainWND.FormCreate(Sender: TObject);
 begin
+    CbSFP_ideCenter_DEBUG_Show;
     // регистрируем ЕДИНСТВЕННОГО абонента в системе
     SubScriber:=CbSFP_SubScriber__REGISTER(tCbSFP_DemoSubScriber_HNDL,TCbSFP_DemoSubScriber_EDTR);
 end;

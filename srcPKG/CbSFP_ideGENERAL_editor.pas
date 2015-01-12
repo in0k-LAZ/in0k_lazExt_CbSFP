@@ -56,6 +56,8 @@ type
   public
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
+  protected
+    procedure DEBUG(const msgType,msgText:string);
   public
     function GetTitle: String; override;
     class function SupportedOptionsClass:TAbstractIDEOptionsClass; override;
@@ -117,18 +119,36 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$ifOpt D+}
+procedure tCbSFP_ideGeneral_Editor.DEBUG(const msgType,msgText:string);
+begin
+    CbSFP_ideCenter_DEBUG_main(nil,msgType,msgText);
+end;
+{$endIf}
+
+//------------------------------------------------------------------------------
+
 procedure tCbSFP_ideGeneral_Editor.Setup(ADialog:TAbstractOptionsEditorDialog);
 begin
-    {doNofing}
+   {$ifOpt D+}
+       DEBUG('M','Setup ..');
+   {$endIf}
+   //--------------------------------------------------------------------------
+   // do nofing
+   //--------------------------------------------------------------------------
+   {$ifOpt D+}
+       DEBUG('M','Setup 0k');
+   {$endIf}
 end;
 
 procedure tCbSFP_ideGeneral_Editor.ReadSettings(AOptions:TAbstractIDEOptions);
 begin
+    {$ifOpt D+}
+        DEBUG('M','ReadSettings ..');
+    {$endIf}
+    //--------------------------------------------------------------------------
     //CbSFP_ideCenter_DEBUG('M','ReadSettings');
     Edit1.Text:=CbSFP_ConfigsRootPath;
-
-
-
     memo1.Append('ReadSettings'+IntToHex(integer(AOptions),8));
     if AOptions is tCbSFP_ideGeneral_Config
     then begin
@@ -136,21 +156,18 @@ begin
        //if _CbSFP_ideGeneral_Config_=AOptions then memo1.Append('OK');
        if AOptions=NIL then memo1.Append('NIL');
     end;
-
-
-    {if AOptions is tCbSFP_ideGeneral_Config then
-        with tCbSFP_ideGeneral_Config(AOptions) do begin
-            LOAD;
-            //---
-            CheckBox1.Checked:=enabled;
-            Edit1.Text:=CNFsDIR;
-        end;}
+    //--------------------------------------------------------------------------
+    {$ifOpt D+}
+        DEBUG('M','ReadSettings 0k');
+    {$endIf}
 end;
 
 procedure tCbSFP_ideGeneral_Editor.WriteSettings(AOptions:TAbstractIDEOptions);
 begin
-   // CbSFP_ideCenter_DEBUG('M','WriteSettings ..');
-
+   {$ifOpt D+}
+       DEBUG('M','WriteSettings ..');
+   {$endIf}
+   //--------------------------------------------------------------------------
 
    memo1.Append('WriteSettings'+IntToHex(integer(AOptions),8));
    if AOptions is tCbSFP_ideGeneral_Config
@@ -159,14 +176,10 @@ begin
       //if _CbSFP_ideGeneral_Config_=AOptions then memo1.Append('OK');
       if AOptions=NIL then memo1.Append('NIL');
    end;
-   { if AOptions is tCbSFP_ideGeneral_Config then
-        with tCbSFP_ideGeneral_Config(AOptions) do begin
-            enabled:=CheckBox1.Checked;
-            CNFsDIR:=DirectoryEdit1.Directory;
-            //---
-            SAVE;
-        end; }
-    //CbSFP_ideCenter_DEBUG('M','WriteSettings OK');
+   //--------------------------------------------------------------------------
+   {$ifOpt D+}
+       DEBUG('M','WriteSettings 0k');
+   {$endIf}
 end;
 {$endRegion}
 

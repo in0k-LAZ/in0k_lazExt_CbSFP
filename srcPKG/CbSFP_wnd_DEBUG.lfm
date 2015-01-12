@@ -21,7 +21,11 @@ object CbSFP_wndDEBUG: TCbSFP_wndDEBUG
     Top = 0
     Width = 705
     Anchors = [akTop, akLeft, akRight, akBottom]
+    Font.CharSet = RUSSIAN_CHARSET
+    Font.Height = -11
+    Font.Name = 'Consolas'
     Font.Pitch = fpFixed
+    Font.Quality = fqDraft
     Lines.Strings = (
       'Memo1'
     )
