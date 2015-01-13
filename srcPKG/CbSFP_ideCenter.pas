@@ -92,6 +92,8 @@ type
     procedure _wnd_DEBUG_node_doCLS_(const node:pCbSFP_Node);
     procedure _wnd_DEBUG_node_onCLS_(const node:pCbSFP_Node);
   private
+    procedure _wnd_DEBUG_onCLS_(const node:pCbSFP_Node);
+  private
     procedure _DEBUG_MAIN_(const node:pCbSFP_Node; const mType,mText:string);
     procedure _DEBUG_NODE_(const node:pCbSFP_Node; const mType,mText:string);
   {%region --- работа с УЗЛАМИ pCbSFP_Node ------------------------ /fold}
@@ -354,7 +356,7 @@ type
     function  FindPttnInSource(const source,PTTN:string; out mathPos,mathLen:PtrInt):boolean;
   public //<
     procedure DEBUG_Show;
-    procedure DEBUG_MSG(const mType,mText:string);
+    procedure DEBUG_main(const mType,mText:string);
   end;
 
 //function CbSFP_ideCenter__SubScriberREGISTER(const HNDL:tCbSFP_SubScriberTHandle; const EDTR:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
@@ -380,28 +382,25 @@ function CbSFP_ideCenter__SubScriber_REGISTER(const Handle:tCbSFP_SubScriberTHan
 
 
 function  CbSFP_ideCenter__EditorNODE(const value:TAbstractIDEOptionsEditor):tCbSFP_ideEditorNODE;
-//procedure  CbSFP_ideCenter__ideEditor_DEBUG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
-
-
-
-
-
 function  CbSFP_ideCenter_SubScriber_INDF(const SubScriber:tCbSFP_SubScriber):string;
-//procedure CbSFP_ideCenter_wndDBG_Activate(const SubScriber:tCbSFP_SubScriber);
-//procedure CbSFP_ideCenter_wndDBG_Activate;
-//procedure CbSFP_ideCenter_wndDBG_outGoing(const SubScriber:tCbSFP_SubScriber);
-//procedure CbSFP_ideCenter_wndDBG_Message (const SubScriber:tCbSFP_SubScriber);
 
-procedure CbSFP_ideCenter_DEBUG_outGoing (const SubScriber:tCbSFP_SubScriber);
-//procedure CbSFP_ideCenter_DEBUG          (const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
 
 procedure CbSFP_ideCenter_DEBUG_Show;
 procedure CbSFP_ideCenter_DEBUG_main(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
 procedure CbSFP_ideCenter_DEBUG_node(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
 
+procedure CbSFP_ideCenter_DEBUG_onClose(const SubScriber:tCbSFP_SubScriber);
+
+
+function  CbSFP_pointer2text(const value:pointer):string; inline;
+
+
 implementation
 
-
+function CbSFP_pointer2text(const value:pointer):string; inline;
+begin
+    result:='@'+IntToHex( PtrUInt(value), sizeOf(pointer)*2 );
+end;
 
 {$ifDef ideLazExtMODE}
 //uses CbSFP_ideGENERAL;
@@ -421,11 +420,8 @@ end;
 
 destructor tCbSFP_ideCallCenter.DESTROY;
 begin
-    // чистим (закрываем) окна отладки
-   _lair_CLS_dbgWindows;
-    if Assigned(_wnd_DEBUG_) then _wnd_DEBUG_.Close;
-    // чистим список "подписчиков"
-   _lair_DST;
+   _lair_CLS_dbgWindows; //< чистим (закрываем) окна отладки
+   _lair_DST;            //< чистим список "подписчиков"
 end;
 
 //------------------------------------------------------------------------------
@@ -618,11 +614,14 @@ end;
 procedure tCbSFP_ideCallCenter._lair_CLS_dbgWindows;
 var tmp:pCbSFP_Node;
 begin
+    // окна отладки пакетов
     tmp:=_lair;
     while Assigned(tmp) do begin
         if Assigned(tmp^._wnd_DEBUG_) then tmp^._wnd_DEBUG_.Close;
         tmp:=tmp^.next;
     end;
+    // ГЛАВНОЕ окно отладки
+    if Assigned(_wnd_DEBUG_) then _wnd_DEBUG_.Close;
 end;
 
 {%endregion}
@@ -742,6 +741,17 @@ end;
 procedure tCbSFP_ideCallCenter._wnd_DEBUG_node_onCLS_(const node:pCbSFP_Node);
 begin
     node^._wnd_DEBUG_:=nil;
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+procedure tCbSFP_ideCallCenter._wnd_DEBUG_onCLS_(const node:pCbSFP_Node);
+begin
+    if Assigned(node) then begin
+        if pointer(node)<>pointer(self)
+        then _wnd_DEBUG_node_onCLS_(node)
+        else _wnd_DEBUG_MAIN_onCLS_
+    end;
 end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2089,20 +2099,18 @@ begin
    _CallCenter_._regExpr_FindPTTN(source,PTTN,mathPos,mathLen);
 end;
 
+//------------------------------------------------------------------------------
 
+// отправляем сообщение в ГЛАВНОЕ окно ДЕБАГА
 procedure tCbSFP_ideEditorNODE.DEBUG_Show;
 begin
    _CallCenter_._wnd_DEBUG_node_doOPN_(_SubScriber_);
 end;
 
-procedure tCbSFP_ideEditorNODE.DEBUG_MSG(const mType,mText:string);
+// отправляем сообщение в ГЛАВНОЕ окно ДЕБАГА
+procedure tCbSFP_ideEditorNODE.DEBUG_main(const mType,mText:string);
 begin
-    //ShowMessage('tCbSFP_ideEditorNODE.DEBUG_MSG ...');
-  // _CallCenter_._DEBUG_NODE_(_SubScriber_,mType,mText);
-   _CallCenter_._DEBUG_MAIN_(_SubScriber_,mType,mText);
-
-
-    //ShowMessage('tCbSFP_ideEditorNODE.DEBUG_MSG 0k');
+    CbSFP_ideCenter_DEBUG_main(_SubScriber_,mType,mText);
 end;
 
 {$endRegion}
@@ -2148,29 +2156,6 @@ begin
 end;}
 
 
-procedure CbSFP_ideCenter_DEBUG_outGoing(const SubScriber:tCbSFP_SubScriber);
-begin
-   //_CallCenter_._wnd_DEBUG_CLS(SubScriber);
-end;
-
-
-procedure CbSFP_ideCenter_DEBUG_Show;
-begin
-   _CallCenter_._wnd_DEBUG_MAIN_doOPN_;//(pointer(_CallCenter_));
-end;
-
-procedure CbSFP_ideCenter_DEBUG_main(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
-begin
-   _CallCenter_._DEBUG_MAIN_(SubScriber,mType,mText);
-end;
-
-procedure CbSFP_ideCenter_DEBUG_node(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
-begin
-   _CallCenter_._DEBUG_NODE_(SubScriber,mType,mText);
-end;
-
-
-
 {$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"
 
 function CbSFP_ideCenter__SubScriber_REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor; const IdeOER:PIDEOptionsEditorRec):tCbSFP_SubScriber;
@@ -2194,8 +2179,34 @@ end;
 
 {$endIf}
 
-
 {%endregion}
+
+
+procedure CbSFP_ideCenter_DEBUG_onClose(const SubScriber:tCbSFP_SubScriber);
+begin
+    if Assigned(SubScriber)and(Assigned(_CallCenter_)) then begin
+       _CallCenter_._wnd_DEBUG_onCLS_(SubScriber)
+    end;
+end;
+
+
+procedure CbSFP_ideCenter_DEBUG_Show;
+begin
+   _CallCenter_._wnd_DEBUG_MAIN_doOPN_;//(pointer(_CallCenter_));
+end;
+
+// отправить сообщение в ГЛАВНОЕ окно ДЕБАГА
+procedure CbSFP_ideCenter_DEBUG_main(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+begin
+   _CallCenter_._DEBUG_MAIN_(SubScriber,mType,mText);
+end;
+
+// отправить сообщение в окно ДЕБАГА КОНКРЕТНОГО узла
+procedure CbSFP_ideCenter_DEBUG_node(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+begin
+   _CallCenter_._DEBUG_NODE_(SubScriber,mType,mText);
+end;
+
 
 initialization
 

@@ -9,7 +9,7 @@ interface
 uses
   CbSFP_ideGENERAL, CbSFP_ideREGISTER, CbSFP__Intf, CbSFP_SubScriber, 
   CbSFP_ideEditor, CbSFP_ideCenter, CbSFP_ideGENERAL_editor, 
-  CbSFP_ideGENERAL_config, LazarusPackageIntf;
+  CbSFP_ideGENERAL_config, CbSFP_wnd_DEBUG, LazarusPackageIntf;
 
 implementation
 

@@ -42,7 +42,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="13">
       <Unit0>
         <Filename Value="uiDevelopPRJ.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -124,6 +124,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="CbSFP_ideGENERAL_config"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="..\srcDemoSubScriber\CbSFP_DemoSubScriber_core.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CbSFP_DemoSubScriber_core"/>
+      </Unit12>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

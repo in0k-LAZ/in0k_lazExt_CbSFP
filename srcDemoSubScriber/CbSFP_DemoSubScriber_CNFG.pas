@@ -30,11 +30,13 @@ unit CbSFP_DemoSubScriber_CNFG;
 
 interface
 
+uses CbSFP_DemoSubScriber_core;
+
 type
 
  rCbSFP_DemoSubScriber_CNFG=record
-    III:integer;
-    SSS:string;
+    INT:integer;
+    TXT:string;
   end;
  pCbSFP_DemoSubScriber_CNFG=^rCbSFP_DemoSubScriber_CNFG;
 
@@ -56,8 +58,8 @@ end;
 
 procedure CbSFP_DemoSubScriber_CNFG__DEF(const Obj:pCbSFP_DemoSubScriber_CNFG);
 begin
-    Obj^.III:=10;
-    Obj^.SSS:='test'
+    Obj^.INT:=cCbSFP_DemoSubScriber__defValue_INT;
+    Obj^.TXT:=cCbSFP_DemoSubScriber__defValue_TXT;
 end;
 
 end.

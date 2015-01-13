@@ -5,16 +5,19 @@ unit CbSFP_wnd_DEBUG;
 interface
 
 uses CbSFP_SubScriber,
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls;
+    Classes, SysUtils, Forms, StdCtrls, ActnList;
 
 type
 
   { TCbSFP_wndDEBUG }
 
   TCbSFP_wndDEBUG = class(TForm)
+    a_CLEAR: TAction;
+    ActionList1: TActionList;
     Button1: TButton;
     Button2: TButton;
     Memo1: TMemo;
+    procedure a_CLEARExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
   private
@@ -23,7 +26,6 @@ type
     constructor Create(subScriber:tCbSFP_SubScriber);
   public
     procedure message(const mText:string);
-    //procedure message(const mType,mText:string);
   end;
 
 implementation
@@ -31,24 +33,29 @@ uses CbSFP_ideCenter;
 
 {$R *.lfm}
 
-procedure TCbSFP_wndDEBUG.FormClose(Sender:TObject; var CloseAction:TCloseAction);
+constructor TCbSFP_wndDEBUG.Create(subScriber:tCbSFP_SubScriber);
 begin
-    CbSFP_ideCenter_DEBUG_outGoing(_subScriber_);
-    CloseAction:=caFree;
+    inherited Create(nil);
+    Memo1.Clear;
+   _subScriber_:=subScriber;
 end;
+
+//------------------------------------------------------------------------------
 
 procedure TCbSFP_wndDEBUG.FormShow(Sender: TObject);
 begin
     if Assigned(_subScriber_) then begin
-        caption:=CbSFP_ideCenter_SubScriber_INDF(_subScriber_)+' [DEBUGing]'
+        caption:='[DEBUGing] '+CbSFP_ideCenter_SubScriber_INDF(_subScriber_);
     end;
 end;
 
-constructor TCbSFP_wndDEBUG.Create(subScriber:tCbSFP_SubScriber);
+procedure TCbSFP_wndDEBUG.FormClose(Sender:TObject; var CloseAction:TCloseAction);
 begin
-    inherited Create(nil);
-   _subScriber_:=subScriber;
+    CbSFP_ideCenter_DEBUG_onClose(_subScriber_);
+    CloseAction:=caFree;
 end;
+
+//------------------------------------------------------------------------------
 
 procedure TCbSFP_wndDEBUG.message(const mText:string);
 begin
@@ -57,12 +64,12 @@ begin
     memo1.SelLength:=0;
 end;
 
-{procedure TCbSFP_wndDEBUG.Message(const mType,mText:string);
+//------------------------------------------------------------------------------
+
+procedure TCbSFP_wndDEBUG.a_CLEARExecute(Sender: TObject);
 begin
-    if mType<>''
-    then message(' ['+mType+'] '+mText)
-    else message(mText);
-end;}
+    Memo1.Clear;
+end;
 
 end.
 

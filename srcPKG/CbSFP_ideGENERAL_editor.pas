@@ -144,12 +144,12 @@ end;
 procedure tCbSFP_ideGeneral_Editor.ReadSettings(AOptions:TAbstractIDEOptions);
 begin
     {$ifOpt D+}
-        DEBUG('M','ReadSettings ..');
+        DEBUG('M','ReadSettings '+CbSFP_pointer2text(AOptions)+' ..');
     {$endIf}
     //--------------------------------------------------------------------------
     //CbSFP_ideCenter_DEBUG('M','ReadSettings');
     Edit1.Text:=CbSFP_ConfigsRootPath;
-    memo1.Append('ReadSettings'+IntToHex(integer(AOptions),8));
+    memo1.Append('ReadSettings @'+IntToHex(integer(AOptions), sizeOf(pointer)*2));
     if AOptions is tCbSFP_ideGeneral_Config
     then begin
        memo1.Append('OK TYPE');
@@ -158,14 +158,14 @@ begin
     end;
     //--------------------------------------------------------------------------
     {$ifOpt D+}
-        DEBUG('M','ReadSettings 0k');
+        DEBUG('M','ReadSettings '+CbSFP_pointer2text(AOptions)+' 0k');
     {$endIf}
 end;
 
 procedure tCbSFP_ideGeneral_Editor.WriteSettings(AOptions:TAbstractIDEOptions);
 begin
    {$ifOpt D+}
-       DEBUG('M','WriteSettings ..');
+       DEBUG('M','WriteSettings '+CbSFP_pointer2text(AOptions)+' ..');
    {$endIf}
    //--------------------------------------------------------------------------
 
@@ -178,7 +178,7 @@ begin
    end;
    //--------------------------------------------------------------------------
    {$ifOpt D+}
-       DEBUG('M','WriteSettings 0k');
+       DEBUG('M','WriteSettings '+CbSFP_pointer2text(AOptions)+' 0k');
    {$endIf}
 end;
 {$endRegion}

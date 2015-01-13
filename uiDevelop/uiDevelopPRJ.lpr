@@ -45,15 +45,15 @@ uses
   //---
   CbSFP_DemoSubScriber_CNFG, CbSFP_DemoSubScriber_HNDL,
   CbSFP_DemoSubScriber_EDTR, CbSFP_wnd_DEBUG, CbSFP_ideGENERAL_editor,
-  CbSFP_ideGENERAL_config, uiGeneralWND;
+  CbSFP_ideGENERAL_config, uiGeneralWND, CbSFP_DemoSubScriber_core;
 
 {$R *.res}
 
 begin
   RequireDerivedFormResource := True;
   Application.Initialize;
-  Application.CreateForm(TmainWND, mainWND);
   Application.CreateForm(TGnrlWND, GnrlWND);
+  Application.CreateForm(TmainWND, mainWND);
   Application.Run;
 end.
 

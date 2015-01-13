@@ -32,6 +32,7 @@ interface
 
 uses IniFiles,
      CbSFP_SubScriber,
+     CbSFP_DemoSubScriber_core,
      CbSFP_DemoSubScriber_CNFG;
 
 type
@@ -53,7 +54,7 @@ implementation
 
 class function tCbSFP_DemoSubScriber_HNDL.Identifier:string;
 begin
-    result:='CbSFP_DemoSubScriber';
+    result:=cCbSFP_DemoSubScriber__Identifier;
 end;
 
 //------------------------------------------------------------------------------
@@ -75,9 +76,15 @@ end;
 
 //------------------------------------------------------------------------------
 
+const
+   _cCbSFPdSS__FileEXT    ='.ini';
+   _cCbSFPdSS__section_Name='DSS';
+   _cCbSFPdSS__nodeName_INT='INT';
+   _cCbSFPdSS__nodeName_TXT='TXT';
+
 function tCbSFP_DemoSubScriber_HNDL.ConfigOBJ_FileEXT:string;
 begin
-    result:='.ini';
+    result:=_cCbSFPdSS__FileEXT;
 end;
 
 function tCbSFP_DemoSubScriber_HNDL.ConfigOBJ_Save(const Obj:pointer; const FileName:string):boolean;
@@ -89,8 +96,8 @@ begin
     try
         ini:=TIniFile.Create(FileName);
         //---
-        ini.WriteInteger('main','III',tmp^.III);
-        ini.WriteString ('main','SSS',tmp^.SSS);
+        ini.WriteInteger(_cCbSFPdSS__section_Name,_cCbSFPdSS__nodeName_INT,tmp^.INT);
+        ini.WriteString (_cCbSFPdSS__section_Name,_cCbSFPdSS__nodeName_TXT,tmp^.TXT);
         //---
         ini.FREE;
         result:=TRUE;
@@ -107,8 +114,8 @@ begin
     result:=false;
     try
         ini:=TIniFile.Create(FileName);
-        tmp^.III:=ini.ReadInteger('main','III',tmp^.III);
-        tmp^.SSS:=ini.ReadString ('main','SSS',tmp^.SSS);
+        tmp^.INT:=ini.ReadInteger(_cCbSFPdSS__section_Name,_cCbSFPdSS__nodeName_INT,tmp^.INT);
+        tmp^.TXT:=ini.ReadString (_cCbSFPdSS__section_Name,_cCbSFPdSS__nodeName_TXT,tmp^.TXT);
         //---
         ini.FREE;
         result:=TRUE;

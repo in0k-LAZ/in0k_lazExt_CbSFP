@@ -345,14 +345,19 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
       Height = 15
       Top = 8
       Width = 55
+      Align = alCustom
       Anchors = []
       Pen.Color = clHotLight
       Pen.Style = psDot
     end
     object TESTs_lbl0: TLabel
-      Left = 24
+      AnchorSideLeft.Control = TESTs_bDBG
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = TESTs_bDBG
+      AnchorSideTop.Side = asrCenter
+      Left = 76
       Height = 15
-      Top = 0
+      Top = 2
       Width = 55
       Caption = 'TESTs_lbl0'
       ParentColor = False
@@ -362,9 +367,9 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = TESTs_lbl0
       AnchorSideTop.Side = asrCenter
-      Left = 79
+      Left = 131
       Height = 15
-      Top = 0
+      Top = 2
       Width = 55
       Caption = 'TESTs_lbl1'
       Font.Color = clHotLight
@@ -377,26 +382,27 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = TESTs_lbl0
       AnchorSideTop.Side = asrCenter
-      Left = 134
+      Left = 186
       Height = 15
-      Top = 0
+      Top = 2
       Width = 55
       Caption = 'TESTs_lbl2'
       ParentColor = False
     end
-    object Button1: TButton
+    object TESTs_bDBG: TSpeedButton
+      AnchorSideLeft.Control = TESTs_gBOX
+      AnchorSideTop.Control = TESTs_gBOX
       Left = 0
-      Height = 25
+      Height = 19
       Top = 0
-      Width = 19
-      Caption = 'Button1'
-      OnClick = Button1Click
-      TabOrder = 0
+      Width = 76
+      Action = aTEST_dWND
+      AutoSize = True
     end
   end
   object ActionList: TActionList
-    left = 320
-    top = 56
+    left = 184
+    top = 120
     object aOPTN_aAdd: TAction
     end
     object aOPTN_aDEL: TAction
@@ -411,6 +417,10 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
     end
     object aCNFG__DEF: TAction
       Caption = 'aCNFG__DEF'
+    end
+    object aTEST_dWND: TAction
+      Caption = 'aTEST_dWND'
+      OnExecute = aTEST_dWNDExecute
     end
   end
 end

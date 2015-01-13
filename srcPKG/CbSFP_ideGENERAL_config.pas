@@ -131,7 +131,6 @@ begin
     result:=_CbSFP_ideGeneral_Config__GET_;
 end;
 
-
 //------------------------------------------------------------------------------
 
 function tCbSFP_ideGeneral_Config._ConfigStorage_get:tCbSFP_configFile;
@@ -153,7 +152,6 @@ begin
     Config:=_ConfigStorage_get;
     try if Assigned(Config) then begin
             //Config.SetDeleteValue(cCBSP__General_Options__enabled,_enabled,cIn0k_LazExt_CBSP_def_Enabled);
-            //Config.SetDeleteValue('dd','asdfasdf','asdf');
         end;
        _mustSAVE:=false;
     finally
@@ -167,7 +165,6 @@ begin
     Config:=_ConfigStorage_get;
     try if Assigned(Config) then begin
         //   _enabled:=Config.GetValue(cCBSP__General_Options__enabled,cIn0k_LazExt_CBSP_def_Enabled);
-        //   _CNFsDIR:=Config.GetValue(cCBSP__General_Options__CNFsDIR,_get_defaultCNFsDIR);
         end;
        _mustSAVE:=false;
     finally

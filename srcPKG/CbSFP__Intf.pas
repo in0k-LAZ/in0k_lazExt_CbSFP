@@ -38,7 +38,7 @@ interface
 
 uses
     {$ifDef ideLazExtMODE}
-    IDEOptionsIntf,
+    IDEOptionsIntf, SrcEditorIntf,
     CbSFP_ideREGISTER,
     {$else}
         {$ifDef uiDevelopPRJ}
@@ -47,16 +47,20 @@ uses
     CbSFP_ideCenter, CbSFP_SubScriber;
 
 
-function CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
+function  CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
+procedure CbSFP_SubScriber__DebugMSG(const SubScriber:tCbSFP_SubScriber;    const mType,mText:string);
+
 {$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"
 //function CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor; const AGroup,AIndex:Integer; const AParent:Integer=NoParent):tCbSFP_SubScriber;
-function CbSFP_SubScriber__cnfg_OBJ(const SubScriber:tCbSFP_SubScriber; const srcFileName:string):pointer;
-{$endIf}
 
-procedure CbSFP_SubScriber__DebugMSG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+function CbSFP_SubScriber__ideLazarus_ActiveEditor_sourceFileName:string;
+function CbSFP_SubScriber__cnfg_OBJ(const SubScriber:tCbSFP_SubScriber; const srcFileName:string):pointer;
+function CbSFP_SubScriber__cnfg_OBJ(const SubScriber:tCbSFP_SubScriber):pointer;
+{$endIf}
 
 implementation
 
+// зарегистрировать Подписчика в системе
 function CbSFP_SubScriber__REGISTER(const Handle:tCbSFP_SubScriberTHandle; const Editor:tCbSFP_SubScriberTEditor):tCbSFP_SubScriber;
 begin
     {$ifDef ideLazExtMODE}
@@ -72,16 +76,53 @@ begin
     result:=CbSFP_ideCenter.CbSFP_ideCenter__SubScriberREGISTER(Handle,Editor, AGroup,AIndex,AParent);
 end;}
 
+{$endIf}
+
+//------------------------------------------------------------------------------
+
+// отправить DEBUG-сообщение в DEBUG-окно Подписчика
+procedure CbSFP_SubScriber__DebugMSG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+begin
+    CbSFP_ideCenter_DEBUG_node(SubScriber, mType,mText);
+end;
+
+//------------------------------------------------------------------------------
+
+{$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"
+
+// имя файла в "АКТИВНОЙ вкладке редактора исходного кода"
+function CbSFP_SubScriber__ideLazarus_ActiveEditor_sourceFileName:string;
+var tmp:TSourceEditorInterface;
+begin
+    result:='';
+    tmp:=SourceEditorManagerIntf.ActiveEditor;
+    if Assigned(tmp) then begin
+        result:=tmp.FileName;
+    end;
+end;
+
+{$endif}
+
+//------------------------------------------------------------------------------
+
+{$ifDef ideLazExtMODE} //< боевой режм "Расширения IDE"
+
+// получить настройки по ПутиФайла
 function CbSFP_SubScriber__cnfg_OBJ(const SubScriber:tCbSFP_SubScriber; const srcFileName:string):pointer;
 begin
     result:=CbSFP_ideCenter.CbSFP_ideCenter__SubScriber_CnfgOBJ(SubScriber,srcFileName);
+    {$ifOpt D+}
+    CbSFP_ideCenter.CbSFP_ideCenter_DEBUG_main(SubScriber,'getCNFIG',CbSFP_pointer2text(result)+'<->'+srcFileName);
+    {$endIf}
 end;
-{$endIf}
 
-procedure CbSFP_SubScriber__DebugMSG(const SubScriber:tCbSFP_SubScriber; const mType,mText:string);
+// получить настройки для файла в "АКТИВНОЙ вкладке редактора исходного кода"
+function CbSFP_SubScriber__cnfg_OBJ(const SubScriber:tCbSFP_SubScriber):pointer;
 begin
-   // CbSFP_ideCenter_DEBUG(SubScriber, mType,mText);
+    result:=CbSFP_SubScriber__cnfg_OBJ(SubScriber,CbSFP_SubScriber__ideLazarus_ActiveEditor_sourceFileName);
 end;
+
+{$endif}
 
 end.
 

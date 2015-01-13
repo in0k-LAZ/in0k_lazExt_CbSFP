@@ -32,6 +32,7 @@ interface
 
 uses Forms, Dialogs, ExtCtrls, StdCtrls, EditBtn,
   //--- что тестируем
+  CbSFP_ideGENERAL_config,
   CbSFP_ideCenter, CbSFP_ideEditor, CbSFP_SubScriber,   CbSFP__Intf,
   //--- чем тестируем
   CbSFP_DemoSubScriber_HNDL, //< тестовый Обработчик
@@ -46,15 +47,11 @@ type
     Button2: TButton;
     Button3: TButton;
     CbSFP_ideCallEditor1: TCbSFP_ideCallEditor;
-    FileNameEdit1: TFileNameEdit;
     Panel1: TPanel;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure FileNameEdit1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure Panel1Resize(Sender: TObject);
   private
     SubScriber:tCbSFP_SubScriber;
   end;
@@ -81,36 +78,19 @@ begin
     // ... чето-делает
     CbSFP_ideCallEditor1.Setup(nil);
     // ... чето-делает
-    CbSFP_ideCallEditor1.ReadSettings(nil);
-end;
-
-procedure TmainWND.Panel1Resize(Sender: TObject);
-begin
-    FileNameEdit1.Width:=Button1.Left-FileNameEdit1.Left-FileNameEdit1.Height*2;
+    CbSFP_ideCallEditor1.ReadSettings(CbSFP_ideGeneral_Config__GET);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TmainWND.Button1Click(Sender:TObject);
 begin
-    CbSFP_ideCallEditor1.WriteSettings(nil);
-    Dialogs.ShowMessage('Write Settings END!');
+    CbSFP_ideCallEditor1.WriteSettings(CbSFP_ideGeneral_Config__GET);
 end;
 
 procedure TmainWND.Button2Click(Sender:TObject);
 begin
-    CbSFP_ideCallEditor1.RestoreSettings(nil);
-    Dialogs.ShowMessage('Restore Settings END!');
-end;
-
-procedure TmainWND.Button3Click(Sender: TObject);
-begin
-   //CbSFP_ideCenter_wndDBG_Activate(SubScriber);
-end;
-
-procedure TmainWND.FileNameEdit1Change(Sender: TObject);
-begin
-    CbSFP_ideCallEditor1.testFileName:=TFileNameEdit(Sender).FileName;
+    CbSFP_ideCallEditor1.RestoreSettings(CbSFP_ideGeneral_Config__GET);
 end;
 
 end.

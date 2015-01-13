@@ -30,8 +30,8 @@ unit CbSFP_DemoSubScriber_EDTR;
 
 interface
 
-uses SysUtils, StdCtrls, Classes,
-  CbSFP_SubScriber, CbSFP__Intf,
+uses SysUtils, StdCtrls,
+  CbSFP_SubScriber,
   CbSFP_DemoSubScriber_CNFG;
 
 type
@@ -67,14 +67,14 @@ end;
 
 procedure TCbSFP_DemoSubScriber_EDTR._custom_load_(const config:pCbSFP_DemoSubScriber_CNFG);
 begin
-    edit1.Text:=IntToStr(config^.III);
-    edit2.Text:=config^.SSS;
+    edit1.Text:=IntToStr(config^.INT);
+    edit2.Text:=config^.TXT;
 end;
 
 procedure TCbSFP_DemoSubScriber_EDTR._custom_save_(const config:pCbSFP_DemoSubScriber_CNFG);
 begin
-    config^.III:=strtoint(edit1.Text);
-    config^.SSS:=edit2.Text;
+    config^.INT:=strtoint(edit1.Text);
+    config^.TXT:=edit2.Text;
 end;
 
 end.

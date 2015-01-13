@@ -44,7 +44,7 @@ uses sysutils, Classes, Graphics,  Dialogs,
      {$ifDef CbSFP_log_ON}
      eventlog,
      {$endIf}
-     CbSFP_ideCenter, CbSFP_SubScriber,
+     CbSFP_ideCenter, CbSFP_SubScriber, CbSFP_ideGENERAL_config,
      {$ifDef ideLazExtMODE}
      SrcEditorIntf,
      {$endIf}
@@ -55,6 +55,7 @@ type
  { tCbSFP_ideCallEditor }
 
  tCbSFP_ideCallEditor=class(TAbstractIDEOptionsEditor)
+   aTEST_dWND: TAction;
     //---
     ActionList: TActionList;
     aOPTN_aDEL: TAction;
@@ -64,7 +65,6 @@ type
     aPTTN_mwUP: TAction;
     aPTTN_mwDW: TAction;
     aCNFG__DEF: TAction;
-    Button1: TButton;
     //---
     CMMN_Panel: TPanel;
     CNFG_toDEF: TSpeedButton;
@@ -81,6 +81,7 @@ type
     //---
     GBox_Panel: TPanel;
     Shape1: TShape;
+    TESTs_bDBG: TSpeedButton;
     TESTs_lbl0: TLabel;
     TESTs_lbl1: TLabel;
     TESTs_lbl2: TLabel;
@@ -100,7 +101,7 @@ type
     PTTNs_bDwn: TSpeedButton;
     //---
     TESTs_gBOX: TGroupBox;
-    procedure Button1Click(Sender: TObject);
+    procedure aTEST_dWNDExecute(Sender: TObject);
     procedure OPTNs_lBoxDrawItem(Control: TWinControl; Index: Integer;
       ARect: TRect; State: TOwnerDrawState);
     procedure TESTs_lbl1Resize(Sender: TObject);
@@ -235,14 +236,16 @@ type
     procedure _onResize_controlsPosSET(Sender:TObject);
     procedure _onSetup_gBox_setConstraints;
   protected //<-----------------------------------------------------------------
-    procedure _frame_setSizes(const v1,v2:integer);
-    procedure _frame_getSizes(out   v1,v2:integer);
+    procedure _frameGeometry_setSizes(const v1,v2:integer);
+    procedure _frameGeometry_getSizes(out   v1,v2:integer);
+    procedure _frameGeometry_LOAD(const Config:tCbSFP_ideGeneral_Config);
+    procedure _frameGeometry_SAVE(const Config:tCbSFP_ideGeneral_Config);
   public
     constructor Create(TheOwner: TComponent); override;
     destructor DESTROY; override;
   public
     {$ifDef uiDevelopPRJ}
-    property testFileName:string read _testFileName write _testFileName_set;
+    //property testFileName:string read _testFileName write _testFileName_set;
     {$endif}
   public
     function GetTitle: String; override;
@@ -256,7 +259,7 @@ type
 
 implementation
 {$ifDef ideLazExtMODE}
-uses CbSFP_ideGENERAL_config;
+//uses CbSFP_ideGENERAL_config;
 {$endIf}
 
 {%region --- inLine .. -------------------------------------------- /fold}
@@ -281,9 +284,6 @@ begin
    _onCreate_setButtonsIMGs;
     //---
    _testFileName:='';
-    {$ifDef ideLazExtMODE}
-   _testFileName_set(_ideLazarus_ActivEditFileName);
-    {$endIf}
     //---
    _ideEditorNODE_:=NIL;
     //---
@@ -346,6 +346,7 @@ begin
     aPTTN_mwUP.Caption:='';
     aPTTN_mwDW.Caption:='';
     aCNFG__DEF.Caption:='';
+    TESTs_bDBG.Caption:='';
     {$endIf}
 end;
 
@@ -381,21 +382,39 @@ begin
         PTTNs_bDwn.LoadGlyphFromLazarusResource('arrow_down');
         //---
         CNFG_toDEF.LoadGlyphFromLazarusResource('pkg_inherited');
+        //---
+        TESTs_bDBG.LoadGlyphFromLazarusResource('debugger');
     {$endIf}
 end;
 
 //------------------------------------------------------------------------------
 
-procedure tCbSFP_ideCallEditor._frame_setSizes(const v1,v2:integer);
+procedure tCbSFP_ideCallEditor._frameGeometry_setSizes(const v1,v2:integer);
 begin
    OPTNs_GBox.Height:=v1;
    GBox_Panel.Width:=v2;
 end;
 
-procedure tCbSFP_ideCallEditor._frame_getSizes(out v1,v2:integer);
+procedure tCbSFP_ideCallEditor._frameGeometry_getSizes(out v1,v2:integer);
 begin
     v1:=OPTNs_GBox.Height;
     v2:=GBox_Panel.Width;
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+procedure tCbSFP_ideCallEditor._frameGeometry_LOAD(const Config:tCbSFP_ideGeneral_Config);
+var v1,v2:integer;
+begin
+    Config.SubScriber_loadEditorVALUEs(nodeEditor.Identifier,V1,V2);
+   _frameGeometry_setSizes(V1,V2);
+end;
+
+procedure tCbSFP_ideCallEditor._frameGeometry_SAVE(const Config:tCbSFP_ideGeneral_Config);
+var v1,v2:integer;
+begin
+   _frameGeometry_getSizes(V1,V2);
+    Config.SubScriber_saveEditorVALUEs(nodeEditor.Identifier,V1,V2);
 end;
 
 //------------------------------------------------------------------------------
@@ -509,7 +528,7 @@ begin
   //
 end;
 
-procedure tCbSFP_ideCallEditor.Button1Click(Sender: TObject);
+procedure tCbSFP_ideCallEditor.aTEST_dWNDExecute(Sender: TObject);
 begin
     nodeEditor.DEBUG_Show;
 end;
@@ -535,9 +554,12 @@ begin
 end;
 
 {$ifOpt D+}
+// отправляем ДЕБАГ сообщение (уходит в ГЛАВНОЕ окно)
 procedure tCbSFP_ideCallEditor.DEBUG(const msgType,msgText:string);
+var ne:tCbSFP_ideEditorNODE;
 begin
-    nodeEditor.DEBUG_MSG(msgType,msgText);
+    ne:=nodeEditor;
+    if Assigned(ne) then ne.DEBUG_main(msgType,msgText);
 end;
 {$endIf}
 
@@ -555,7 +577,7 @@ end;
 procedure tCbSFP_ideCallEditor._testFileName_ini;
 begin
     {$ifDef ideLazExtMODE}
-   _testFileName_set('dfgsdf'{_ideLazarus_ActivEditFileName});
+   _testFileName_set(_ideLazarus_ActivEditFileName);
     {$else}
    _testFileName_set(ParamStr(0));
     {$endIf}
@@ -1395,71 +1417,61 @@ end;
 
 procedure tCbSFP_ideCallEditor.Setup(ADialog:TAbstractOptionsEditorDialog);
 begin
+    {$ifNDef ideLazExtMODE} //< в самом ЛАЗАРУСЕ это ТОЛЬКО раздражает
     {$ifOpt D+}
+        // это ДОЛЖНО выкидывать ShowMessage при вызове nodeEditor
+        // детали смотри в _common_FRM__Tst2CRT
         DEBUG('M','Setup ..');
+    {$endIf}
     {$endIf}
     //--------------------------------------------------------------------------
     // do nofing
     //--------------------------------------------------------------------------
+    {$ifNDef ideLazExtMODE} //< в самом ЛАЗАРУСЕ это ТОЛЬКО раздражает
     {$ifOpt D+}
+        // это ДОЛЖНО выкидывать ShowMessage при вызове nodeEditor
+        // детали смотри в _common_FRM__Tst2CRT
         DEBUG('M','Setup 0k');
+    {$endIf}
     {$endIf}
 end;
 
 procedure tCbSFP_ideCallEditor.ReadSettings(AOptions:TAbstractIDEOptions);
-{$ifDef ideLazExtMODE}
-var v1,v2:integer;
-{$endIf}
 begin
     {$ifOpt D+}
-        DEBUG('M','ReadSettings ..');
+        DEBUG('M','ReadSettings '+CbSFP_pointer2text(AOptions)+' ..');
     {$endIf}
     //--------------------------------------------------------------------------
-    {$ifDef ideLazExtMODE}
-    tCbSFP_ideGeneral_Config(AOptions).SubScriber_loadEditorVALUEs(nodeEditor.Identifier,V1,V2);
-   _frame_setSizes(V1,V2);
-    {$else}
-        {$ifDef uiDevelopPRJ}
-       _frame_setSizes(0,0);
-        {$endif}
-    {$endIf}
+    if Assigned(AOptions) then _frameGeometry_LOAD(tCbSFP_ideGeneral_Config(AOptions));
    _common_FRM__Tst2CRT; //< НЕ хорошо (см. реализацию)
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
     //--------------------------------------------------------------------------
     {$ifOpt D+}
-        DEBUG('M','ReadSettings 0k');
+        DEBUG('M','ReadSettings '+CbSFP_pointer2text(AOptions)+' 0k');
     {$endIf}
 end;
 
 procedure tCbSFP_ideCallEditor.WriteSettings(AOptions:TAbstractIDEOptions);
-{$ifDef ideLazExtMODE}
-var v1,v2:integer;
-{$endIf}
 begin
     {$ifOpt D+}
-        DEBUG('M','WriteSettings ..');
+        DEBUG('M','WriteSettings '+CbSFP_pointer2text(AOptions)+' ..');
     {$endIf}
     //--------------------------------------------------------------------------
-    {$ifDef ideLazExtMODE}
-   _frame_getSizes(V1,V2);
-    with tCbSFP_ideGeneral_Config(AOptions) do begin
-        SubScriber_saveEditorVALUEs(nodeEditor.Identifier,V1,V2);
-    end;
-    {$endIf}
+    if Assigned(AOptions) then _frameGeometry_SAVE(tCbSFP_ideGeneral_Config(AOptions));
    _settingsSAVE_;
    _settingsLOAD_;
    _doSelected_DEFAULT_ITM;
     //--------------------------------------------------------------------------
     {$ifOpt D+}
-        DEBUG('M','WriteSettings 0k');
+        DEBUG('M','WriteSettings '+CbSFP_pointer2text(AOptions)+' 0k');
     {$endIf}
 end;
 
 procedure tCbSFP_ideCallEditor.RestoreSettings({%H-}AOptions:TAbstractIDEOptions);
 begin
     {$ifOpt D+}
-        DEBUG('M','RestoreSettings ..');
+        DEBUG('M','RestoreSettings '+CbSFP_pointer2text(AOptions)+' ..');
     {$endIf}
     //--------------------------------------------------------------------------
     nodeEditor.EDIT_doEnd(FALSE); //<НЕТ, ОТМЕНЯЕМ все изменения
@@ -1467,7 +1479,7 @@ begin
    _doSelected_DEFAULT_ITM;
     //--------------------------------------------------------------------------
     {$ifOpt D+}
-        DEBUG('M','RestoreSettings 0k');
+        DEBUG('M','RestoreSettings '+CbSFP_pointer2text(AOptions)+' 0k');
     {$endIf}
 end;
 
