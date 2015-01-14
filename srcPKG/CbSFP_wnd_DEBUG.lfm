@@ -7,8 +7,9 @@ object CbSFP_wndDEBUG: TCbSFP_wndDEBUG
   ClientHeight = 338
   ClientWidth = 705
   OnClose = FormClose
+  OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.2.2.0'
   Visible = True
   object Memo1: TMemo
     AnchorSideLeft.Control = Owner

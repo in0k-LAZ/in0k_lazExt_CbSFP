@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CONFIG>
-  <CbSFP_DemoSubScriber V1="114" V2="229"/>
+  <CbSFP_DemoSubScriber V1="114" V2="229" wndBDGTop="207" wndBDGLeft="409" wndBDGWidth="705" wndBDGHeight="338">
+    <wndBDG Top="245" Left="35" Width="705" Height="451"/>
+  </CbSFP_DemoSubScriber>
+  <in0k_LazExt_CbSFP wndBDGTop="207" wndBDGLeft="409" wndBDGWidth="705" wndBDGHeight="338">
+    <wndBDG Top="120" Left="13" Width="705" Height="445"/>
+  </in0k_LazExt_CbSFP>
 </CONFIG>

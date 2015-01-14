@@ -60,12 +60,15 @@ type
    public
      procedure SubScriber_saveEditorVALUEs(const INDF:string; const V1,V2:integer);
      procedure SubScriber_loadEditorVALUEs(const INDF:string; out   V1,V2:integer);
+   public
+     procedure SubScriber_wndDBG_Save(const INDF:string; const Left,Top,Width,Height:integer);
+     procedure SubScriber_wndDBG_Load(const INDF:string; var   Left,Top,Width,Height:integer);
    end;
 
 
-{$ifDef uiDevelopPRJ}
+{.$ifDef uiDevelopPRJ}
 function CbSFP_ideGeneral_Config__GET:tCbSFP_ideGeneral_Config;
-{$endif}
+{.$endif}
 
 implementation
 
@@ -95,12 +98,12 @@ begin
     result:=_CbSFP_ideGeneral_Config_;
 end;
 
-{$ifDef uiDevelopPRJ}
+{.$ifDef uiDevelopPRJ}
 function CbSFP_ideGeneral_Config__GET:tCbSFP_ideGeneral_Config;
 begin
     result:=_CbSFP_ideGeneral_Config__GET_;
 end;
-{$endif}
+{.$endif}
 
 {%endregion}
 //------------------------------------------------------------------------------
@@ -179,6 +182,12 @@ const
   cNodeName_V1='V1';
   cNodeName_V2='V2';
 
+  cNodeName_wndDBG='wndBDG';
+  cNodeName_Left  ='Left';
+  cNodeName_Top   ='Top';
+  cNodeName_Width ='Width';
+  cNodeName_Height='Height';
+
 procedure tCbSFP_ideGeneral_Config.SubScriber_saveEditorVALUEs(const INDF:string; const V1,V2:integer);
 var Config:tCbSFP_configFile;
 begin
@@ -196,6 +205,38 @@ begin
     Config:=_ConfigStorage_get;
     try V1:=Config.GetValue(INDF+cPathDELIM+cNodeName_V1,1);
         V2:=Config.GetValue(INDF+cPathDELIM+cNodeName_V2,1);
+    finally
+       Config.Free;
+    end;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure tCbSFP_ideGeneral_Config.SubScriber_wndDBG_Save(const INDF:string; const Left,Top,Width,Height:integer);
+var Config:tCbSFP_configFile;
+begin
+    Config:=_ConfigStorage_get;
+    try with Config do begin
+            SetValue(INDF+cPathDELIM+cNodeName_wndDBG+cPathDELIM+cNodeName_Left  ,Left  );
+            SetValue(INDF+cPathDELIM+cNodeName_wndDBG+cPathDELIM+cNodeName_Top   ,Top   );
+            SetValue(INDF+cPathDELIM+cNodeName_wndDBG+cPathDELIM+cNodeName_Width ,Width );
+            SetValue(INDF+cPathDELIM+cNodeName_wndDBG+cPathDELIM+cNodeName_Height,Height);
+        end;
+    finally
+       Config.Free;
+    end;
+end;
+
+procedure tCbSFP_ideGeneral_Config.SubScriber_wndDBG_Load(const INDF:string; var   Left,Top,Width,Height:integer);
+var Config:tCbSFP_configFile;
+begin
+    Config:=_ConfigStorage_get;
+    try with Config do begin
+            Left  :=GetValue(INDF+cPathDELIM+cNodeName_wndDBG+cPathDELIM+cNodeName_Left  ,Left  );
+            Top   :=GetValue(INDF+cPathDELIM+cNodeName_wndDBG+cPathDELIM+cNodeName_Top   ,Top   );
+            Width :=GetValue(INDF+cPathDELIM+cNodeName_wndDBG+cPathDELIM+cNodeName_Width ,Width );
+            Height:=GetValue(INDF+cPathDELIM+cNodeName_wndDBG+cPathDELIM+cNodeName_Height,Height);
+        end;
     finally
        Config.Free;
     end;
