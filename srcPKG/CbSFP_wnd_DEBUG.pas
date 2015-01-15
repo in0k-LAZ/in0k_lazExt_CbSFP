@@ -19,8 +19,7 @@ type
     Memo1: TMemo;
     procedure a_CLEARExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    procedure FormResize(Sender: TObject);
-    procedure FormShow(Sender: TObject);
+    procedure FormShow (Sender: TObject);
   private
    _subScriber_:tCbSFP_SubScriber;
    _wndSize_isLoaded:boolean;
@@ -49,21 +48,17 @@ end;
 
 procedure TCbSFP_wndDEBUG.FormShow(Sender: TObject);
 begin
+   _wndSize_load;
     if Assigned(_subScriber_) then begin
         caption:='[DEBUGing] '+CbSFP_ideCenter_SubScriber_INDF(_subScriber_);
     end;
-   _wndSize_load;
 end;
 
 procedure TCbSFP_wndDEBUG.FormClose(Sender:TObject; var CloseAction:TCloseAction);
 begin
+   _wndSize_save;
     CbSFP_ideCenter_DEBUG_onClose(_subScriber_);
     CloseAction:=caFree;
-end;
-
-procedure TCbSFP_wndDEBUG.FormResize(Sender: TObject);
-begin
-   _wndSize_save;
 end;
 
 //------------------------------------------------------------------------------
