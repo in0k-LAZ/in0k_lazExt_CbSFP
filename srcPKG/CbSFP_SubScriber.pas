@@ -47,6 +47,9 @@ type
   public
     // идентификатор подписчика (уникальное среди используемых)
     class function Identifier:string; virtual;
+  public
+    function BuidInDebugMODE:boolean; INLINE;
+
   public //< работа с объектом "КОНФИГУРАЦИЯ"
     // СОЗДАТЬ объект
     function  ConfigOBJ_CRT:tCbSFP_SubScriber_cnfOBJ;            virtual; abstract;
@@ -82,6 +85,17 @@ implementation
 class function tCbSFP_SubScriber_handle.Identifier:string;
 begin
     result:=self.ClassName;
+end;
+
+function tCbSFP_SubScriber_handle.BuidInDebugMODE:boolean;
+begin
+    {$ifOPT D+}
+        result:=TRUE;
+        {$hint BUILD in DEBUG mode}
+    {$else}
+        result:=TRUE;
+        {$hint BUILD withOUT DEBUG}
+    {$endIF}
 end;
 
 //------------------------------------------------------------------------------

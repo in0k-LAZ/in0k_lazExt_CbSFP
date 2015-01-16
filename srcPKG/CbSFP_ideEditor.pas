@@ -102,6 +102,7 @@ type
     //---
     TESTs_gBOX: TGroupBox;
     procedure aTEST_dWNDExecute(Sender: TObject);
+    procedure aTEST_dWNDUpdate(Sender: TObject);
     procedure OPTNs_lBoxDrawItem(Control: TWinControl; Index: Integer;
       ARect: TRect; State: TOwnerDrawState);
     procedure TESTs_lbl1Resize(Sender: TObject);
@@ -531,6 +532,11 @@ end;
 procedure tCbSFP_ideCallEditor.aTEST_dWNDExecute(Sender: TObject);
 begin
     nodeEditor.DEBUG_Show;
+end;
+
+procedure tCbSFP_ideCallEditor.aTEST_dWNDUpdate(Sender: TObject);
+begin
+    tAction(Sender).Enabled:=nodeEditor.DEBUG_mode;
 end;
 
 procedure tCbSFP_ideCallEditor._ideEditorNODE_CLR;

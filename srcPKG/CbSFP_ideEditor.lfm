@@ -421,6 +421,7 @@ object CbSFP_ideCallEditor: TCbSFP_ideCallEditor
     object aTEST_dWND: TAction
       Caption = 'aTEST_dWND'
       OnExecute = aTEST_dWNDExecute
+      OnUpdate = aTEST_dWNDUpdate
     end
   end
 end

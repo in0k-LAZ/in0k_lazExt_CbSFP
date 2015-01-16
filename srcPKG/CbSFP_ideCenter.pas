@@ -92,6 +92,7 @@ type
   private
     procedure _wnd_DEBUG_onCLS_(const node:pCbSFP_Node);
   private
+    function  _DEBUG_MODE_(const node:pCbSFP_Node):boolean;
     procedure _DEBUG_MAIN_(const node:pCbSFP_Node; const mType,mText:string);
     procedure _DEBUG_NODE_(const node:pCbSFP_Node; const mType,mText:string);
   {%region --- работа с УЗЛАМИ pCbSFP_Node ------------------------ /fold}
@@ -353,6 +354,7 @@ type
     //procedure ideCenter_DEBUG(const mType,mText:string);
     function  FindPttnInSource(const source,PTTN:string; out mathPos,mathLen:PtrInt):boolean;
   public //<
+    function  DEBUG_mode:boolean;
     procedure DEBUG_Show;
     procedure DEBUG_main(const mType,mText:string);
   end;
@@ -787,6 +789,11 @@ begin
         wndDEBUG.message(mType,mText);
     end;
 end;}
+
+function tCbSFP_ideCallCenter._DEBUG_MODE_(const node:pCbSFP_Node):boolean;
+begin
+    result:=node^.SubSiCLASS.BuidInDebugMODE;
+end;
 
 procedure tCbSFP_ideCallCenter._DEBUG_MAIN_(const node:pCbSFP_Node; const mType,mText:string);
 begin
@@ -2098,6 +2105,11 @@ begin
 end;
 
 //------------------------------------------------------------------------------
+
+function tCbSFP_ideEditorNODE.DEBUG_mode:boolean;
+begin
+   result:=_CallCenter_._DEBUG_MODE_(_SubScriber_);
+end;
 
 // отправляем сообщение в ГЛАВНОЕ окно ДЕБАГА
 procedure tCbSFP_ideEditorNODE.DEBUG_Show;
